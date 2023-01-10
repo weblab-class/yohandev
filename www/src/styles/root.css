@@ -1,0 +1,17 @@
+/**
+ * [root.css] Common CSS utilities + variables used throughout.
+ */
+.centered {
+    display: flex;
+    align-items: center;
+}
+
+.columns {
+    display: flex;
+    flex-direction: column;
+}
+
+.rows {
+    display: flex;
+    flex-direction: row;
+}

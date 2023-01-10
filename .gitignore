@@ -1,0 +1,8 @@
+.DS_Store
+
+node_modules/
+www/target/
+
+www/build/*
+api/build/*
+!www/build/index.html

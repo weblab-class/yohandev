@@ -1,0 +1,27 @@
+{
+  "name": "sentor",
+  "version": "0.1.0",
+  "description": "A node editor for AI models.",
+  "main": "api/build/app.js",
+  "repository": "git@github.com:weblab-class/yohandev.git",
+  "author": "Yohan Guyomard <yohang@mit.edu>",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "serve": "yarn && npx esbuild --platform=node --format=esm --packages=external --bundle api/src/app.ts --outfile=api/build/app.js && node api/build/app.js",
+    "watch": "yarn run serve --watch"
+  },
+  "dependencies": {
+    "args": "^5.0.3",
+    "chalk": "^5.2.0",
+    "esbuild": "^0.16.16",
+    "execa": "^6.1.0",
+    "express": "^4.18.2",
+    "ora": "^6.1.2",
+    "preact": "^10.11.3"
+  },
+  "devDependencies": {
+    "@types/args": "^5.0.0",
+    "@types/express": "^4.17.15"
+  }
+}

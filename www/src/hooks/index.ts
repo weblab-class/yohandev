@@ -1,0 +1,1 @@
+export { useWasm } from "./wasm";
