@@ -1,5 +1,6 @@
+import geckos from "@geckos.io/server";
 import express from "express";
-import chalk from "chalk";
+import http from "node:http";
 import parse from "mri";
 
 import { path } from "../../shared/build/util";
@@ -11,7 +12,11 @@ const {
 
 const app = express()
     .use(express.static(path("client/build/")));
+const server = http.createServer(app);
+const io = geckos();
 
-// Start server:
-app.listen(port);
-console.log(chalk.bold.cyanBright(`Server running at http://localhost:${port}`));
+io.addServer(server);
+io.onConnection((channel) => {
+    console.log("Received connection!");
+});
+server.listen(port);

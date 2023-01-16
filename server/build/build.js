@@ -9,6 +9,7 @@ import { Cargo } from "../../shared/build/cargo.js";
 import { path } from "../../shared/build/util.js";
 
 import parse from "mri";
+import chalk from "chalk";
 
 const {
     watch,      // Enable/disable rebuilding `server/` on changes.
@@ -43,7 +44,12 @@ build({
     },
 }).finally((_) => {
     // Run the server.
-    run && Process.restart();
+    if (run) {
+        Process.restart();
+        // Parse sub-arguments
+        const { port=8000 } = parse(args);
+        console.log(chalk.bold.cyanBright(`Server running at http://localhost:${port}`));
+    }
 });
 
 const Process = {

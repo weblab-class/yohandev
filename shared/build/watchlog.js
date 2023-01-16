@@ -19,7 +19,7 @@ export function plugin({ name }) {
             return;
         }
         // Error message:
-        console.error("\n", chalk.redBright.bold(e.text), "\n");
+        console.error("\n", chalk.redBright.bold(err.text), "\n");
         // Extra info:
         if (!err.location) return;
         const {
@@ -45,12 +45,12 @@ export function plugin({ name }) {
         );
     }
     return {
-        name: 'log',
+        name: "log",
         setup(build) {
             const anim = ora({
                 text: `Building ${name ?? ""}`,
                 color: "cyan",
-                prefixText: name ? chalk.yellowBright(`[${name}]`) : "",
+                prefixText: name ? chalk.grey(`[${name}]`) : "",
             });
             // Override esbuild outputs.
             build.initialOptions.logLevel = "silent";
@@ -66,7 +66,9 @@ export function plugin({ name }) {
                 } else {
                     anim.succeed("Build succeeded.");
                 }
-                res.errors.concat(res.warnings).forEach(logError);
+                res.errors.concat(res.warnings).forEach((e) => {
+                    logError(e)
+                });
             });
         }
     };

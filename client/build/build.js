@@ -6,7 +6,8 @@ import { build } from "esbuild";
 
 import { WatchLog } from "../../shared/build/watchlog.js";
 import { Cargo } from "../../shared/build/cargo.js";
-import { ROOT } from "../../shared/build/util.js";
+import { Argv } from "../../shared/build/argv.js";
+import { path } from "../../shared/build/util.js";
 
 import parse from "mri";
 
@@ -18,14 +19,15 @@ const {
 
 build({
     // Bundle
-    entryPoints: [join(ROOT, "client/src/app.js")],
-    outfile: join(ROOT, "client/build/app.js"),
+    entryPoints: [path("client/src/app.js")],
+    outfile: path("client/build/app.js"),
     bundle: true,
     minify: true,
     sourcemap: true,
     plugins: [
         Cargo.plugin(),
         WatchLog.plugin({ name: "c" }),
+        Argv.plugin(),
     ],
 
     // Preact

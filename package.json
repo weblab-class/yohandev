@@ -10,9 +10,11 @@
   "scripts": {
     "build": "yarn && node client/build/build.js --release && node server/build/build.js --release",
     "serve": "yarn && node client/build/build.js --release && node server/build/build.js --release --run --",
-    "watch": "yarn && concurrently -r \"node client/build/build.js --watch\" \"node server/build/build.js --watch --run\""
+    "watch": "yarn && concurrently -r \"node client/build/build.js --watch --port 8000\" \"node server/build/build.js --watch --run --port 8000\""
   },
   "dependencies": {
+    "@geckos.io/client": "^2.3.0",
+    "@geckos.io/server": "^2.3.0",
     "args": "^5.0.3",
     "chalk": "^5.2.0",
     "esbuild": "^0.16.16",

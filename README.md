@@ -3,15 +3,21 @@
     A node editor for AI models.
 </div>
 
+## Toolchain Dependencies
+    - node
+    - yarn(`brew install yarn`)
+    - cmake(`brew install cmake`)
+    - cargo([rustup.rs](https://rustup.rs))
+        + `wasm32-unknown-unknown` target(`rustup target add wasm32-unknown-unknown`)
+
+## Troubleshooting
+    - darwin-arm64: Missing OpenSSL
+        - You may need to force brew to link it. For me it was `brew link --force openssl@1.1`
+        - Source: https://github.com/murat-dogan/node-datachannel/issues/63#issuecomment-1076034512
+
 ## Captain's Logs
 ### Week 1
 - Setup project template using `WebAssembly` + `Rust` + `Preact`.
-    - Entry point is always `api/` which serves the frontend `www/`(and any other API routes) and (optionally) rebuilds it when modified.
-    - Rust will be used for computationally expensive tasks, directly on the client.
-- (WIP) Create a node editor taking API inspiration from `ReactFlow`.
-    - Top-level `Graph` component with nodes/edges passed in as props.
-    - Node moves, deletions, connections, etc. use the prop-callback pattern.
-    - UI inspiration from Tailwind and GitHub's website.
-    - Every node uses the `translate` CSS property for their global position.
-    - All edges are part of one `svg` element, also with global positions.
-    - Infinite workspace with scroll/zoom using `translate` + `scale` CSS properties.
+- Got sick
+### Week 2
+- 
