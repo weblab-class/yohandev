@@ -2,8 +2,12 @@
     "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
     "files.exclude": {
         "node_modules/": true,
-        "www/target/": true,
-        "www/Cargo.lock": true,
+        "client/target/": true,
+        "server/target/": true,
+        "shared/target/": true,
+        "client/Cargo.lock": true,
+        "server/Cargo.lock": true,
+        "shared/Cargo.lock": true,
         "yarn.lock": true
     }
 }
