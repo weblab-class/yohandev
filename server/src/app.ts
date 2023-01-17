@@ -18,5 +18,10 @@ const io = geckos();
 io.addServer(server);
 io.onConnection((channel) => {
     console.log("Received connection!");
+    channel.on("ping", (_) => {
+        console.log("got ping!");
+        channel.emit("pong");
+    })
+    channel.emit("pong");
 });
 server.listen(port);
