@@ -25,11 +25,13 @@ export async function build(path) {
             .split(/\r?\n/)
             .map((s) => JSON.parse(s))
         );
-    const artifact = messages.find((m) => m["reason"] === "compiler-artifact");
+    const artifact = messages.filter((m) => m["reason"] === "compiler-artifact");
     const diagnostics = messages.filter((m) => m["reason"] === "compiler-message");
 
     return {
-        artifact: artifact?.filenames[0],
+        artifact: artifact
+            .flatMap((m) => m["filenames"])
+            .find((p) => p.endsWith(".wasm")),
         errors: diagnostics
             .filter((m) => m["message"]["level"] === "error")
             .map((m) => m["message"]["rendered"]),

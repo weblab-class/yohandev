@@ -18,10 +18,8 @@ const io = geckos();
 io.addServer(server);
 io.onConnection((channel) => {
     console.log("Received connection!");
-    channel.on("ping", (_) => {
-        console.log("got ping!");
-        channel.emit("pong");
-    })
-    channel.emit("pong");
+    channel.onRaw((packet) => {
+        console.log(`Received: ${new Int8Array(<ArrayBuffer>packet, 0, 1)}`);
+    });
 });
 server.listen(port);
