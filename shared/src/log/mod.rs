@@ -1,6 +1,7 @@
 use log::{ Level, LevelFilter, Log, Metadata, Record };
 use std::ffi::CString;
 
+// -----------------------[ FFI ]-----------------------
 extern {
     fn info(ptr: *const u8);    // console.log
     fn error(ptr: *const u8);   // console.error
@@ -13,6 +14,7 @@ pub extern "C" fn hook() {
     log::set_logger(&WasmLogger).unwrap();
     log::set_max_level(LevelFilter::Debug);
 }
+// -----------------------------------------------------
 
 /// A JS <-> WASM logger.
 pub struct WasmLogger;

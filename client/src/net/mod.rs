@@ -1,6 +1,7 @@
-use std::mem::MaybeUninit;
+use core::mem::MaybeUninit;
 use shared::Packet;
 
+// -----------------------[ FFI ]-----------------------
 extern {
     // SAFETY:
     // Packets are sent/received as-is.
@@ -19,13 +20,36 @@ extern {
 pub extern "C" fn packet_byte_size() -> usize {
     core::mem::size_of::<Packet>()
 }
+// -----------------------------------------------------
 
-#[no_mangle]
-pub extern "C" fn ping() {
-    unsafe {
-        // SAFETY:
-        // Lifetime of the borrow is that of the function call.
-        emit(&Packet::Ping);
+/// I/O operations over UDP channels. 
+pub struct Network;
+
+impl Network {
+    /// Iterate over incoming packets.
+    pub fn poll() -> impl Iterator<Item=Packet> {
+        core::iter::from_fn(|| {
+            let mut packet = MaybeUninit::<Packet>::uninit();
+
+            if unsafe { poll(&mut packet as _) } {
+                Some(unsafe {
+                    // SAFETY:
+                    // The JS implementation returns `true` iff
+                    // the pointers passed to it were initialized.
+                    packet.assume_init()
+                })
+            } else {
+                None
+            }
+        })
     }
-    log::info!("Pinging!");
+
+    /// Send a packet to the server.
+    pub fn send(packet: &Packet) {
+        unsafe {
+            // SAFETY:
+            // Lifetime of the borrow is that of the function call.
+            emit(packet as _);
+        }
+    }
 }

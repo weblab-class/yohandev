@@ -25,6 +25,9 @@ export async function game(port: number) {
     log.hook(wasm);
     net.hook(wasm);
 
+    // Tick(TODO: use `requestAnimationFrame`)
+    setInterval(() => wasm.tick(), 500);
+
     return {
         io, draw, wasm,
 

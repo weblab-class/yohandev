@@ -10,6 +10,9 @@ export function imports(mem: () => Memory, io: ClientChannel) {
     // Queue of received packets
     const rx: Packet[] = [];
     // Setup callbacks:
+    io.onConnect((e) => {
+        if (e) throw e;
+    });
     io.onRaw((packet) => {
         rx.push(packet);
     });
@@ -42,9 +45,6 @@ export function hook(exports: Exports & {
     packet_byte_size(): usize;
     ping(): void;
 }) {
-    // Initialize constants.
+    // Initialize constants:
     PACKET_SIZE = exports.packet_byte_size();
-
-    // Quick test:
-    setInterval(() => exports.ping(), 500);
 }

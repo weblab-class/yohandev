@@ -1,14 +1,17 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
-}
+use shared::Packet;
+use net::Network;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+mod net;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+/// Step the game state by one tick.
+#[no_mangle]
+pub extern "C" fn tick() {
+    // Ping <-> Pong
+    for (id, packet) in Network::poll() {
+        Network::send(id, &match packet {
+            Packet::Ping => Packet::Pong,
+            Packet::Pong => Packet::Ping,
+        });
+        log::info!("Got {packet:?} from {id:?}");
     }
 }
