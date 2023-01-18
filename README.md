@@ -9,6 +9,8 @@
     - cmake(`brew install cmake`)
     - cargo([rustup.rs](https://rustup.rs))
         + `wasm32-unknown-unknown` target(`rustup target add wasm32-unknown-unknown`)
+    - wabt(`brew install wabt`)
+    - binaryen(`brew install binaryen`)
 
 ## Troubleshooting
     - darwin-arm64: Missing OpenSSL

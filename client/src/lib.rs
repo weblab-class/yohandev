@@ -1,9 +1,11 @@
+pub use bevy_ecs::prelude as ecs;
+pub use vek as math;
+
 use once_cell::unsync::Lazy;
-use shared::Packet;
-use hecs::World;
-use net::Network;
+use ecs::{ World, Component };
 
 mod net;
+mod draw;
 
 /// Behold, the quick & shitty™ solution to not having an
 /// even system. WASM is not threaded, so it's just easier
@@ -15,22 +17,14 @@ pub extern "C" fn setup() {
     // SAFETY:
     // WebAssembly is single threaded.
     let world = unsafe { &mut *WORLD };
-    
-    world.spawn((0.0,));
 }
 
 /// Step the game state by one tick.
 #[no_mangle]
-pub extern "C" fn tick() {
+pub extern "C" fn tick(dt: u32) {
     // SAFETY:
     // WebAssembly is single threaded.
     let world = unsafe { &mut *WORLD };
 
-    // Ping <-> Pong
-    for packet in Network::poll() {
-        log::info!("Got {packet:?} from the server!");
-    }
-    Network::send(&Packet::Ping);
-
-    world.spawn((0.0,));
+    
 }

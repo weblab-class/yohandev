@@ -25,9 +25,15 @@ export async function game(port: number) {
     log.hook(wasm);
     net.hook(wasm);
 
-    // Tick(TODO: use `requestAnimationFrame`)
+    // Begin game loop.
     wasm.setup();
-    setInterval(() => wasm.tick(), 500);
+    requestAnimationFrame(function frame(t) {
+        wasm.tick(t - (this.t ?? t));
+        // Delta time:
+        this.t = t;
+        // Request next frame:
+        requestAnimationFrame(frame);
+    });
 
     return {
         io, draw, wasm,
