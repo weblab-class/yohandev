@@ -24,7 +24,7 @@ export function imports(mem: () => Memory, io: ClientChannel) {
             // buffered without exceeding the original lifetime.
             io.raw.emit(mem().buffer.slice(ptr, ptr + PACKET_SIZE));
         },
-        poll(ptr: RefMut<Uninit<Packet>>): boolean {
+        poll_packets(ptr: RefMut<Uninit<Packet>>): boolean {
             if (!rx.length) {
                 return false;
             }

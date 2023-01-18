@@ -21,7 +21,6 @@ pub extern "C" fn main() {
     let world = world();
 
     // Crappy event system:
-    draw::spawn_sprites(world, 1000);
 }
 
 #[no_mangle]
@@ -29,6 +28,8 @@ pub extern "C" fn tick(_time: u32) {
     let world = world();
     
     // Crappy event system:
+    for packet in net::poll() {
+        net::spawn::players(world, &packet);
+    }
     draw::render(world);
-    draw::wiggle(world);
 }

@@ -35,9 +35,6 @@ export function imports(draw: Svg) {
                 .y(y)
                 .radius(r);
         },
-        rand() {
-            return Math.random();
-        }
     }
 }
 

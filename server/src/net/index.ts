@@ -35,7 +35,7 @@ export function imports(mem: () => Memory, io: GeckosServer) {
         return mem().buffer.slice(ptr, ptr + PACKET_SIZE);
     }
     return {
-        emit(to: Connection, ptr: Ref<Packet>) {
+        emit_packet(to: Connection, ptr: Ref<Packet>) {
             if (!clients[to]) {
                 return;
             }
@@ -44,13 +44,13 @@ export function imports(mem: () => Memory, io: GeckosServer) {
             // buffered without exceeding the original lifetime.
             clients[to].raw.emit(packet(ptr));
         },
-        broadcast(ptr: Ref<Packet>) {
+        broadcast_packet(ptr: Ref<Packet>) {
             // SAFETY:
             // A copy of the packet is made so it can be safely
             // buffered without exceeding the original lifetime.
             io.raw.emit(packet(ptr));
         },
-        poll(from: RefMut<Uninit<Connection>>, ptr: RefMut<Uninit<Packet>>): boolean {
+        poll_packets(from: RefMut<Uninit<Connection>>, ptr: RefMut<Uninit<Packet>>): boolean {
             if (!rx.length) {
                 return false;
             }

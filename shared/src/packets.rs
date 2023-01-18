@@ -1,5 +1,10 @@
+use hecs::Entity;
+
 #[derive(Debug, Clone, Copy)]
 pub enum Packet {
-    Ping = 0x0,
-    Pong = 0x1,
+    Ping ,
+    Pong,
+    SpawnPlayer {
+        ent: Entity
+    },
 }

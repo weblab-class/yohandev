@@ -19,7 +19,8 @@ export async function game(io: GeckosServer) {
     net.hook(wasm);
 
     // Tick:
-    setInterval(() => wasm.tick(), 50);
+    wasm.main();
+    setInterval(() => wasm.tick(), 1000 / 60);
 
     return { wasm };
 }
