@@ -22,7 +22,7 @@ export function imports(mem: () => Memory): Imports {
 };
 
 export function hook(exports: Exports & {
-    hook(): void;
+    hook_log(): void;
 }) {
-    exports.hook();
+    exports.hook_log();
 }

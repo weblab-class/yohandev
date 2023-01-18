@@ -1,35 +1,72 @@
-use crate::ecs::{ Entity, Component, Query, Changed };
-use crate::math::{ Vec2, Extent2 };
+use vek::{ Vec2, Extent2 };
+use hecs::World;
 
 // -----------------------[ FFI ]-----------------------
 extern {
-    // SAFETY:
-    // Discriminant in `Shape` is explicitely marked `u32`
-    // to guarentee a 4 byte alignment.
-    fn query_shapes(idx: u32, shape: *const Shape);
+    fn iter_sprites_rect(e: u32, x: f32, y: f32, w: f32, h: f32);
+    fn iter_sprites_circle(e: u32, x: f32, y: f32, r: f32);
+    fn rand() -> f32;
 }
 // -----------------------------------------------------
 
-/// [Component] that draws a 2D shape.
-#[derive(Component, Debug, Clone)]
-#[repr(u32)]
-pub enum Shape {
-    /// Rectangle with `(pos, size)` relative to entity's position.
+/// Component to display a sprite. All coordinates are
+/// TODO: relative to one's [Pos], if any.
+pub enum Sprite {
     Rect(Vec2<f32>, Extent2<f32>),
-    /// Quad with `vertices[4]` relative to enttiy's position.
-    Quad([Vec2<f32>; 4]),
-    /// Circle with `(pos, radius)` relative to entity's position.
     Circle(Vec2<f32>, f32),
 }
 
-/// System that updates all [Shape]s in the world.
-pub fn render(query: Query<(Entity, &Shape), Changed<Shape>>) {
-    for (ent, shape) in &query {
-        unsafe {
-            // SAFETY:
-            // Borrow of `shape` lasts for the duration of the function
-            // call.
-            query_shapes(ent.index(), shape);
+/// System that updates all [Sprite]s.
+pub fn render(world: &mut World) {
+    for (entity, shape) in &mut world.query::<&Sprite>() {
+        match shape {
+            Sprite::Rect(Vec2 { x, y }, Extent2 { w, h }) => unsafe {
+                iter_sprites_rect(entity.id(), *x, *y, *w, *h);
+            },
+            Sprite::Circle(Vec2 { x, y }, r) => unsafe {
+                iter_sprites_circle(entity.id(), *x, *y, *r);
+            },
+        }
+    }
+}
+
+/// Test system to spawn lots of [Sprite]s
+pub fn spawn_sprites(world: &mut World, n: usize) {
+    fn random() -> f32 {
+        unsafe { rand() }
+    }
+
+    for _ in 0..n {
+        world.spawn((if random() > 0.5 {
+            Sprite::Circle(
+                Vec2::new(random() * 1000.0, random() * 1000.0),
+                random() * 10.0
+            )
+        } else {
+            Sprite::Rect(
+                Vec2::new(random() * 1000.0, random() * 1000.0),
+                Extent2::new(random() * 10.0, random() * 10.0),
+            )
+        },));
+    }
+}
+
+pub fn wiggle(world: &mut World) {
+    use Sprite::*;
+
+    // Get a random vector.
+    fn rvec() -> Vec2<f32> {
+        Vec2 {
+            x: unsafe { rand() - 0.5 },
+            y: unsafe { rand() - 0.5 },
+        }
+    }
+
+    for (_, shape) in world.query_mut::<&mut Sprite>() {
+        match shape {
+            Rect(pos, _) | Circle(pos, _ )=> {
+                *pos += rvec();
+            }
         }
     }
 }

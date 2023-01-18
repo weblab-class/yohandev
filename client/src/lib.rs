@@ -1,30 +1,34 @@
-pub use bevy_ecs::prelude as ecs;
-pub use vek as math;
-
+use hecs::World;
 use once_cell::unsync::Lazy;
-use ecs::{ World, Component };
 
 mod net;
 mod draw;
 
-/// Behold, the quick & shitty™ solution to not having an
-/// even system. WASM is not threaded, so it's just easier
-/// to have a global state and hard-code the event loop.
-static mut WORLD: Lazy<World> = Lazy::new(|| World::new());
+pub fn world<'a>() -> &'a mut World {
+    // Global instance since WebAssembly must yield control back
+    // to JS and rely on its callbacks.
+    static mut WORLD: Lazy<World> = Lazy::new(|| World::new());
 
-#[no_mangle]
-pub extern "C" fn setup() {
-    // SAFETY:
-    // WebAssembly is single threaded.
-    let world = unsafe { &mut *WORLD };
+    unsafe {
+        // SAFETY:
+        // WebAssembly is single threaded, this is probably fine.
+        &mut *WORLD
+    }
 }
 
-/// Step the game state by one tick.
 #[no_mangle]
-pub extern "C" fn tick(dt: u32) {
-    // SAFETY:
-    // WebAssembly is single threaded.
-    let world = unsafe { &mut *WORLD };
+pub extern "C" fn main() {
+    let world = world();
 
+    // Crappy event system:
+    draw::spawn_sprites(world, 1000);
+}
+
+#[no_mangle]
+pub extern "C" fn tick(_time: u32) {
+    let world = world();
     
+    // Crappy event system:
+    draw::render(world);
+    draw::wiggle(world);
 }

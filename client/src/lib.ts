@@ -4,6 +4,7 @@ import { geckos } from "@geckos.io/client";
 import { SVG } from "@svgdotjs/svg.js";
 
 import * as log from "../../shared/src/log";
+import * as svg from "./draw";
 import * as net from "./net";
 
 /**
@@ -20,17 +21,18 @@ export async function game(port: number) {
     const wasm = await instantiate({
         ...log.imports(() => wasm.memory),
         ...net.imports(() => wasm.memory, io),
+        ...svg.imports(draw),
     });
     // Set module callbacks.
     log.hook(wasm);
     net.hook(wasm);
+    svg.hook(wasm);
 
     // Begin game loop.
-    wasm.setup();
+    wasm.main();
     requestAnimationFrame(function frame(t) {
-        wasm.tick(t - (this.t ?? t));
-        // Delta time:
-        this.t = t;
+        // Update:
+        wasm.tick(t);
         // Request next frame:
         requestAnimationFrame(frame);
     });

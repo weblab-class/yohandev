@@ -10,7 +10,7 @@ extern {
 
 /// Attaches all JS <-> WASM logging callbacks.
 #[no_mangle]
-pub extern "C" fn hook() {
+pub extern "C" fn hook_log() {
     log::set_logger(&WasmLogger).unwrap();
     log::set_max_level(LevelFilter::Debug);
 }
