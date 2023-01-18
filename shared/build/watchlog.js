@@ -48,7 +48,7 @@ export function plugin({ name }) {
         name: "log",
         setup(build) {
             const anim = ora({
-                text: `Building ${name ?? ""}`,
+                text: `Building`,
                 color: "cyan",
                 prefixText: name ? chalk.grey(`[${name}]`) : "",
             });

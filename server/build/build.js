@@ -24,7 +24,7 @@ build({
     outfile: path("server/build/app.js"),
     bundle: true,
     plugins: [
-        Cargo.plugin(),
+        Cargo.plugin("inline"),
         WatchLog.plugin({ name: "s" }),
     ],
 

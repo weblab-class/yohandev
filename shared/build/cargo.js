@@ -53,9 +53,10 @@ export async function manifestPath(path) {
 
 /**
  * Creates an `esbuild` plugin that compiles `.rs` imports into WebAssembly.
+ * @argument {"fetch" | "inline"} impl
  * @returns {import("esbuild").Plugin}
  */
-export function plugin(/* no config */) {
+export function plugin(impl) {
     // 1. Resolve project source to its manifest.
     async function resolveSource(args) {
         const path = resolve(args.resolveDir, args.path);
@@ -90,17 +91,29 @@ export function plugin(/* no config */) {
     }
     // 3. Virtual JS module to instantiate the WebAssembly artifact.
     function loadStub(args) {
-        return {
-            // Virtual module code:
-            contents: `
-                import wasm from "${args.path}";
+        switch (impl) {
+            case "fetch": return {
+                contents: `
+                    import wasm from "${args.path}";
 
-                export default async (env) => (
-                    WebAssembly.instantiateStreaming(fetch(wasm), { env })
-                        .then((obj) => obj.instance.exports)
-                );
-            `
-        };
+                    export default async (env) => (
+                        WebAssembly.instantiateStreaming(fetch(wasm), { env })
+                            .then((obj) => obj.instance.exports)
+                    );
+                `
+            };
+            case "inline": return {
+                contents: `
+                    import wasm from "${args.path}";
+
+                    export default async (env) => (
+                        WebAssembly.instantiate(wasm, { env })
+                            .then((obj) => obj.instance.exports)
+                    )
+                `
+            };
+            default: throw `Unknown implementation "${impl}".`;
+        }
     }
     // 4. Compile & copy the WebAssembly artifact.
     async function loadBinary(args) {
@@ -114,7 +127,7 @@ export function plugin(/* no config */) {
             contents: artifact && await readFile(artifact),
             errors: errors.map((text) => ({ text, detail: { rendered: true } })),
             warnings: warnings.map((text) =>({ text, detail: { rendered: true } })),
-            loader: "file",
+            loader: impl == "fetch" ? "file" : "binary",
         }
     }
     return {

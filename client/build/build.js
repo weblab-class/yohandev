@@ -25,7 +25,7 @@ build({
     minify: true,
     sourcemap: true,
     plugins: [
-        Cargo.plugin(),
+        Cargo.plugin("fetch"),
         WatchLog.plugin({ name: "c" }),
         Argv.plugin(),
     ],
