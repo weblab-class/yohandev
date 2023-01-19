@@ -1,36 +1,9 @@
 {
-  "name": "untitled-brawler",
+  "name": "bbox",
   "version": "0.1.0",
   "description": "The hybrid of a brawler and deck building game.",
-  "type": "module",
-  "exports": "./server/build/app.js",
+  "main": "src/bin/server.ts",
   "repository": "git@github.com:weblab-class/yohandev.git",
   "author": "Yohan Guyomard <yohang@mit.edu>",
-  "license": "MIT",
-  "scripts": {
-    "build": "yarn && node client/build/build.js --release && node server/build/build.js --release",
-    "serve": "yarn && node client/build/build.js --release && node server/build/build.js --release --run --",
-    "watch": "yarn && concurrently -r \"node client/build/build.js --watch --port 8000\" \"node server/build/build.js --watch --run --port 8000\""
-  },
-  "dependencies": {
-    "@geckos.io/client": "^2.3.0",
-    "@geckos.io/server": "^2.3.0",
-    "@svgdotjs/svg.js": "^3.1.2",
-    "args": "^5.0.3",
-    "chalk": "^5.2.0",
-    "esbuild": "^0.16.16",
-    "execa": "^6.1.0",
-    "express": "^4.18.2",
-    "mri": "^1.2.0",
-    "ora": "^6.1.2",
-    "preact": "^10.11.3"
-  },
-  "devDependencies": {
-    "@types/args": "^5.0.0",
-    "@types/express": "^4.17.15",
-    "concurrently": "^7.6.0"
-  },
-  "engines": {
-    "node": ">=14.16"
-  }
+  "license": "MIT"
 }
