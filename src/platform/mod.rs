@@ -5,7 +5,9 @@ use std::mem::{ MaybeUninit, self };
 use std::ffi::{ CString, c_char };
 
 use crate::packets::Packet;
+use crate::render::Sprite;
 
+// ----------------[ FFI ]----------------
 extern {
     // SAFETY:
     // Lifetime of `ptr` can only be guarenteed for the duration
@@ -22,6 +24,9 @@ extern {
     fn net_poll_packets(ptr: *mut MaybeUninit<Packet>) -> bool;
     fn net_poll_connections(ptr: *mut MaybeUninit<Connection>) -> bool;
     fn net_poll_disconnections(ptr: *mut MaybeUninit<Connection>) -> bool;
+
+    fn render_set_sprite(id: u32, sprite: Sprite, x: f32, y: f32);
+    fn render_remove_sprite(id: u32);
 }
 
 #[no_mangle]
@@ -35,6 +40,7 @@ extern "C" fn main() {
 extern "C" fn tick() {
     crate::tick();
 }
+// ---------------------------------------
 
 /// See [log].
 pub struct Logger;
@@ -88,6 +94,7 @@ pub struct Socket {
 
 /// Unique identifier for a networked connection.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(C)]
 pub struct Connection(u32);
 
 impl Socket {
@@ -138,5 +145,34 @@ impl Socket {
     /// Iterate over the packets received since last tick.
     pub fn packets(&self) -> impl Iterator<Item = &Packet> {
         self.recv.iter()
+    }
+
+    /// Iterate over the connections since last tick.
+    pub fn connections(&self) -> impl Iterator<Item = &Connection> {
+        self.connections.iter()
+    }
+
+    /// Iterate over the disconnections since last tick.
+    pub fn disconnections(&self) -> impl Iterator<Item = &Connection> {
+        self.disconnections.iter()
+    }
+}
+
+/// Abstraction over a sprite renderer.
+pub struct Canvas;
+
+impl Canvas {
+    /// Add or update the sprite associated with `id`.
+    pub fn set(&self, id: u32, sprite: Sprite, x: f32, y: f32) {
+        unsafe {
+            render_set_sprite(id, sprite, x, y);
+        }
+    }
+
+    // Remove the sprite associated with `id`.
+    pub fn remove(&self, id: u32) {
+        unsafe {
+            render_remove_sprite(id);
+        }
     }
 }

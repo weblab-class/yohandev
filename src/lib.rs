@@ -1,5 +1,6 @@
 mod platform;
 mod packets;
+mod render;
 
 pub fn setup() {
     log::info!("Program has started!");
