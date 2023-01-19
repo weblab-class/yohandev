@@ -18,6 +18,10 @@ export async function game(io: GeckosServer) {
         ...Render.imports(),
         ...Input.imports(),
     });
+    wasm.main();
+    setInterval(function loop() {
+        wasm.tick();
+    }, 25)
 }
 
 module Log {

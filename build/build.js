@@ -76,10 +76,11 @@ const Cargo = {
         const TARGET = "wasm32-unknown-unknown";
         const FORMAT = "json-diagnostic-rendered-ansi";
         const ARGS = [
-            "build",
+            "rustc",
             "--target", TARGET,
             "--message-format", FORMAT,
-            "--features", cfg.join(),
+            "--",
+            "--cfg", cfg.join(),
         ];
 
         const messages = await exec("cargo", ARGS, { cwd: dirname(path), reject: false })

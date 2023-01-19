@@ -10,7 +10,3 @@ crate-type = ["cdylib"]
 hecs = "0.9.1"
 log = "0.4.17"
 vek = "0.15.9"
-
-[features]
-server = []
-client = []

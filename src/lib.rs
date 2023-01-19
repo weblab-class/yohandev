@@ -14,13 +14,14 @@ pub fn setup() {
 }
 
 pub fn tick() {
-    log::info!("Tick!");
-
     // TODO instantiate once, then get form platform.
     let mut socket = platform::Socket::default();
 
     socket.poll();
     for (from, packet) in socket.packets() {
         log::info!("Received {packet:?} from {from:?}");
+    }
+    for connection in socket.connections() {
+        socket.send(*connection, &packets::Packet::Ping);
     }
 }

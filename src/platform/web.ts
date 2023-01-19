@@ -18,6 +18,11 @@ export async function game() {
         ...Render.imports(),
         ...Input.imports(),
     });
+    wasm.main();
+    requestAnimationFrame(function loop(_time) {
+        requestAnimationFrame(loop);
+        wasm.tick();
+    });
 }
 
 module Log {
