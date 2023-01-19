@@ -5,5 +5,9 @@
   "main": "src/bin/server.ts",
   "repository": "git@github.com:weblab-class/yohandev.git",
   "author": "Yohan Guyomard <yohang@mit.edu>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@geckos.io/client": "^2.3.0",
+    "@geckos.io/server": "^2.3.0"
+  }
 }
