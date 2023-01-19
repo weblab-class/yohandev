@@ -27,6 +27,9 @@ extern {
 
     fn render_set_sprite(id: u32, sprite: Sprite, x: f32, y: f32);
     fn render_remove_sprite(id: u32);
+
+    fn input_get_dx() -> f32;
+    fn input_get_dy() -> f32;
 }
 
 #[no_mangle]
@@ -173,6 +176,25 @@ impl Canvas {
     pub fn remove(&self, id: u32) {
         unsafe {
             render_remove_sprite(id);
+        }
+    }
+}
+
+/// Abstraction over keyboard/controller input.
+pub struct Gamepad;
+
+impl Gamepad {
+    /// Query the X direction of movement
+    pub fn dx(&self) -> f32 {
+        unsafe {
+            input_get_dx()
+        }
+    }
+
+    /// Query the Y direction of movement
+    pub fn dy(&self) -> f32 {
+        unsafe {
+            input_get_dy()
         }
     }
 }
