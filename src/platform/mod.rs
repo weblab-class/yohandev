@@ -168,6 +168,7 @@ impl Socket {
 }
 
 /// Abstraction over a sprite renderer.
+#[derive(Default)]
 pub struct Canvas;
 
 impl Canvas {
@@ -187,6 +188,7 @@ impl Canvas {
 }
 
 /// Abstraction over keyboard/controller input.
+#[derive(Default)]
 pub struct Gamepad;
 
 impl Gamepad {

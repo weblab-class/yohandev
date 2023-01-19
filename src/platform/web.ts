@@ -169,12 +169,40 @@ module Render {
 
 module Input {
     export function imports() {
+        // TODO: make this programmatic
+        const bindings = {
+            axes: <{ [_: string]: [string, string] }>{
+                x: ["ArrowLeft", "ArrowRight"],
+                y: ["ArrowDown", "ArrowUp"],
+            },
+            buttons: { }
+        };
+        // Buffer key presses and their timing(negative is release).
+        const buf: { [key: string]: number } = {};
+        
+        // Calculate the value of an axis
+        function axis([neg, pos]: [string, string]): f32 {
+            const negv = buf[neg] ?? 0;
+            const posv = buf[pos] ?? 0;
+
+            if (posv > negv) {
+                return posv > 0 ? 1.0 : 0.0;
+            } else {
+                return negv > 0 ? -1.0 : 0.0;
+            }
+        }
+        document.addEventListener("keydown", (e) => {
+            buf[e.key] = e.timeStamp;
+        });
+        document.addEventListener("keyup", (e) => {
+            buf[e.key] = -e.timeStamp;
+        });
         return {
             input_get_dx(): f32 {
-                return 0.0;
+                return axis(bindings.axes.x);
             },
             input_get_dy(): f32 {
-                return 0.0;
+                return axis(bindings.axes.y);
             },
         }
     }

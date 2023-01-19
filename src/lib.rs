@@ -16,6 +16,7 @@ pub fn setup() {
 pub fn tick() {
     // TODO instantiate once, then get form platform.
     let mut socket = platform::Socket::default();
+    let input = platform::Gamepad::default();
 
     socket.poll();
     for (from, packet) in socket.packets() {
@@ -23,5 +24,9 @@ pub fn tick() {
     }
     for connection in socket.connections() {
         socket.send(*connection, &packets::Packet::Ping);
+    }
+
+    if cfg!(client) {
+        log::info!("x: {}, y: {}", input.dx(), input.dy());
     }
 }
