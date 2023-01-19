@@ -6,6 +6,7 @@ import { SVG } from "@svgdotjs/svg.js";
 import * as log from "../../shared/src/log";
 import * as svg from "./draw";
 import * as net from "./net";
+import * as input from "./input";
 
 /**
  * Fetch, compile, and instantiate a new instance of the game.
@@ -22,11 +23,13 @@ export async function game(port: number) {
         ...log.imports(() => wasm.memory),
         ...net.imports(() => wasm.memory, io),
         ...svg.imports(draw),
+        ...input.imports(),
     });
     // Set module callbacks.
     log.hook(wasm);
     net.hook(wasm);
     svg.hook(wasm);
+    input.hook(wasm);
 
     // Begin game loop.
     wasm.main();

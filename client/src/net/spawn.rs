@@ -1,6 +1,6 @@
-use vek::Vec2;
-use hecs::World;
+use shared::ecs::World;
 use shared::Packet;
+use vek::Vec2;
 
 use crate::draw::Sprite;
 

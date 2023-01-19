@@ -1,5 +1,5 @@
 use vek::{ Vec2, Extent2 };
-use hecs::World;
+use shared::ecs::World;
 
 // -----------------------[ FFI ]-----------------------
 extern {

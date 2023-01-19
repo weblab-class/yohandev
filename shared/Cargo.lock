@@ -76,6 +76,7 @@ version = "0.1.0"
 dependencies = [
  "hecs",
  "log",
+ "once_cell",
 ]
 
 [[package]]

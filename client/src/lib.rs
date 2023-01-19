@@ -1,35 +1,29 @@
-use hecs::World;
-use once_cell::unsync::Lazy;
+use shared::ecs;
 
 mod net;
 mod draw;
-
-pub fn world<'a>() -> &'a mut World {
-    // Global instance since WebAssembly must yield control back
-    // to JS and rely on its callbacks.
-    static mut WORLD: Lazy<World> = Lazy::new(|| World::new());
-
-    unsafe {
-        // SAFETY:
-        // WebAssembly is single threaded, this is probably fine.
-        &mut *WORLD
-    }
-}
+mod input;
 
 #[no_mangle]
 pub extern "C" fn main() {
-    let world = world();
-
-    // Crappy event system:
+    
 }
 
 #[no_mangle]
 pub extern "C" fn tick(_time: u32) {
-    let world = world();
+    let world = ecs::world();
     
-    // Crappy event system:
+    // Input
+    input::poll();
+    // Network
     for packet in net::poll() {
         net::spawn::players(world, &packet);
     }
+    // Gameplay
+    // -- snip --
+    if input::is_down(input::Key::Up) {
+        log::info!("UP!");
+    }
+    // Render
     draw::render(world);
 }
