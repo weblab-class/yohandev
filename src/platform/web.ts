@@ -40,27 +40,29 @@ module Net {
     export function imports(mem: () => Memory) {
         // TODO: this shouldn't be hard-coded
         const channel = geckos({ port: 8000 });
-        
         // Buffer incoming messages:
-        let rx: RawMessage[] = [];
+        const rx: RawMessage[] = [];
+        
         // Server-assigned client ID:
         let id: Connection;
-        let event: "connected" | "disconnected" | undefined;
+        // Event flags
+        let connected = false;
+        let disconnected = false;
         
         channel.onConnect((e) => {
             if (e) throw e;
         });
         channel.onDisconnect((e) => {
             if (e) throw e;
-            event = "disconnected";
+            disconnected = true;
         });
         channel.onRaw((msg) => {
             rx.push(msg);
         });
         channel.on("whoami", (msg) => {
             // Actual connection established after this exchange:
-            id = <Connection> msg["id"]
-            event = "connected";
+            id = msg["id"] as Connection;
+            connected = true;
         });
 
         return {
@@ -81,7 +83,7 @@ module Net {
                 if (!rx.length || id === undefined) {
                     return false;
                 }
-                const payload = new Uint8Array(<ArrayBuffer>rx.shift());
+                const payload = new Uint8Array(rx.shift() as ArrayBuffer);
                 const packet = new Uint8Array(mem().buffer, ptr);
                 const conn = new Uint32Array(mem().buffer, from);
                 
@@ -93,10 +95,10 @@ module Net {
                 return true;
             },
             net_poll_connections(ptr: RefMut<Uninit<Connection>>): boolean {
-                if (id === undefined || event !== "connected") {
+                if (id === undefined || !connected) {
                     return false;
                 }
-                event = undefined;
+                connected = false;
 
                 // SAFETY:
                 // Caller guarentees the pointer is of correct size.
@@ -105,10 +107,10 @@ module Net {
                 return true;
             },
             net_poll_disconnections(ptr: RefMut<Uninit<Connection>>): boolean {
-                if (id === undefined || event !== "disconnected") {
+                if (id === undefined || !disconnected) {
                     return false;
                 }
-                event = undefined;
+                disconnected = false;
 
                 // SAFETY:
                 // Caller guarentees the pointer is of correct size.

@@ -2,4 +2,9 @@
 
 node_modules/
 target/
-build/
+build/*
+build/pkg/*
+
+!build/pkg/
+!build/pkg/index.html
+!build/build.js

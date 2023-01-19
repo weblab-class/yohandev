@@ -49,6 +49,7 @@ extern "C" fn tick() {
 // ---------------------------------------
 
 /// See [log].
+#[derive(Default)]
 pub struct Logger;
 
 impl Logger {
@@ -89,6 +90,7 @@ impl log::Log for Logger {
 }
 
 /// Abstraction over a networked channel.
+#[derive(Default)]
 pub struct Socket {
     /// Buffered packets that have been received.
     recv: Vec<(Connection, Packet)>,
