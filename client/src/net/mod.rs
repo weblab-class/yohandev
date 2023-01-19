@@ -1,14 +1,14 @@
 use shared::Packet;
 use core::mem::MaybeUninit;
 
-pub mod spawn;
+pub mod player;
 
 // -----------------------[ FFI ]-----------------------
 extern {
     // SAFETY:
     // Packets are sent/received as-is.
     #[allow(improper_ctypes)]
-    fn emit(ptr: *const Packet);
+    fn emit_packet(ptr: *const Packet);
 
     // SAFETY:
     // 1. Packets are sent/received as-is.
@@ -47,6 +47,6 @@ pub fn send(packet: &Packet) {
     unsafe {
         // SAFETY:
         // Lifetime of the borrow is that of the function call.
-        emit(packet as _);
+        emit_packet(packet as _);
     }
 }

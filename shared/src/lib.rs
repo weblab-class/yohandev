@@ -1,6 +1,12 @@
 pub use packets::Packet;
+pub use physics::Transform;
+pub use player::Player;
+pub use input::Input;
 
-mod packets;
+pub mod packets;
+pub mod physics;
+pub mod player;
+pub mod input;
 mod log;
 
 pub mod ecs {

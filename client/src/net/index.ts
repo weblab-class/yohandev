@@ -18,7 +18,7 @@ export function imports(mem: () => Memory, io: ClientChannel) {
     });
 
     return {
-        emit(ptr: Ref<Packet>) {
+        emit_packet(ptr: Ref<Packet>) {
             // SAFETY:
             // A copy of the packet is made so it can be safely
             // buffered without exceeding the original lifetime.

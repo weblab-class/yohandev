@@ -1,18 +1,11 @@
-import { Exports } from "../../../shared/src/types";
+import { Exports, i8 } from "../../../shared/src/types";
 
-/** Key codes relevant to the game. */
-enum Key {
-    Up      = 0x0,
-    Down    = 0x1,
-    Left    = 0x2,
-    Right   = 0x3,
-}
 /** Keyboard bindings. TODO: configurable as part of `imports` arg. */
 const bindings = {
-    [Key.Up]: "ArrowUp",
-    [Key.Down]: "ArrowDown",
-    [Key.Left]: "ArrowLeft",
-    [Key.Right]: "ArrowRight",
+    "up": "ArrowUp",
+    "down": "ArrowDown",
+    "left": "ArrowLeft",
+    "right": "ArrowRight",
 }
 
 export function imports() {
@@ -26,8 +19,17 @@ export function imports() {
     })
 
     return {
-        poll_key(code: Key): boolean {
-            return down[bindings[code]];
+        poll_input_dx(): i8 {
+            const l = down[bindings["left"]];
+            const r = down[bindings["right"]];
+            // TODO: better system than this
+            return (l && !r) ? -128 : (r && !l) ? 127 : 0;
+        },
+        poll_input_dy(): i8 {
+            const u = down[bindings["down"]];
+            const d = down[bindings["up"]];
+            // TODO: better system than this
+            return (u && !d) ? -128 : (d && !u) ? 127 : 0;
         }
     }
 }

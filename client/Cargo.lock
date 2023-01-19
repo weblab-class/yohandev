@@ -173,6 +173,7 @@ dependencies = [
  "hecs",
  "log",
  "once_cell",
+ "vek",
 ]
 
 [[package]]
