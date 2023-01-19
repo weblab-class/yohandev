@@ -47,8 +47,11 @@ export interface Imports extends WebAssembly.ModuleImports {
     log_error(ptr: Ref<u8>): void;
     log_warn(ptr: Ref<u8>): void;
 
-    net_emit(ptr: Ref<Packet>, len: usize): void;
-    net_poll_packets(ptr: RefMut<Uninit<Packet>>): boolean;
+    net_emit(to: Connection, ptr: Ref<Packet>, len: usize): void;
+    net_poll_packets(
+        from: RefMut<Uninit<Connection>>,
+        ptr: RefMut<Uninit<Packet>>
+    ): boolean;
     net_poll_connections(ptr: RefMut<Uninit<Connection>>): boolean;
     net_poll_disconnections(ptr: RefMut<Uninit<Connection>>): boolean;
 
@@ -69,4 +72,12 @@ export interface Exports extends WebAssembly.Exports {
 /** Fetch, compile, and instantiate the WebAssembly module. */
 export async function instantiate(imports: Imports): Promise<Exports> {
     return lib(imports);
+}
+
+/** Decode a null-terminated string */
+export function cstring(mem: Memory, ptr: Ref<u8>): string {
+    const view = new Uint8Array(mem.buffer, ptr);
+    const len = view.findIndex((c) => c == 0);
+    
+    return new TextDecoder().decode(view.subarray(0, len));   
 }

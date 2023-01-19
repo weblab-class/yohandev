@@ -20,8 +20,11 @@ extern {
     // 1. Lifetime of `ptr` can only be guarenteed for the duration
     //    of the function call. Copy if needed for longer.
     // 2. Poll should return `true` iff it initialized the `ptr`.
-    fn net_emit(ptr: *const Packet, len: usize);
-    fn net_poll_packets(ptr: *mut MaybeUninit<Packet>) -> bool;
+    fn net_emit(to: Connection, ptr: *const Packet, len: usize);
+    fn net_poll_packets(
+        from: *mut MaybeUninit<Connection>,
+        ptr: *mut MaybeUninit<Packet>
+    ) -> bool;
     fn net_poll_connections(ptr: *mut MaybeUninit<Connection>) -> bool;
     fn net_poll_disconnections(ptr: *mut MaybeUninit<Connection>) -> bool;
 
@@ -88,7 +91,7 @@ impl log::Log for Logger {
 /// Abstraction over a networked channel.
 pub struct Socket {
     /// Buffered packets that have been received.
-    recv: Vec<Packet>,
+    recv: Vec<(Connection, Packet)>,
     /// Buffered NEW connections since last poll, NOT every client.
     connections: Vec<Connection>,
     /// Buffered new disconnections.
@@ -102,9 +105,9 @@ pub struct Connection(u32);
 
 impl Socket {
     /// Send an unreliable packet.
-    pub fn send(&self, packet: &Packet) {
+    pub fn send(&self, to: Connection, packet: &Packet) {
         unsafe {
-            net_emit(packet as _, mem::size_of_val(packet));
+            net_emit(to, packet as _, mem::size_of_val(packet));
         }
     }
 
@@ -116,16 +119,17 @@ impl Socket {
 
         // Packets
         let mut packet = MaybeUninit::uninit();
-        while unsafe { net_poll_packets(&mut packet as _) } {
+        let mut conn = MaybeUninit::uninit();
+        while unsafe {
+            net_poll_packets(&mut conn as _, &mut packet as _)
+        } {
             self.recv.push(unsafe {
                 // SAFETY:
-                // Poll will return true if `packet` has been
-                // initialized.
-                packet.assume_init_read()
+                // Poll will return true iff initialized.
+                (conn.assume_init(), packet.assume_init_read())
             });
         }
         // Connections
-        let mut conn = MaybeUninit::uninit();
         while unsafe { net_poll_connections(&mut conn as _) } {
             self.connections.push(unsafe {
                 // SAFETY:
@@ -146,7 +150,7 @@ impl Socket {
     }
 
     /// Iterate over the packets received since last tick.
-    pub fn packets(&self) -> impl Iterator<Item = &Packet> {
+    pub fn packets(&self) -> impl Iterator<Item = &(Connection, Packet)> {
         self.recv.iter()
     }
 
