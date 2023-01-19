@@ -18,3 +18,4 @@ shared/build/*
 !shared/build/cargo.js
 !shared/build/watchlog.js
 !shared/build/util.js
+!shared/build/argv.js
