@@ -1,3 +1,9 @@
+// @ts-ignore
+import lib from "./mod.rs";
+
+/** Shorthand for WebAssembly.Memory */
+export type Memory = WebAssembly.Memory;
+
 /** An immutable pointer. */
 export type Ref<_> = number;
 /** A mutable pointer. */
@@ -54,8 +60,13 @@ export interface Imports extends WebAssembly.ModuleImports {
 }
 
 export interface Exports extends WebAssembly.Exports {
-    memory: WebAssembly.Memory;
+    memory: Memory;
 
     main(): void;
     tick(): void;
+}
+
+/** Fetch, compile, and instantiate the WebAssembly module. */
+export async function instantiate(imports: Imports): Promise<Exports> {
+    return lib(imports);
 }
