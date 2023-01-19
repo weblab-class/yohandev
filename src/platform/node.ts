@@ -131,11 +131,11 @@ module Net {
 module Render {
     export function imports() {
         return {
-            render_set_sprite(id: u32, sprite: Sprite, x: f32, y: f32): void {
-
+            render_set_sprite(_id: u32, _sprite: Sprite, _x: f32, _y: f32): void {
+                // Node is headless!
             },
             render_remove_sprite(id: u32): void {
-
+                // Node is headless!
             },
         }
     }
@@ -145,9 +145,11 @@ module Input {
     export function imports() {
         return {
             input_get_dx(): f32 {
+                // Node is headless!
                 return 0.0;
             },
             input_get_dy(): f32 {
+                // Node is headless!
                 return 0.0;
             },
         }

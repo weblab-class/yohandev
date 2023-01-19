@@ -2,6 +2,7 @@
  * Platform implementation for a web browser.
  */
 import { geckos, RawMessage } from "@geckos.io/client";
+import { Shape, SVG } from "@svgdotjs/svg.js";
 import {
     Memory, Ref, RefMut, Uninit,
     cstring,
@@ -129,12 +130,38 @@ module Net {
 
 module Render {
     export function imports() {
+        // TODO: somehow return this to attach to DOM
+        const draw = SVG().size("100%", "100%");
+        // Entity -> SVG cache
+        const cache: {
+            [id: u32]: {
+                sprite: Sprite,
+                shape: Shape,
+            }
+        } = {};
         return {
             render_set_sprite(id: u32, sprite: Sprite, x: f32, y: f32): void {
-
+                // Create shape
+                if (!cache.hasOwnProperty(id) || cache[id].sprite !== sprite) {
+                    cache[id]?.shape.remove();
+                    cache[id] = {
+                        sprite,
+                        shape: (() => {
+                            switch (sprite) {
+                                case Sprite.Rect: return draw.rect(20, 50);
+                                case Sprite.Circle: return draw.circle(30);
+                            }
+                        })(),
+                    };
+                }
+                // Update shape
+                cache[id].shape.x(x).y(y);
             },
             render_remove_sprite(id: u32): void {
-
+                // Remove from DOM
+                cache[id]?.shape.remove();
+                // Remove from cache
+                delete cache[id];
             },
         }
     }
