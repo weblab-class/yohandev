@@ -9,7 +9,6 @@ import { game } from "../platform/node";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-console.log(join(ROOT, "build/pkg/"));
 const app = express()
     .use(express.static(join(ROOT, "build/pkg/")));
 const server = http.createServer(app);

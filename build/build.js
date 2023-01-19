@@ -202,6 +202,8 @@ const Cargo = {
     },
 };
 
+import { fork } from "node:child_process";
+
 /**
  * Actual build script.
  */
@@ -220,6 +222,6 @@ const Cargo = {
     );
     // Run artifact
     if (FLAGS["run"]) {
-        console.log(CONFIGS["server"]().outfile);
+        fork(CONFIGS["server"]().outfile, {stdio: "inherit" });
     }
 })();
