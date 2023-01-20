@@ -3,6 +3,7 @@
 
 use std::mem::{ MaybeUninit, self };
 use std::ffi::{ CString, c_char };
+use once_cell::sync::OnceCell;
 
 use crate::packets::Packet;
 use crate::render::Sprite;
@@ -39,14 +40,24 @@ extern {
 extern "C" fn main() {
     Logger::hook();
 
-    crate::setup();
+    crate::main();
 }
 
 #[no_mangle]
 extern "C" fn tick() {
-    crate::tick();
+    if let Some(func) = TICK.get() {
+        func();
+    }
 }
 // ---------------------------------------
+
+/// Callback for every tick event.
+static TICK: OnceCell<fn()> = OnceCell::new();
+
+/// Start the main event loop with the passed-in function.
+pub fn run(func: fn()) {
+    TICK.set(func).unwrap();
+}
 
 /// See [log].
 #[derive(Default)]
