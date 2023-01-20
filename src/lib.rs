@@ -20,7 +20,9 @@ pub fn main() {
         player::spawn_existing(&mut world, &socket);
         player::spawn(&mut world, &socket);
         input::update(&mut world, &input);
+        input::sync(&mut world, &socket);
         player::controller(&mut world);
+        transform::sync_position(&mut world, &socket);
         render::update(&world, &canvas);
     });
 }

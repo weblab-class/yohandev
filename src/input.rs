@@ -1,6 +1,6 @@
-use hecs::World;
+use hecs::{World, PreparedQuery};
 
-use crate::platform::Gamepad;
+use crate::{platform::{Gamepad, Socket, Connection}, packets::Packet};
 
 /// Snapshot of a player's input. Used as both a
 /// component and a packet.
@@ -28,20 +28,42 @@ impl Input {
     }
 }
 
-/// `Client system`:
-///     - Updates the local player's input component.
-///     - Sends input snapshots to the server.
-/// 
-/// `Server system`:
-///     - Listens for client's incoming inputs.
-///     - Updates respective entities' input components.
+/// Client system that polls user inputs and updates them
+/// on the client.
 pub fn update(world: &mut World, gamepad: &Gamepad) {
     const MAX: f32 = i8::MAX as _;
 
+    if cfg!(server) {
+        return;
+    }
+
     for (_, input) in world.query_mut::<&mut Input>() {
-        if cfg!(client) {
-            input.dx = (MAX * gamepad.dx()) as _;
-            input.dy = (MAX * gamepad.dy()) as _;
+        input.dx = (MAX * gamepad.dx()) as _;
+        input.dy = (MAX * gamepad.dy()) as _;
+    }
+}
+
+/// System that synchronizes the `Input` component over the
+/// network.
+pub fn sync(world: &mut World, socket: &Socket) {
+    if cfg!(client) {
+        for (_, &input) in world.query_mut::<&Input>() {
+            socket.broadcast(&Packet::Input(input));
+        }
+    }
+    if cfg!(server) {
+        // Query to search for the relevant entity
+        let mut query = PreparedQuery::<(&Connection, &mut Input)>::default();
+
+        for (connection, packet) in socket.packets() {
+            if let Packet::Input(input) = packet {
+                query
+                    .query_mut(world)
+                    .find(|(_, (conn, _))| *conn == connection)
+                    .map(|(_, (_, inp))| {
+                        *inp = *input;
+                    });
+            }
         }
     }
 }

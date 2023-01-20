@@ -2,7 +2,7 @@ use hecs::{ World, With, EntityBuilder };
 use vek::Vec2;
 
 use crate::{
-    transform::Transform,
+    transform::{Transform, NetPosition},
     input::Input,
     platform::{ Socket, Connection },
     render::Sprite,
@@ -34,6 +34,7 @@ pub fn spawn(world: &mut World, socket: &Socket) {
     let bundle = || (
         Player,
         Transform::default(),
+        NetPosition::default(),
         Sprite::Rect,
     );
     if cfg!(server) {
@@ -85,7 +86,7 @@ pub fn spawn_existing(world: &mut World, socket: &Socket) {
     type Query<'a> = With<&'a Connection, &'a Player>;
 
     for &incoming in socket.connections() {
-        for (entity, &connection) in &mut world.query::<Query>() {
+        for (entity, &connection) in world.query_mut::<Query>() {
             // TODO: reliable
             socket.send(incoming, &Packet::SpawnPlayer {
                 entity,
