@@ -22,4 +22,4 @@
 - Setup project template using `WebAssembly` + `Rust` + `Preact`.
 - Got sick
 ### Week 2
-- 
+- As it turns out, daemons suck! I'd much rather have a shortcut in my IDE to build.

@@ -1,0 +1,13 @@
+[package]
+name = "bbox"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+hecs = "0.9.1"
+log = "0.4.17"
+vek = "0.15.9"
+once_cell = "1.17.0"
