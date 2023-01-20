@@ -83,6 +83,14 @@ module Net {
                     mem().buffer.slice(ptr, ptr + len)
                 );
             },
+            net_broadcast(ptr: Ref<Packet>, len: usize): void {
+                io.raw.emit(
+                    // SAFETY:
+                    // Lifetime of the packet is extended since `slice`
+                    // creates a copy.
+                    mem().buffer.slice(ptr, ptr + len)
+                );
+            },
             net_poll_packets(
                 from: RefMut<Uninit<Connection>>,
                 ptr: RefMut<Uninit<Packet>>

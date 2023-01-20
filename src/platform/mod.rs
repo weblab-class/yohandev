@@ -22,6 +22,7 @@ extern {
     //    of the function call. Copy if needed for longer.
     // 2. Poll should return `true` iff it initialized the `ptr`.
     fn net_emit(to: Connection, ptr: *const Packet, len: usize);
+    fn net_broadcast(ptr: *const Packet, len: usize);
     fn net_poll_packets(
         from: *mut MaybeUninit<Connection>,
         ptr: *mut MaybeUninit<Packet>
@@ -131,6 +132,13 @@ impl Socket {
     pub fn send(&self, to: Connection, packet: &Packet) {
         unsafe {
             net_emit(to, packet as _, mem::size_of_val(packet));
+        }
+    }
+
+    /// Send an unreliable packet to everyone.
+    pub fn broadcast(&self, packet: &Packet) {
+        unsafe {
+            net_broadcast(packet as _, mem::size_of_val(packet));
         }
     }
 

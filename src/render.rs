@@ -1,6 +1,6 @@
 use hecs::World;
 
-use crate::{ platform::Canvas, input::Input };
+use crate::{ platform::Canvas, transform::Transform };
 
 /// Component that gives entities a visual appearance.
 #[derive(Debug, Clone, Copy)]
@@ -19,13 +19,12 @@ pub fn update(world: &World, canvas: &Canvas) {
         // Nothing to do :O
         return;
     }
-    // TODO: use transform component
-    for (e, (sprite, input)) in &mut world.query::<(&Sprite, &Input)>() {
+    for (e, (sprite, transform)) in &mut world.query::<(&Sprite, &Transform)>() {
         canvas.set(
             e.id(),
             *sprite,
-            100.0 + input.dx() * 50.0,
-            100.0 + input.dy() * 50.0,
+            transform.translation.x,
+            transform.translation.y,
         );
     }
 }

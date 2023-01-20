@@ -48,6 +48,7 @@ export interface Imports extends WebAssembly.ModuleImports {
     log_warn(ptr: Ref<u8>): void;
 
     net_emit(to: Connection, ptr: Ref<Packet>, len: usize): void;
+    net_broadcast(ptr: Ref<Packet>, len: usize): void;
     net_poll_packets(
         from: RefMut<Uninit<Connection>>,
         ptr: RefMut<Uninit<Packet>>
