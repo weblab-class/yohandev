@@ -130,8 +130,10 @@ module Net {
 
 module Render {
     export function imports() {
-        // TODO: somehow return this to attach to DOM
-        const draw = SVG().size("100%", "100%");
+        // TODO: somehow return this to attach to DOM node
+        const draw = SVG()
+            .size("100%", "100%")
+            .addTo(document.body);
         // Entity -> SVG cache
         const cache: {
             [id: u32]: {

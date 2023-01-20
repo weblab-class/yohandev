@@ -3,7 +3,7 @@
 
 use std::mem::{ MaybeUninit, self };
 use std::ffi::{ CString, c_char };
-use once_cell::sync::OnceCell;
+use once_cell::unsync::OnceCell;
 
 use crate::packets::Packet;
 use crate::render::Sprite;
@@ -45,18 +45,28 @@ extern "C" fn main() {
 
 #[no_mangle]
 extern "C" fn tick() {
-    if let Some(func) = TICK.get() {
-        func();
+    unsafe {
+        // SAFETY:
+        // WebAssembly is single-threaded so access to mutable
+        // statics is fine. 
+        if let Some(func) = TICK.get_mut() {
+            func();
+        }
     }
 }
 // ---------------------------------------
 
 /// Callback for every tick event.
-static TICK: OnceCell<fn()> = OnceCell::new();
+static mut TICK: OnceCell<Box<dyn FnMut()>> = OnceCell::new();
 
 /// Start the main event loop with the passed-in function.
-pub fn run(func: fn()) {
-    TICK.set(func).unwrap();
+pub fn run(func: impl FnMut() + 'static) {
+    unsafe {
+        // SAFETY:
+        // WebAssembly is single-threaded so access to mutable
+        // statics is fine. 
+        assert!(TICK.set(Box::new(func)).is_ok());
+    }
 }
 
 /// See [log].

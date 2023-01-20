@@ -12,7 +12,13 @@ pub fn main() {
     let canvas = Canvas::default();
     let input = Gamepad::default();
 
-    platform::run(|| {
-        log::info!("tick");
+    world.spawn((
+        input::Input::default(),
+        render::Sprite::Rect,
+    ));
+
+    platform::run(move || {
+        input::update(&mut world, &input);
+        render::update(&world, &canvas);
     });
 }
