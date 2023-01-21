@@ -18,6 +18,7 @@ export async function game() {
         ...Net.imports(() => wasm.memory),
         ...Render.imports(),
         ...Input.imports(),
+        ...Time.imports(),
     });
     wasm.main();
     requestAnimationFrame(function loop(_time) {
@@ -215,6 +216,16 @@ module Input {
             input_get_dy(): f32 {
                 return axis(bindings.axes.y);
             },
+        }
+    }
+}
+
+module Time {
+    export function imports() {
+        return {
+            time_now(): u32 {
+                return window.performance ? performance.now() : Date.now();
+            }
         }
     }
 }

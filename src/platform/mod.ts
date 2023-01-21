@@ -61,6 +61,8 @@ export interface Imports extends WebAssembly.ModuleImports {
 
     input_get_dx(): f32;
     input_get_dy(): f32;
+
+    time_now(): u32;
 }
 
 export interface Exports extends WebAssembly.Exports {

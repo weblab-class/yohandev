@@ -1,4 +1,4 @@
-use platform::{ Canvas, Gamepad, Socket };
+use platform::{ Canvas, Gamepad, Socket, Time };
 use hecs::World;
 
 mod transform;
@@ -14,6 +14,7 @@ mod math;
 pub fn main() {
     let mut world = World::new();
     let mut socket = Socket::default();
+    let mut time = Time::default();
     let canvas = Canvas::default();
     let input = Gamepad::default();
 
@@ -35,6 +36,7 @@ pub fn main() {
 
     platform::run(move || {
         socket.poll();
+        time.poll();
 
         player::instantiate(&mut world, &socket);
         spawn::networked_instantiate(&mut world, &socket);
@@ -49,5 +51,7 @@ pub fn main() {
         }
         transform::networked_position(&mut world, &socket);
         render::update(&world, &canvas);
+
+        log::info!("{}s", time.dt());
     });
 }

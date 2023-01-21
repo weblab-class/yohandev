@@ -35,6 +35,8 @@ extern {
 
     fn input_get_dx() -> f32;
     fn input_get_dy() -> f32;
+
+    fn time_now() -> u32;
 }
 
 #[no_mangle]
@@ -232,6 +234,52 @@ impl Gamepad {
     pub fn dy(&self) -> f32 {
         unsafe {
             input_get_dy()
+        }
+    }
+}
+
+/// Abstraction over time measurements.
+#[derive(Default)]
+pub struct Time {
+    /// Start time, in ms
+    start: u32,
+    /// Most recent time polled
+    now: u32,
+    /// Second most recent time polled
+    last: Option<u32>,
+}
+
+impl Time {
+    /// Call this at start of every frame.
+    pub fn poll(&mut self) {
+        self.last = Some(self.now);
+        self.now = unsafe { time_now() };
+        // Pretty much impossible for start to be exactly 0
+        if self.start == 0 {
+            self.start = self.now;
+        }
+    }
+
+    /// Seconds elapsed since start of the program.
+    pub fn elapsed(&self) -> f32 {
+        self.elapsed_ms() as f32 / 1000.0
+    }
+
+    /// Milliseconds elapsed since start of the program.
+    pub fn elapsed_ms(&self) -> u32 {
+        self.now - self.start
+    }
+
+    /// Seconds between this frame and the one before.
+    pub fn dt(&self) -> f32 {
+        self.dt_ms() as f32 / 1000.0
+    }
+
+    /// Milliseconds between this frame and the one before.
+    pub fn dt_ms(&self) -> u32 {
+        match self.last {
+            Some(last) => self.now - last,
+            None => 0,
         }
     }
 }

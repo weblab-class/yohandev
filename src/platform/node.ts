@@ -17,6 +17,7 @@ export async function game(io: GeckosServer) {
         ...Net.imports(() => wasm.memory, io),
         ...Render.imports(),
         ...Input.imports(),
+        ...Time.imports(),
     });
     wasm.main();
     setInterval(function loop() {
@@ -160,6 +161,16 @@ module Input {
                 // Node is headless!
                 return 0.0;
             },
+        }
+    }
+}
+
+module Time {
+    export function imports() {
+        return {
+            time_now(): u32 {
+                return performance.now();
+            }
         }
     }
 }
