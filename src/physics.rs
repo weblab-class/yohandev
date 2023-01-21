@@ -3,7 +3,7 @@ use std::ops::Deref;
 use hecs::{ Entity, World, With };
 use parry2d::{
     shape::{ Cuboid, Ball, Shape },
-    query
+    query,
 };
 
 use crate::{
@@ -44,7 +44,7 @@ impl Deref for Collider {
 /// Component that stores *all* entities collided with in the past frame,
 /// for entities that care about it. 
 #[derive(Debug, Default, Clone)]
-pub struct Collisions(Vec<Entity>);
+pub struct Collisions(pub Vec<Entity>);
 
 /// Component for entities whose position is affected by its velocity
 /// and collisions.
@@ -54,7 +54,7 @@ pub struct Collisions(Vec<Entity>);
 #[derive(Debug, Default, Clone)]
 pub struct KinematicBody {
     /// Linear velocity.
-    velocity: Vec2<f32>,
+    pub velocity: Vec2<f32>,
 }
 
 /// Component for entities whose position is unaffected by collisions,
@@ -68,13 +68,13 @@ pub struct FixedBody;
 #[derive(Debug, Clone)]
 pub struct Gravity {
     /// Acceleration of gravity in `m/s^2`(ie. `(0, -9.8)`)
-    acceleration: Vec2<f32>,
+    pub acceleration: Vec2<f32>,
 }
 
 impl Default for Gravity {
     fn default() -> Self {
         Self {
-            acceleration: vec2!(0.0, -9.8)
+            acceleration: vec2!(0.0, -981.0)
         }
     }
 }
@@ -89,43 +89,43 @@ pub enum Grounded {
     No { time: f32 },
 }
 
-/// System that computes collisions between [Collider]s and stores the
-/// result in [Collisions] components.
-/// 
-/// It should be called before other physics systems that might mutate
-/// the [Collisions] component, as this one clears it.
-pub fn compute_collisions(world: &mut World) {
-    /// Minimum query to have a collision.
-    type Query<'a> = (
-        &'a Collider,
-        &'a Transform,
-    );
-    // Simple O(n^2) `a` intersects `b` test:
-    for (e1, ((c1, t1), Collisions(list))) in &mut world.query::<(Query, &mut Collisions)>() {
-        // Reset collisions list
-        list.clear();
-        // Try every other collider...
-        for (e2, (c2, t2)) in &mut world.query::<Query>() {
-            // ...except self, of course:
-            if e1 == e2 {
-                continue;
-            }
-            if let Ok(intersects) = query::intersection_test(
-                &t1.into(),
-                &**c1,
-                &t2.into(),
-                &**c2,
-            ) {
-                // Collision!
-                if intersects {
-                    list.push(e2);
-                }
-            }
-        }
-    }
-}
+// /// System that computes collisions between [Collider]s and stores the
+// /// result in [Collisions] components.
+// /// 
+// /// It should be called before other physics systems that might mutate
+// /// the [Collisions] component, as this one clears it.
+// pub fn compute_collisions(world: &mut World) {
+//     /// Minimum query to have a collision.
+//     type Query<'a> = (
+//         &'a Collider,
+//         &'a Transform,
+//     );
+//     // Simple O(n^2) `a` intersects `b` test:
+//     for (e1, ((c1, t1), Collisions(list))) in &mut world.query::<(Query, &mut Collisions)>() {
+//         // Reset collisions list
+//         list.clear();
+//         // Try every other collider...
+//         for (e2, (c2, t2)) in &mut world.query::<Query>() {
+//             // ...except self, of course:
+//             if e1 == e2 {
+//                 continue;
+//             }
+//             if let Ok(intersects) = query::intersection_test(
+//                 &t1.into(),
+//                 &**c1,
+//                 &t2.into(),
+//                 &**c2,
+//             ) {
+//                 // Collision!
+//                 if intersects {
+//                     list.push(e2);
+//                 }
+//             }
+//         }
+//     }
+// }
 
-/// 
+/// System that updates the [Grounded] component.
 pub fn compute_grounded(world: &mut World) {
     todo!()
 }
@@ -138,52 +138,52 @@ pub fn compute_gravity(world: &mut World) {
         &'a Gravity,
     );
     for (_, (kb, gravity)) in world.query_mut::<Query>() {
-        kb.velocity += gravity.acceleration;
+        // TODO: delta time
+        kb.velocity += gravity.acceleration * (1.0 / 60.0);
     }
 }
 
-/// System that steps the physics simulation.
-/// TODO: use delta time
-pub fn step_kinematic_bodies(world: &mut World) {
-    /// Query the moving body.
-    type KinematicQuery<'a> = (&'a KinematicBody, &'a Collider, &'a Transform);
-    /// Query what it might bump into.
-    type FixedQuery<'a> = With<(&'a Collider, &'a Transform), &'a FixedBody>;
-    
-    // Entities and their velocity * dt
-    let mut moves = Vec::new();
-    // Step every kinematic body by their velocity:
-    for (e1, (kb, c1, t1)) in &mut world.query::<KinematicQuery>() {
-        // Query the soonest impact
-        let toi = world.query::<FixedQuery>()
-            .into_iter()
-            .filter(|(e2, _)| e1 != *e2)
-            .map(|(_, (c2, t2))| {
-                query::time_of_impact(
-                    &t1.into(),
-                    &kb.velocity,
-                    &**c1,
-                    &t2.into(),
-                    &vec2!(0.0, 0.0),
-                    &**c2,
-                    1.0 / 60.0, // TODO:(important) delta time goes here
-                    true,
-                )
-                .unwrap()
-                .map(|toi| toi.toi)
-                // If no collision occurs, move by the full velocity * dt
-                .unwrap_or(1.0 / 60.0) // TODO: delta time goes here
-            })
-            .reduce(f32::min)
-            .unwrap_or(1.0 / 60.0); // TODO: delta time goes here
-        // Move
-        moves.push((e1, kb.velocity * toi));
+/// System that simulates kinematic bodies.
+pub fn compute_kinematics(world: &mut World) {
+    type Query<'a> = (
+        &'a mut Transform,
+        &'a KinematicBody,
+    );
+    for (_, (transform, kb)) in world.query_mut::<Query>() {
+        // TODO: delta time
+        transform.translation += kb.velocity * (1.0 / 60.0);
     }
-    for (e, dpos) in moves {
-        if let Ok(mut transform) = world.get::<&mut Transform>(e) {
-            transform.translation += dpos;
+}
+
+/// System that resolves intersections between kinematic/fixed bodies.
+pub fn resolve_collisions(world: &mut World) {
+    /// Minimum query to have a collision.
+    type KinematicQuery<'a> = (
+        &'a mut Transform,
+        &'a mut KinematicBody,
+        &'a Collider,
+    );
+    type FixedQuery<'a> = With<(&'a Transform, &'a Collider), &'a FixedBody>;
+
+    // Simple O(n^2) `a` intersects `b` test.
+    for (_, (t1, kb, c1)) in &mut world.query::<KinematicQuery>() {
+        for (_, (t2, c2)) in &mut world.query::<FixedQuery>() {
+            if let Ok(Some(contact)) = query::contact(
+                &(&*t1).into(),
+                &**c1,
+                &t2.into(),
+                &**c2,
+                0.01,
+            ) {
+                if contact.dist >= 0.0 {
+                    continue;
+                }
+                let norm = contact.normal1.into_inner();
+                // Remove component of translation along contact normal
+                t1.translation += norm * contact.dist;
+                // Remove component of velocity along contact normal
+                kb.velocity -= norm * norm.dot(&kb.velocity);
+            }
         }
-        // Nullify velocity's component along collision normal
-        // proj formula
     }
 }

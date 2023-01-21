@@ -1,21 +1,22 @@
 use hecs::World;
 
 use crate::{
-    transform::Transform,
+    physics::KinematicBody,
     input::Input,
     platform::Socket,
     spawn::Prefab,
-    math::vec2,
 };
 
 /// System that updates player controllers.
 pub fn controller(world: &mut World) {
     /// Queries all players
-    type Query<'a> = (&'a mut Transform, &'a Input);
+    type Query<'a> = (&'a mut KinematicBody, &'a Input);
 
-    for (_, (transform, input)) in world.query_mut::<Query>() {
-        // TODO: use delta time
-        transform.translation += vec2!(input.dx(), input.dy())
+    for (_, (kb, input)) in world.query_mut::<Query>() {
+        kb.velocity.x = input.dx() * 100.0;
+        if input.dy() > 0.0 {
+            kb.velocity.y += 50.0;
+        }
     }
 }
 

@@ -14,6 +14,7 @@ body {
 }
 
 svg.cartesian {
+    /* 100px = 1m */
     transform: scaleY(-1);
 }
 

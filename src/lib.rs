@@ -33,11 +33,12 @@ pub fn main() {
         spawn::networked_instantiate(&mut world, &socket);
         input::update(&mut world, &input);
         input::network_player_commands(&mut world, &socket);
-        physics::compute_collisions(&mut world);
+        // physics::compute_collisions(&mut world);
         // physics::compute_grounded(&mut world);
         player::controller(&mut world);
         physics::compute_gravity(&mut world);
-        physics::step_kinematic_bodies(&mut world);
+        physics::compute_kinematics(&mut world);
+        physics::resolve_collisions(&mut world);
         transform::networked_position(&mut world, &socket);
         render::update(&world, &canvas);
     });
