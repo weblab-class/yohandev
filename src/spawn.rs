@@ -6,7 +6,8 @@ use crate::{
     network::{ Networked, Packet },
     render::Sprite,
     input::Input,
-    physics::{ Collider, Collisions },
+    physics::{ Collider, Collisions, KinematicBody, Gravity },
+    math::vec2,
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -24,8 +25,13 @@ impl Prefab {
                 Sprite::Rect,
                 Collider::rect(20.0, 50.0),
                 Collisions::default(),
+                KinematicBody::default(),
+                Gravity::default(),
                 Input::default(),
-                Transform::default(),
+                Transform {
+                    translation: vec2!(0.0, 200.0),
+                    rotation: 0.0,
+                },
             )),
         };
         // Keep track of the parent prefab

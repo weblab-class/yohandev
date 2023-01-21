@@ -1,3 +1,4 @@
+use nalgebra::Isometry2;
 use hecs::World;
 
 use crate::{
@@ -13,6 +14,12 @@ pub struct Transform {
     pub translation: Vec2<f32>,
     /// CCW
     pub rotation: f32,
+}
+
+impl From<&Transform> for Isometry2<f32> {
+    fn from(t: &Transform) -> Self {
+        Self::new(t.translation, t.rotation)
+    }
 }
 
 // TODO: LocalPos, LocalRot and etc. systems
