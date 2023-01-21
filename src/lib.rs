@@ -24,6 +24,7 @@ pub fn main() {
         spawn::networked_instantiate(&mut world, &socket);
         input::update(&mut world, &input);
         input::network_player_commands(&mut world, &socket);
+        physics::compute_collisions(&mut world);
         player::controller(&mut world);
         transform::networked_position(&mut world, &socket);
         render::update(&world, &canvas);

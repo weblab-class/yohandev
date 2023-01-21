@@ -4,17 +4,15 @@ use crate::{
     transform::Transform,
     platform::Socket,
     network::{ Networked, Packet },
-    render::Sprite, input::Input
+    render::Sprite,
+    input::Input,
+    physics::{ Collider, Collisions },
 };
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Prefab {
     Player,
 }
-
-/// Marker component for entities which have been instantiated on
-/// the server but not yet replicated on clients.
-struct NotYetReplicated;
 
 impl Prefab {
     pub fn instantiate(&self) -> EntityBuilder {
@@ -24,6 +22,8 @@ impl Prefab {
             Self::Player => builder.add_bundle((
                 Networked,
                 Sprite::Rect,
+                Collider::rect(20.0, 50.0),
+                Collisions::default(),
                 Input::default(),
                 Transform::default(),
             )),
@@ -37,6 +37,10 @@ impl Prefab {
         builder
     }
 }
+
+/// Marker component for entities which have been instantiated on
+/// the server but not yet replicated on clients.
+struct NotYetReplicated;
 
 /// System that synchronizes instantiations of prefabs.
 #[cfg(server)]
