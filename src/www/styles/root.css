@@ -6,11 +6,15 @@
 }
 
 body {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
 
     margin: 0;
     overflow: hidden;
+}
+
+svg.cartesian {
+    transform: scaleY(-1);
 }
 
 .w\:100\% { width: 100%; }

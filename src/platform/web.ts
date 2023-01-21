@@ -141,6 +141,7 @@ module Render {
         // TODO: somehow return this to attach to DOM node
         const draw = SVG()
             .size("100%", "100%")
+            .addClass("cartesian")
             .addTo(document.body);
         // Entity -> SVG cache
         const cache: {
