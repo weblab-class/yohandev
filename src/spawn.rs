@@ -6,7 +6,7 @@ use crate::{
     network::{ Networked, Packet },
     render::Sprite,
     input::Input,
-    physics::{ Collider, Collisions, KinematicBody, Gravity },
+    physics::{ Collider, Collisions, KinematicBody, Gravity, Grounded },
     math::vec2,
 };
 
@@ -27,6 +27,7 @@ impl Prefab {
                 Collisions::default(),
                 KinematicBody::default(),
                 Gravity::default(),
+                Grounded::default(),
                 Input::default(),
                 Transform {
                     translation: vec2!(0.0, 200.0),

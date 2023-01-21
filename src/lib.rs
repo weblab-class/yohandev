@@ -21,7 +21,14 @@ pub fn main() {
     world.spawn((
         render::Sprite::Rect,
         // collider is bigger than visual sprite
-        physics::Collider::rect(200.0, 20.0),
+        physics::Collider::rect(500.0, 20.0),
+        physics::FixedBody::default(),
+        transform::Transform::default(),
+    ));
+    world.spawn((
+        render::Sprite::Rect,
+        // collider is bigger than visual sprite
+        physics::Collider::rect(20.0, 200.0),
         physics::FixedBody::default(),
         transform::Transform::default(),
     ));
@@ -33,8 +40,6 @@ pub fn main() {
         spawn::networked_instantiate(&mut world, &socket);
         input::update(&mut world, &input);
         input::network_player_commands(&mut world, &socket);
-        // physics::compute_collisions(&mut world);
-        // physics::compute_grounded(&mut world);
         player::controller(&mut world);
         physics::compute_gravity(&mut world);
         physics::compute_kinematics(&mut world);
