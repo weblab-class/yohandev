@@ -44,10 +44,10 @@ pub fn main() {
         input::network_player_commands(&mut world, &socket);
         // TODO: client-side prediction
         if cfg!(server) {
-            player::controller(&mut world);
-            physics::compute_gravity(&mut world);
-            physics::compute_kinematics(&mut world);
-            physics::resolve_collisions(&mut world);
+            player::controller(&mut world, &time);
+            physics::compute_gravity(&mut world, &time);
+            physics::compute_kinematics(&mut world, &time);
+            physics::resolve_collisions(&mut world, &time);
         }
         transform::networked_position(&mut world, &socket);
         render::update(&world, &canvas);

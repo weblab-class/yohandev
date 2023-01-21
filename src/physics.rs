@@ -8,7 +8,8 @@ use parry2d::{
 
 use crate::{
     math::{ Vec2, vec2 },
-    transform::Transform
+    transform::Transform,
+    platform::Time,
 };
 
 /// Collider component
@@ -99,33 +100,31 @@ impl Default for Grounded {
 }
 
 /// System that adds gravity to every relevant entity.
-pub fn compute_gravity(world: &mut World) {
+pub fn compute_gravity(world: &mut World, time: &Time) {
     /// Query kinematic bodies
     type Query<'a> = (
         &'a mut KinematicBody,
         &'a Gravity,
     );
     for (_, (kb, gravity)) in world.query_mut::<Query>() {
-        // TODO: delta time
-        kb.velocity += gravity.acceleration * (1.0 / 60.0);
+        kb.velocity += gravity.acceleration * time.dt();
     }
 }
 
 /// System that simulates kinematic bodies.
-pub fn compute_kinematics(world: &mut World) {
+pub fn compute_kinematics(world: &mut World, time: &Time) {
     type Query<'a> = (
         &'a mut Transform,
         &'a KinematicBody,
     );
     for (_, (transform, kb)) in world.query_mut::<Query>() {
-        // TODO: delta time
-        transform.translation += kb.velocity * (1.0 / 60.0);
+        transform.translation += kb.velocity * time.dt();
     }
 }
 
 /// System that resolves intersections between kinematic/fixed bodies.
 /// Also updates the [Grounded] component.
-pub fn resolve_collisions(world: &mut World) {
+pub fn resolve_collisions(world: &mut World, time: &Time) {
     /// Minimum query to have a collision.
     type KinematicQuery<'a> = (
         &'a mut Transform,
@@ -175,12 +174,11 @@ pub fn resolve_collisions(world: &mut World) {
         // (Optionally) compute groundedness
         if let Some((g, _)) = &mut ground {
             **g = match g.clone() {
-                // TODO: delta time
-                Grounded::Yes { time } if grounded => Grounded::Yes {
-                    time: time + (1.0 / 60.0),
+                Grounded::Yes { time: t } if grounded => Grounded::Yes {
+                    time: t + time.dt(),
                 },
-                Grounded::No { time } if !grounded => Grounded::No {
-                    time: time + (1.0 / 60.0),
+                Grounded::No { time: t } if !grounded => Grounded::No {
+                    time: t + time.dt(),
                 },
                 Grounded::No { .. } => Grounded::Yes { time: 0.0 },
                 Grounded::Yes { .. } => Grounded::No { time: 0.0 },

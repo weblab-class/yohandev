@@ -1,14 +1,14 @@
 use hecs::World;
 
 use crate::{
-    physics::{KinematicBody, Grounded},
+    physics::{ KinematicBody, Grounded },
     input::Input,
-    platform::Socket,
+    platform::{ Socket, Time },
     spawn::Prefab,
 };
 
 /// System that updates player controllers.
-pub fn controller(world: &mut World) {
+pub fn controller(world: &mut World, time: &Time) {
     /// Queries all players
     type Query<'a> = (
         &'a mut KinematicBody,
@@ -17,7 +17,9 @@ pub fn controller(world: &mut World) {
     );
 
     for (_, (kb, grounded, input)) in world.query_mut::<Query>() {
-        kb.velocity.x += input.dx() * 100.0;
+        // Movement
+        kb.velocity.x +=  100.0 * input.dx() * time.dt();
+        // Jump
         if matches!(grounded, Grounded::Yes { .. }) && input.dy() > 0.0 {
             kb.velocity.y += 250.0;
         }
