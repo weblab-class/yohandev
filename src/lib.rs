@@ -3,8 +3,9 @@ use hecs::World;
 
 mod transform;
 mod platform;
-mod packets;
+mod network;
 mod player;
+mod spawn;
 mod render;
 mod input;
 
@@ -17,12 +18,12 @@ pub fn main() {
     platform::run(move || {
         socket.poll();
 
-        player::spawn_existing(&mut world, &socket);
-        player::spawn(&mut world, &socket);
+        player::instantiate(&mut world, &socket);
+        spawn::networked_instantiate(&mut world, &socket);
         input::update(&mut world, &input);
-        input::sync(&mut world, &socket);
+        input::network_player_commands(&mut world, &socket);
         player::controller(&mut world);
-        transform::sync_position(&mut world, &socket);
+        transform::networked_position(&mut world, &socket);
         render::update(&world, &canvas);
     });
 }

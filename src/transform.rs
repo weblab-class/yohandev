@@ -1,7 +1,10 @@
-use hecs::World;
+use hecs::{ World, With };
 use vek::Vec2;
 
-use crate::{platform::Socket, packets::Packet};
+use crate::{
+    platform::Socket,
+    network::{ Packet, Networked }
+};
 
 /// Component for an entity's global transform.
 #[derive(Debug, Default)]
@@ -12,44 +15,29 @@ pub struct Transform {
     pub rotation: f32,
 }
 
-/// Component that tags an entity's `Transform::translation` as
-/// synchronized over the network.
-#[derive(Debug, Default)]
-pub struct NetPosition {
-    /// Last sent/received position over the network
-    last: Vec2<f32>,
+// TODO: LocalPos, LocalRot and etc. systems
+// TODO: Networked position buffer
+
+/// System that synchronizes entity positions over the network.
+#[cfg(server)]
+pub fn networked_position(world: &mut World, socket: &Socket) {
+    type Query<'a> = With<&'a Transform, &'a Networked>;
+
+    for (e, transform) in world.query_mut::<Query>() {
+        socket.broadcast(
+            &Packet::EntityPosition(e, transform.translation)
+        );
+    }
 }
 
-// TODO: LocalPos, LocalRot and etc. systems
-
-/// System that synchronizes entity positions over the
-/// network.
-pub fn sync_position(world: &mut World, socket: &Socket) {
-    if cfg!(server) {
-        type Query<'a> = (&'a Transform, &'a mut NetPosition);
-
-        for (entity, (transform, pos)) in world.query_mut::<Query>() {
-            // Skip entities that don't move.
-            if pos.last == transform.translation {
-                continue;
-            }
-            pos.last = transform.translation;
-
-            // Let clients know
-            socket.broadcast(&Packet::EntityPosition {
-                entity,
-                position: transform.translation,
-            });
-        }
-    }
-    if cfg!(client) {
-        for (_, packet) in socket.packets() {
-            if let Packet::EntityPosition { entity, position } = packet {
-                if let Ok(mut transform) = world.get::<&mut Transform>(*entity) {
-                    // TODO: update last position
-                    transform.translation = *position;
-                }
-            }
+#[cfg(client)]
+pub fn networked_position(world: &mut World, socket: &Socket) {
+    for (_, packet) in socket.packets() {
+        let Packet::EntityPosition(e, position) = packet else {
+            continue;
+        };
+        if let Ok(mut transform) = world.get::<&mut Transform>(*e) {
+            transform.translation = *position;
         }
     }
 }

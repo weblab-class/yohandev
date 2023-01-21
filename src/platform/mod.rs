@@ -5,7 +5,7 @@ use std::mem::{ MaybeUninit, self };
 use std::ffi::{ CString, c_char };
 use once_cell::unsync::OnceCell;
 
-use crate::packets::Packet;
+use crate::network::Packet;
 use crate::render::Sprite;
 
 // ----------------[ FFI ]----------------

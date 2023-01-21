@@ -1,6 +1,9 @@
-use hecs::{World, PreparedQuery};
+use hecs::World;
 
-use crate::{platform::{Gamepad, Socket, Connection}, packets::Packet};
+use crate::{
+    platform::{ Gamepad, Socket, Connection },
+    network::Packet
+};
 
 /// Snapshot of a player's input. Used as both a
 /// component and a packet.
@@ -28,8 +31,7 @@ impl Input {
     }
 }
 
-/// Client system that polls user inputs and updates them
-/// on the client.
+/// Client system that polls user inputs and updates them on the client.
 pub fn update(world: &mut World, gamepad: &Gamepad) {
     const MAX: f32 = i8::MAX as _;
 
@@ -43,27 +45,28 @@ pub fn update(world: &mut World, gamepad: &Gamepad) {
     }
 }
 
-/// System that synchronizes the `Input` component over the
-/// network.
-pub fn sync(world: &mut World, socket: &Socket) {
-    if cfg!(client) {
-        for (_, &input) in world.query_mut::<&Input>() {
-            socket.broadcast(&Packet::Input(input));
-        }
+/// System that synchronizes the `Input` component over the network.
+#[cfg(client)]
+pub fn network_player_commands(world: &mut World, socket: &Socket) {
+    for (_, &input) in world.query_mut::<&Input>() {
+        socket.broadcast(&Packet::PlayerCommand(input));
     }
-    if cfg!(server) {
-        // Query to search for the relevant entity
-        let mut query = PreparedQuery::<(&Connection, &mut Input)>::default();
+}
 
-        for (connection, packet) in socket.packets() {
-            if let Packet::Input(input) = packet {
-                query
-                    .query_mut(world)
-                    .find(|(_, (conn, _))| *conn == connection)
-                    .map(|(_, (_, inp))| {
-                        *inp = *input;
-                    });
-            }
+#[cfg(server)]
+pub fn network_player_commands(world: &mut World, socket: &Socket) {
+    /// Query to find entity the input corresponds to.
+    type Query<'a> = (&'a mut Input, &'a Connection);
+
+    for (connection, packet) in socket.packets() {
+        let Packet::PlayerCommand(command) = packet else {
+            continue;
+        };
+        if let Some((_, (input, _))) = world
+            .query_mut::<Query>()
+            .into_iter()
+            .find(|(_, (_, c))| *c == connection) {
+                *input = *command;
         }
     }
 }

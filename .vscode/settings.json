@@ -5,5 +5,9 @@
         "target/": true,
         "yarn.lock": true,
         "Cargo.lock": true,
-    }
+    },
+    "rust-analyzer.check.extraArgs": [
+        "--config",
+        " build.rustflags=\"--cfg=client\""
+    ]
 }

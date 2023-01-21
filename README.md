@@ -23,3 +23,19 @@
 - Got sick
 ### Week 2
 - As it turns out, daemons suck! I'd much rather have a shortcut in my IDE to build.
+
+### Ideas
+- Structuring networked ECS v0.2:
+    - Define a list/enum of prefabs to spawn:
+        ```
+        pub struct Networked {
+            id: Channel,    // Client that owns this entity
+            prefab: enum {  // Prefab to spawn on other clients
+                Player,
+                Bullet,
+                // etc...
+            }
+        }
+        ```
+
+- `Networked`() component

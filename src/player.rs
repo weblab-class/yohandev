@@ -1,23 +1,17 @@
-use hecs::{ World, With, EntityBuilder };
+use hecs::World;
 use vek::Vec2;
 
 use crate::{
-    transform::{Transform, NetPosition},
+    transform::Transform,
     input::Input,
-    platform::{ Socket, Connection },
-    render::Sprite,
-    packets::Packet
+    platform::Socket,
+    spawn::Prefab,
 };
-
-/// Component that marks an entity as player-owned.
-pub struct Player;
-/// Component that marks this player as mine(client).
-pub struct OwnedPlayer;
 
 /// System that updates player controllers.
 pub fn controller(world: &mut World) {
-    /// Queries all owned player
-    type Query<'a> = With<(&'a mut Transform, &'a Input), &'a Player>;
+    /// Queries all players
+    type Query<'a> = (&'a mut Transform, &'a Input);
 
     for (_, (transform, input)) in world.query_mut::<Query>() {
         // TODO: use delta time
@@ -28,70 +22,18 @@ pub fn controller(world: &mut World) {
     }
 }
 
-/// System that spawns players.
-pub fn spawn(world: &mut World, socket: &Socket) {
-    // Player bundle
-    let bundle = || (
-        Player,
-        Transform::default(),
-        NetPosition::default(),
-        Sprite::Rect,
-    );
-    if cfg!(server) {
-        // Spawn player entity when connected...
-        for &connection in socket.connections() {
-            // ...and notify clients:
-            // TODO: reliable
-            socket.broadcast(&Packet::SpawnPlayer {
-                entity: world.spawn(
-                    EntityBuilder::new()
-                        .add_bundle(bundle())
-                        .add(Input::default())
-                        .add(connection)
-                        .build()
-                ),
-                connection,
-            });
-            // 
-        }
-    }
+/// System that instantiates a player entity for every client.
+pub fn instantiate(world: &mut World, socket: &Socket) {
     if cfg!(client) {
-        // Spawn whenever server says so
-        for (me, packet) in socket.packets() {
-            if let Packet::SpawnPlayer { entity, connection } = packet {
-                let mut builder = EntityBuilder::new();
-                // Mark as owned
-                if connection == me {
-                    builder
-                        .add(OwnedPlayer)
-                        .add(Input::default());
-                }
-                world.spawn_at(
-                    *entity,
-                    builder
-                        .add_bundle(bundle())
-                        .add(*connection)
-                        .build()
-                );
-            }
-        }
-    }
-}
-
-/// System that notifies a new connection of every existing player.
-pub fn spawn_existing(world: &mut World, socket: &Socket) {
-    if cfg!(client) {
+        // TODO: send player "owned" entity ID for client-side prediction
         return;
-    } 
-    type Query<'a> = With<&'a Connection, &'a Player>;
-
-    for &incoming in socket.connections() {
-        for (entity, &connection) in world.query_mut::<Query>() {
-            // TODO: reliable
-            socket.send(incoming, &Packet::SpawnPlayer {
-                entity,
-                connection
-            });
-        }
+    }
+    for c in socket.connections() {
+        world.spawn(
+            Prefab::Player
+                .instantiate()
+                .add(*c)
+                .build()
+        );
     }
 }
