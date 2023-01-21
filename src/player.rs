@@ -1,11 +1,11 @@
 use hecs::World;
-use vek::Vec2;
 
 use crate::{
     transform::Transform,
     input::Input,
     platform::Socket,
     spawn::Prefab,
+    math::vec2,
 };
 
 /// System that updates player controllers.
@@ -15,10 +15,7 @@ pub fn controller(world: &mut World) {
 
     for (_, (transform, input)) in world.query_mut::<Query>() {
         // TODO: use delta time
-        transform.translation += Vec2 {
-            x: input.dx(),
-            y: input.dy(),
-        }
+        transform.translation += vec2!(input.dx(), input.dy())
     }
 }
 

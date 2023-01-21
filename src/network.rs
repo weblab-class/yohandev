@@ -1,9 +1,9 @@
 use hecs::Entity;
-use vek::Vec2;
 
 use crate::{
     input::Input,
-    spawn::Prefab
+    spawn::Prefab,
+    math::Vec2,
 };
 
 /// Marker component that indicates an entity should be replicated

@@ -4,10 +4,12 @@ use hecs::World;
 mod transform;
 mod platform;
 mod network;
+mod physics;
 mod player;
 mod spawn;
 mod render;
 mod input;
+mod math;
 
 pub fn main() {
     let mut world = World::new();

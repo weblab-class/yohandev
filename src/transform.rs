@@ -1,9 +1,9 @@
 use hecs::World;
-use vek::Vec2;
 
 use crate::{
     platform::Socket,
     network::Packet,
+    math::Vec2,
 };
 
 /// Component for an entity's global transform.

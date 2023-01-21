@@ -9,5 +9,6 @@ crate-type = ["cdylib"]
 [dependencies]
 hecs = "0.9.1"
 log = "0.4.17"
-vek = "0.15.9"
 once_cell = "1.17.0"
+nalgebra = "0.32.1"
+parry2d = "0.13.0"
