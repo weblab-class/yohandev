@@ -1,7 +1,7 @@
 use hecs::World;
 
 use crate::{
-    platform::{ Gamepad, Socket, Connection },
+    platform::{ Gamepad, Socket },
     network::Packet
 };
 
@@ -55,6 +55,8 @@ pub fn network_player_commands(world: &mut World, socket: &Socket) {
 
 #[cfg(server)]
 pub fn network_player_commands(world: &mut World, socket: &Socket) {
+    use crate::platform::Connection;
+
     /// Query to find entity the input corresponds to.
     type Query<'a> = (&'a mut Input, &'a Connection);
 

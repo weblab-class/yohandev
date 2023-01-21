@@ -1,4 +1,4 @@
-use hecs::{ EntityBuilder, World, With, Without };
+use hecs::{ EntityBuilder, World };
 
 use crate::{
     transform::Transform,
@@ -41,6 +41,7 @@ impl Prefab {
 /// System that synchronizes instantiations of prefabs.
 #[cfg(server)]
 pub fn networked_instantiate(world: &mut World, socket: &Socket) {
+    use hecs::{ With, Without };
     /// Queries prefab'ed entities that have *not* yet been replicated.
     type Replicate<'a> = With<&'a Prefab, (&'a NotYetReplicated, &'a Networked)>;
     /// The remaining networked entities that *have* been replicated

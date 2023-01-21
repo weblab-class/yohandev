@@ -1,9 +1,9 @@
-use hecs::{ World, With };
+use hecs::World;
 use vek::Vec2;
 
 use crate::{
     platform::Socket,
-    network::{ Packet, Networked }
+    network::Packet,
 };
 
 /// Component for an entity's global transform.
@@ -21,7 +21,9 @@ pub struct Transform {
 /// System that synchronizes entity positions over the network.
 #[cfg(server)]
 pub fn networked_position(world: &mut World, socket: &Socket) {
-    type Query<'a> = With<&'a Transform, &'a Networked>;
+    use crate::network::Networked;
+
+    type Query<'a> = hecs::With<&'a Transform, &'a Networked>;
 
     for (e, transform) in world.query_mut::<Query>() {
         socket.broadcast(

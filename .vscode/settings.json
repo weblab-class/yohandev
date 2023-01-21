@@ -8,6 +8,6 @@
     },
     "rust-analyzer.check.extraArgs": [
         "--config",
-        " build.rustflags=\"--cfg=client\""
+        " build.rustflags=\"--cfg=server\""
     ]
 }
