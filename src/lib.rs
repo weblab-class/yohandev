@@ -35,6 +35,7 @@ pub fn main() {
         time.poll();
 
         player::networked_instantiate(&mut world, &socket);
+        player::networked_despawn(&mut world, &socket);
         input::update(&mut world, &input);
         input::network_player_commands(&mut world, &socket);
         // TODO: client-side prediction

@@ -63,6 +63,35 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
     }
 }
 
+pub fn networked_despawn(world: &mut World, socket: &Socket) {
+    // Server despawns player for every connection
+    if cfg!(server) {
+        for connection in socket.disconnections() {
+            let Some(e) = world
+                .query_mut::<&Connection>()
+                .into_iter()
+                .find(|(_, c)| *c == connection)
+                .map(|(e, _)| e) else {
+                    continue;
+                };
+            world.despawn(e).unwrap();
+            // TODO: reliable transprot
+            socket.broadcast(&Packet::PlayerDespawn(e));
+        }
+    }
+    // Client despawns whatever it's told to
+    if cfg!(client) {
+        for (_, packet) in socket.packets() {
+            let Packet::PlayerDespawn(e) = packet else {
+                continue;
+            };
+            if let Err(_) = world.despawn(*e) {
+                log::warn!("Server tried to despawn a dead entity");
+            }
+        }
+    }
+}
+
 /// System that updates player controllers.
 pub fn platformer_controller(world: &mut World, time: &Time) {
     /// Queries all players

@@ -13,6 +13,8 @@ use crate::{
 pub enum Packet {
     /// Server -> Clients
     PlayerSpawn(Entity, Connection),
+    /// Server -> Clients
+    PlayerDespawn(Entity),
     /// Client -> Server
     PlayerCommand(Input),
     /// Server -> Clients
