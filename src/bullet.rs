@@ -2,7 +2,6 @@ use hecs::{ Entity, World, EntityBuilder };
 
 use crate::{
     math::Vec2,
-    render::Sprite,
     physics::{ Collider, KinematicBody },
     transform::Transform,
     network::Packet, platform::Socket
@@ -18,8 +17,8 @@ pub fn prefab(origin: Vec2<f32>, velocity: Vec2<f32>) -> EntityBuilder {
     let mut builder = EntityBuilder::new();
     
     builder.add_bundle((
-        Sprite::Circle,
-        // Collider::circle(3.0),
+        // Sprite::Circle,
+        Collider::circle(3.0),
         KinematicBody { velocity },
         Transform {
             translation: origin,

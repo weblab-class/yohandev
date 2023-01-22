@@ -140,7 +140,7 @@ module Net {
 module Render {
     export function imports() {
         return {
-            render_set_sprite(_id: u32, _sprite: Sprite, _x: f32, _y: f32): void {
+            render_set_player_sprite(id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32): void {
                 // Node is headless!
             },
             render_remove_sprite(id: u32): void {

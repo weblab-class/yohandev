@@ -20,15 +20,11 @@ pub fn main() {
 
     // Test game level
     world.spawn((
-        render::Sprite::Rect,
-        // collider is bigger than visual sprite
-        physics::Collider::rect(500.0, 20.0),
+        physics::Collider::rect(5000.0, 20.0),
         physics::FixedBody::default(),
         transform::Transform::default(),
     ));
     world.spawn((
-        render::Sprite::Rect,
-        // collider is bigger than visual sprite
         physics::Collider::rect(20.0, 200.0),
         physics::FixedBody::default(),
         transform::Transform::default(),
@@ -51,6 +47,7 @@ pub fn main() {
         physics::resolve_collisions(&mut world, &time);
         transform::networked_position(&mut world, &socket);
         bullet::network_instantiate(&mut world, &socket);
-        render::update(&world, &canvas);
+        render::animate_player_sprites(&mut world, &time);
+        render::draw_player_sprites(&mut world, &canvas);
     });
 }

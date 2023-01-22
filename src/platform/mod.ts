@@ -56,7 +56,7 @@ export interface Imports extends WebAssembly.ModuleImports {
     net_poll_connections(ptr: RefMut<Uninit<Connection>>): boolean;
     net_poll_disconnections(ptr: RefMut<Uninit<Connection>>): boolean;
 
-    render_set_sprite(id: u32, sprite: Sprite, x: f32, y: f32): void;
+    render_set_player_sprite(id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32): void;
     render_remove_sprite(id: u32): void;
 
     input_get_dx(): f32;

@@ -145,33 +145,21 @@ module Render {
             .addClass("cartesian")
             .addTo(document.body);
         // Entity -> SVG cache
-        const cache: {
-            [id: u32]: {
-                sprite: Sprite,
-                shape: Shape,
-            }
-        } = {};
+        const cache: { [id: u32]: Shape } = {};
         return {
-            render_set_sprite(id: u32, sprite: Sprite, x: f32, y: f32): void {
-                // Create shape
-                if (!cache.hasOwnProperty(id) || cache[id].sprite !== sprite) {
-                    cache[id]?.shape.remove();
-                    cache[id] = {
-                        sprite,
-                        shape: (() => {
-                            switch (sprite) {
-                                case Sprite.Rect: return draw.rect(20, 50);
-                                case Sprite.Circle: return draw.circle(3);
-                            }
-                        })(),
-                    };
+            render_set_player_sprite(id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32): void {
+                if (!(id in cache)) {
+                    cache[id] = draw.rect(30, 50);
                 }
-                // Update shape
-                cache[id].shape.x(x).y(y);
+                cache[id].x(x).y(y).transform({
+                    scaleX: sx,
+                    scaleY: sy,
+                    skewX: skew,
+                });
             },
             render_remove_sprite(id: u32): void {
                 // Remove from DOM
-                cache[id]?.shape.remove();
+                cache[id]?.remove();
                 // Remove from cache
                 delete cache[id];
             },

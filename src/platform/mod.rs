@@ -6,7 +6,6 @@ use std::ffi::{ CString, c_char };
 use once_cell::unsync::OnceCell;
 
 use crate::network::Packet;
-use crate::render::Sprite;
 
 // ----------------[ FFI ]----------------
 extern {
@@ -30,7 +29,7 @@ extern {
     fn net_poll_connections(ptr: *mut MaybeUninit<Connection>) -> bool;
     fn net_poll_disconnections(ptr: *mut MaybeUninit<Connection>) -> bool;
 
-    fn render_set_sprite(id: u32, sprite: Sprite, x: f32, y: f32);
+    fn render_set_player_sprite(id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32);
     fn render_remove_sprite(id: u32);
 
     fn input_get_dx() -> f32;
@@ -205,14 +204,14 @@ pub struct Canvas;
 
 impl Canvas {
     /// Add or update the sprite associated with `id`.
-    pub fn set(&self, id: u32, sprite: Sprite, x: f32, y: f32) {
+    pub fn draw_player(&self, id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32) {
         unsafe {
-            render_set_sprite(id, sprite, x, y);
+            render_set_player_sprite(id, x, y, skew, sx, sy);
         }
     }
 
     // Remove the sprite associated with `id`.
-    pub fn remove(&self, id: u32) {
+    pub fn remove(id: u32) {
         unsafe {
             render_remove_sprite(id);
         }

@@ -4,7 +4,7 @@ use crate::{
     physics::{ KinematicBody, Grounded, Collider, Collisions, Gravity },
     input::Input,
     platform::{ Socket, Time, Connection },
-    render::Sprite,
+    render::PlayerSprite,
     transform::{Transform, NetworkPosition},
     math::vec2, network::Packet, bullet,
 };
@@ -18,9 +18,9 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
     fn prefab(builder: &mut EntityBuilder) -> &mut EntityBuilder {
         builder.add_bundle((
             Player,
-            Sprite::Rect,
+            PlayerSprite::default(),
             Input::default(),
-            Collider::rect(20.0, 50.0),
+            Collider::rect(30.0, 50.0),
             Collisions::default(),
             KinematicBody::default(),
             Grounded::default(),
