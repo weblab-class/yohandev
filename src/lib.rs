@@ -51,7 +51,5 @@ pub fn main() {
         }
         transform::networked_position(&mut world, &socket);
         render::update(&world, &canvas);
-
-        log::info!("{}s", time.dt());
     });
 }

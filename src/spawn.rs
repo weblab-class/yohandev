@@ -23,12 +23,12 @@ impl Prefab {
             Self::Player => builder.add_bundle((
                 Networked,
                 Sprite::Rect,
+                Input::default(),
                 Collider::rect(20.0, 50.0),
                 Collisions::default(),
                 KinematicBody::default(),
-                Gravity::default(),
                 Grounded::default(),
-                Input::default(),
+                Gravity { acceleration: vec2!(0.0, -2500.0) },
                 Transform {
                     translation: vec2!(0.0, 200.0),
                     rotation: 0.0,
