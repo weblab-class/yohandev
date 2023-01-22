@@ -5,9 +5,9 @@ mod transform;
 mod platform;
 mod network;
 mod physics;
-mod player;
-mod spawn;
 mod render;
+mod bullet;
+mod player;
 mod input;
 mod math;
 
@@ -38,8 +38,7 @@ pub fn main() {
         socket.poll();
         time.poll();
 
-        player::instantiate(&mut world, &socket);
-        spawn::networked_instantiate(&mut world, &socket);
+        player::networked_instantiate(&mut world, &socket);
         input::update(&mut world, &input);
         input::network_player_commands(&mut world, &socket);
         // TODO: client-side prediction

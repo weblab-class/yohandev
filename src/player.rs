@@ -1,11 +1,67 @@
-use hecs::World;
+use hecs::{World, EntityBuilder, With};
 
 use crate::{
-    physics::{ KinematicBody, Grounded },
+    physics::{ KinematicBody, Grounded, Collider, Collisions, Gravity },
     input::Input,
-    platform::{ Socket, Time },
-    spawn::Prefab,
+    platform::{ Socket, Time, Connection },
+    render::Sprite,
+    transform::{Transform, NetworkPosition},
+    math::vec2, network::Packet,
 };
+
+/// Component that marks an entity as a player.
+pub struct Player;
+
+/// System that instantiates players over the network.
+pub fn networked_instantiate(world: &mut World, socket: &Socket) {
+    /// Prefab for a player entity
+    fn prefab(builder: &mut EntityBuilder) -> &mut EntityBuilder {
+        builder.add_bundle((
+            Player,
+            Sprite::Rect,
+            Input::default(),
+            Collider::rect(20.0, 50.0),
+            Collisions::default(),
+            KinematicBody::default(),
+            Grounded::default(),
+            Gravity { acceleration: vec2!(0.0, -2500.0) },
+            Transform {
+                translation: vec2!(0.0, 200.0),
+                rotation: 0.0,
+            },
+            NetworkPosition::default(),
+        ))
+    }
+    // Server spawns player for every connection
+    if cfg!(server) {
+        for &connection in socket.connections() {
+            let e = world.spawn(
+                prefab(&mut Default::default())
+                    .add(connection)
+                    .build()
+            );
+            // TODO: reliable transport
+            socket.broadcast(&Packet::PlayerSpawn(e, connection));
+            // Existing players
+            for (e, &c) in world.query_mut::<With<&Connection, &Player>>() {
+                socket.send(connection, &Packet::PlayerSpawn(e, c));
+            }
+        }
+    }
+    // Client spawns player whenever it's told so
+    if cfg!(client) {
+        for (connection, packet) in socket.packets() {
+            let Packet::PlayerSpawn(e, c) = packet else {
+                continue;
+            };
+            world.spawn_at(*e, prefab(&mut Default::default()).build());
+            // Owned entity
+            if connection != c {
+                world.remove_one::<Input>(*e).unwrap();
+            }
+        }
+    }
+}
 
 /// System that updates player controllers.
 pub fn controller(world: &mut World, time: &Time) {
@@ -45,21 +101,9 @@ pub fn controller(world: &mut World, time: &Time) {
         }
         // Damping
         kb.velocity /= 1.0 + FRICTION * time.dt();
-    }
-}
-
-/// System that instantiates a player entity for every client.
-pub fn instantiate(world: &mut World, socket: &Socket) {
-    if cfg!(client) {
-        // TODO: send player "owned" entity ID for client-side prediction
-        return;
-    }
-    for c in socket.connections() {
-        world.spawn(
-            Prefab::Player
-                .instantiate()
-                .add(*c)
-                .build()
-        );
+        // Shoot
+        if input.button(0) {
+            log::info!("pew pew");
+        }
     }
 }

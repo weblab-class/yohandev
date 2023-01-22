@@ -13,6 +13,8 @@ pub struct Input {
     dx: i8,
     /// Movement in the Y direction(quantized)
     dy: i8,
+    /// Ability buttons(bitfield)
+    btn: u8,
 }
 
 impl Input {
@@ -29,6 +31,11 @@ impl Input {
         // Rectify left-leaning `i8`
         self.dy.max(-MAX) as f32 / MAX as f32
     }
+
+    /// Get the `ith` button input
+    pub fn button(&self, i: usize) -> bool {
+        (self.btn & (1 << i)) != 0
+    }
 }
 
 /// Client system that polls user inputs and updates them on the client.
@@ -42,6 +49,11 @@ pub fn update(world: &mut World, gamepad: &Gamepad) {
     for (_, input) in world.query_mut::<&mut Input>() {
         input.dx = (MAX * gamepad.dx()) as _;
         input.dy = (MAX * gamepad.dy()) as _;
+        input.btn = 0;
+
+        for i in 0..8 {
+            input.btn |= (gamepad.button(i) as u8) << i;
+        }
     }
 }
 

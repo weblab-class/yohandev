@@ -35,6 +35,7 @@ extern {
 
     fn input_get_dx() -> f32;
     fn input_get_dy() -> f32;
+    fn input_get_button(i: usize) -> bool;
 
     fn time_now() -> u32;
 }
@@ -234,6 +235,13 @@ impl Gamepad {
     pub fn dy(&self) -> f32 {
         unsafe {
             input_get_dy()
+        }
+    }
+
+    /// Get whether the `ith` button is down right now
+    pub fn button(&self, i: usize) -> bool {
+        unsafe {
+            input_get_button(i)
         }
     }
 }

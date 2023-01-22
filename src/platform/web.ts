@@ -187,7 +187,12 @@ module Input {
                 x: ["ArrowLeft", "ArrowRight"],
                 y: ["ArrowDown", "ArrowUp"],
             },
-            buttons: { }
+            buttons: [
+                ["1", "Mouse0"],
+                ["2", "Mouse2"],
+                ["3"],
+                ["4"],
+            ]
         };
         // Buffer key presses and their timing(negative is release).
         const buf: { [key: string]: number } = {};
@@ -209,12 +214,24 @@ module Input {
         document.addEventListener("keyup", (e) => {
             buf[e.key] = -e.timeStamp;
         });
+        document.addEventListener("mousedown", (e) => {
+            buf["Mouse" + e.button] = e.timeStamp;
+        });
+        document.addEventListener("mouseup", (e) => {
+            buf["Mouse" + e.button] = -e.timeStamp;
+        });
         return {
             input_get_dx(): f32 {
                 return axis(bindings.axes.x);
             },
             input_get_dy(): f32 {
                 return axis(bindings.axes.y);
+            },
+            input_get_button(i: usize): boolean {
+                if (i >= bindings.buttons.length) {
+                    return false;
+                }
+                return bindings.buttons[i].some((b) => buf[b] > 0)
             },
         }
     }

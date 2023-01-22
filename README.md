@@ -39,3 +39,39 @@
         ```
 
 - `Networked`() component
+
+- Synchronization:
+    - Each entity that needs to be replicated has a `Networked` component that specifies
+    what data to send
+    ```
+    // Spawn a bullet:
+    world.spawn((
+        Sprite::Bullet,
+        Transform::default(),
+        Position::new(x, y),
+        Velocity::new(dx, dy),
+        Networked {
+            replicate: Packet::SpawnBullet {
+                pos: 
+            },
+            synchronize: // somehow send typeIDs of components to synchronize
+                         // sender will send those component data as-is(via serialize trait)
+                         // receiver will know how to receive via same method
+        }
+    ));
+    ```
+
+- Message system
+    - ie. "spawn prefab X"
+    - server sends it to itself for some system to respond, but another system intercepts it
+    to network it
+    ```
+    pub fn spawn_players(world: &mut World, messages: Message<SpawnPlayer>) {
+        // message either come locally or from the network
+        //  -> decoupled netcode since server sends message to itself AND client
+        //      -> client just receives the message over the network
+        for message in messages {
+
+        }
+    }
+    ```

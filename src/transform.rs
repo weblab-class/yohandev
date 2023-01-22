@@ -1,5 +1,5 @@
 use nalgebra::Isometry2;
-use hecs::World;
+use hecs::{World, With};
 
 use crate::{
     platform::Socket,
@@ -22,20 +22,20 @@ impl From<&Transform> for Isometry2<f32> {
     }
 }
 
+/// Marker trait that an entity's position should be replicated.
+#[derive(Debug, Default)]
+pub struct NetworkPosition;
+
 // TODO: LocalPos, LocalRot and etc. systems
 // TODO: Networked position buffer
 
 /// System that synchronizes entity positions over the network.
 #[cfg(server)]
 pub fn networked_position(world: &mut World, socket: &Socket) {
-    use crate::network::Networked;
+    type Query<'a> = With<&'a Transform, &'a NetworkPosition>;
 
-    type Query<'a> = hecs::With<&'a Transform, &'a Networked>;
-
-    for (e, transform) in world.query_mut::<Query>() {
-        socket.broadcast(
-            &Packet::EntityPosition(e, transform.translation)
-        );
+    for (e, t) in world.query_mut::<Query>() {
+        socket.broadcast(&Packet::EntityPosition(e, t.translation));
     }
 }
 

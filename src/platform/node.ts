@@ -161,6 +161,10 @@ module Input {
                 // Node is headless!
                 return 0.0;
             },
+            input_get_button(_: usize): boolean {
+                // Node is headless!
+                return false;
+            }
         }
     }
 }
