@@ -161,7 +161,7 @@ module Render {
                         shape: (() => {
                             switch (sprite) {
                                 case Sprite.Rect: return draw.rect(20, 50);
-                                case Sprite.Circle: return draw.circle(30);
+                                case Sprite.Circle: return draw.circle(3);
                             }
                         })(),
                     };

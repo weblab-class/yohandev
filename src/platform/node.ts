@@ -22,7 +22,7 @@ export async function game(io: GeckosServer) {
     wasm.main();
     setInterval(function loop() {
         wasm.tick();
-    }, 25)
+    }, 1000/60)
 }
 
 module Log {

@@ -17,4 +17,9 @@ pub enum Packet {
     PlayerCommand(Input),
     /// Server -> Clients
     EntityPosition(Entity, Vec2<f32>),
+    /// Server -> Clients
+    ProjectileSpawn {
+        origin: Vec2<f32>,
+        velocity: Vec2<f32>,
+    }
 }

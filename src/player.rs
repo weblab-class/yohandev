@@ -6,7 +6,7 @@ use crate::{
     platform::{ Socket, Time, Connection },
     render::Sprite,
     transform::{Transform, NetworkPosition},
-    math::vec2, network::Packet,
+    math::vec2, network::Packet, bullet,
 };
 
 /// Component that marks an entity as a player.
@@ -64,7 +64,7 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
 }
 
 /// System that updates player controllers.
-pub fn controller(world: &mut World, time: &Time) {
+pub fn platformer_controller(world: &mut World, time: &Time) {
     /// Queries all players
     type Query<'a> = (
         &'a mut KinematicBody,
@@ -101,9 +101,24 @@ pub fn controller(world: &mut World, time: &Time) {
         }
         // Damping
         kb.velocity /= 1.0 + FRICTION * time.dt();
+    }
+}
+
+/// System that shoots projectiles
+pub fn weapon_controller(world: &mut World) {
+    /// Queries all weapon holders
+    type Query<'a> = (
+        &'a Transform,
+        &'a Input,
+    );
+    let mut commands = Vec::new();
+    for (_, (transform, input)) in world.query_mut::<Query>() {
         // Shoot
         if input.button(0) {
-            log::info!("pew pew");
+            commands.push((transform.translation, vec2!(200.0, 0.0)));
         }
+    }
+    for (o, v) in commands {
+        world.spawn(bullet::prefab(o, v).build());
     }
 }
