@@ -5,7 +5,7 @@ use crate::{
     physics::{ Collider, KinematicBody },
     transform::Transform,
     network::Packet,
-    platform::Socket,
+    platform::{Socket, Time},
     render::BulletSprite,
 };
 
@@ -13,6 +13,9 @@ use crate::{
 // nice for general network architecture.
 /// Component that marks this entity as having payload to send.
 struct Payload(Option<Packet>);
+
+/// Component for entity that should life for `.0` seconds
+struct BulletLifetime(f32);
 
 /// Create a bullet locally
 pub fn prefab(origin: Vec2<f32>, velocity: Vec2<f32>) -> EntityBuilder {
@@ -25,7 +28,8 @@ pub fn prefab(origin: Vec2<f32>, velocity: Vec2<f32>) -> EntityBuilder {
         Transform {
             translation: origin,
             ..Default::default()
-        }
+        },
+        BulletLifetime(2.0),
     ));
     // Replicate on the network.
     if cfg!(server) {
@@ -56,5 +60,20 @@ pub fn network_instantiate(world: &mut World, socket: &Socket) {
             };
             world.spawn(prefab(*origin, *velocity * 2000.0).build());
         }
+    }
+}
+
+/// System that automatically despawns stale bullets
+pub fn despawn_bullets(world: &mut World, time: &Time) {
+    let mut kill = Vec::new();
+    
+    for (e, BulletLifetime(t)) in world.query_mut::<&mut BulletLifetime>() {
+        *t -= time.dt();
+        if *t <= 0.0 {
+            kill.push(e);
+        }
+    }
+    for e in kill {
+        world.despawn(e).unwrap();
     }
 }

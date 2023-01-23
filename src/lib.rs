@@ -48,6 +48,7 @@ pub fn main() {
         physics::resolve_collisions(&mut world, &time);
         transform::networked_position(&mut world, &socket);
         bullet::network_instantiate(&mut world, &socket);
+        bullet::despawn_bullets(&mut world, &time);
         render::animate_player_sprites(&mut world);
         render::draw_player_sprites(&mut world, &canvas);
         render::draw_bullet_sprites(&mut world, &canvas);
