@@ -157,6 +157,12 @@ module Render {
                     skewX: skew,
                 });
             },
+            render_set_bullet_sprite(id: u32, x: f32, y: f32): void {
+                if (!(id in cache)) {
+                    cache[id] = draw.circle(3);
+                }
+                cache[id].x(x).y(y);
+            },
             render_remove_sprite(id: u32): void {
                 // Remove from DOM
                 cache[id]?.remove();

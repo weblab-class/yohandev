@@ -50,5 +50,6 @@ pub fn main() {
         bullet::network_instantiate(&mut world, &socket);
         render::animate_player_sprites(&mut world);
         render::draw_player_sprites(&mut world, &canvas);
+        render::draw_bullet_sprites(&mut world, &canvas);
     });
 }

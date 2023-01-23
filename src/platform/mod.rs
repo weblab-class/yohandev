@@ -30,6 +30,7 @@ extern {
     fn net_poll_disconnections(ptr: *mut MaybeUninit<Connection>) -> bool;
 
     fn render_set_player_sprite(id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32);
+    fn render_set_bullet_sprite(id: u32, x: f32, y: f32);
     fn render_remove_sprite(id: u32);
 
     fn input_get_dx() -> f32;
@@ -210,6 +211,13 @@ impl Canvas {
     pub fn draw_player(&self, id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32) {
         unsafe {
             render_set_player_sprite(id, x, y, skew, sx, sy);
+        }
+    }
+
+    /// Add or update the sprite associated with `id`.
+    pub fn draw_bullet(&self, id: u32, x: f32, y: f32) {
+        unsafe {
+            render_set_bullet_sprite(id, x, y);
         }
     }
 

@@ -1,7 +1,7 @@
 use hecs::{ World, Entity };
 
 use crate::{
-    platform::{Canvas, Time},
+    platform::Canvas,
     transform::Transform,
     math::Vec2
 };
@@ -59,6 +59,36 @@ pub fn draw_player_sprites(world: &mut World, canvas: &Canvas) {
             sprite.lean,
             sprite.scale.x,
             sprite.scale.y,
+        );
+    }
+}
+
+/// Component to give a bullet appearance
+#[derive(Debug, Default)]
+pub struct BulletSprite {
+    /// Owner so it can be removed from DOM when dropped(temporary)
+    handle: Option<Entity>,   
+}
+
+impl Drop for BulletSprite {
+    fn drop(&mut self) {
+        if let Some(entity) = self.handle {
+            Canvas::remove(entity.id());
+        }
+    }
+}
+
+/// System that draws bullets in the scene
+pub fn draw_bullet_sprites(world: &mut World, canvas: &Canvas) {
+    if cfg!(server) {
+        return;
+    }
+    for (e, (transform, sprite)) in world.query_mut::<(&Transform, &mut BulletSprite)>() {
+        sprite.handle = Some(e);
+        canvas.draw_bullet(
+            e.id(),
+            transform.translation.x,
+            transform.translation.y,
         );
     }
 }

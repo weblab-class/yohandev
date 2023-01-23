@@ -4,7 +4,9 @@ use crate::{
     math::Vec2,
     physics::{ Collider, KinematicBody },
     transform::Transform,
-    network::Packet, platform::Socket
+    network::Packet,
+    platform::Socket,
+    render::BulletSprite,
 };
 
 // TODO: this is a lazy workaround for now, but a system like this could be
@@ -17,7 +19,7 @@ pub fn prefab(origin: Vec2<f32>, velocity: Vec2<f32>) -> EntityBuilder {
     let mut builder = EntityBuilder::new();
     
     builder.add_bundle((
-        // Sprite::Circle,
+        BulletSprite::default(),
         Collider::circle(3.0),
         KinematicBody { velocity },
         Transform {
@@ -52,7 +54,7 @@ pub fn network_instantiate(world: &mut World, socket: &Socket) {
             let Packet::ProjectileSpawn { origin, velocity } = packet else {
                 continue;
             };
-            world.spawn(prefab(*origin, *velocity).build());
+            world.spawn(prefab(*origin, *velocity * 2000.0).build());
         }
     }
 }

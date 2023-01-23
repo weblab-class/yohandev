@@ -149,6 +149,5 @@ pub fn weapon_controller(world: &mut World) {
     }
     for (o, v) in commands {
         world.spawn(bullet::prefab(o, v).build());
-        log::info!("{v:?}");
     }
 }
