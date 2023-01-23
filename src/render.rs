@@ -3,7 +3,7 @@ use hecs::{ World, Entity };
 use crate::{
     platform::{Canvas, Time},
     transform::Transform,
-    math::Vec2, vec2,
+    math::Vec2
 };
 
 /// Component that marks this entity as having a player sprite.
@@ -28,7 +28,7 @@ impl Drop for PlayerSprite {
 }
 
 /// System that animates player sprites' squash/stretch
-pub fn animate_player_sprites(world: &mut World, time: &Time) {
+pub fn animate_player_sprites(world: &mut World) {
     if cfg!(server) {
         return;
     }
@@ -43,8 +43,6 @@ pub fn animate_player_sprites(world: &mut World, time: &Time) {
         // Squash/stretch
         sprite.scale.x = 1.0 - 0.01 * vel.y.abs();
         sprite.scale.y = 1.0 + 0.02 * vel.y.abs();
-        // Bob up/down
-        // sprite.scale.y += 0.05 * (3.0 * time.elapsed()).cos();
     }
 }
 
