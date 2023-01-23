@@ -34,7 +34,10 @@ extern {
 
     fn input_get_dx() -> f32;
     fn input_get_dy() -> f32;
+    fn input_get_ax() -> f32;
+    fn input_get_ay() -> f32;
     fn input_get_button(i: usize) -> bool;
+    fn input_set_player_position(x: f32, y: f32);
 
     fn time_now() -> u32;
 }
@@ -241,6 +244,27 @@ impl Gamepad {
     pub fn button(&self, i: usize) -> bool {
         unsafe {
             input_get_button(i)
+        }
+    }
+
+    /// Get the X direction of attack
+    pub fn ax(&self) -> f32 {
+        unsafe {
+            input_get_ax()
+        }
+    }
+
+    /// Get the Y direction of attack
+    pub fn ay(&self) -> f32 {
+        unsafe {
+            input_get_ay()
+        }
+    }
+
+    /// Used to emulate 2nd joystick via mouse controls.
+    pub fn set_player_position(&self, x: f32, y: f32) {
+        unsafe {
+            input_set_player_position(x, y);
         }
     }
 }

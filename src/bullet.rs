@@ -1,4 +1,4 @@
-use hecs::{ Entity, World, EntityBuilder };
+use hecs::{ World, EntityBuilder };
 
 use crate::{
     math::Vec2,

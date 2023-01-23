@@ -144,10 +144,11 @@ pub fn weapon_controller(world: &mut World) {
     for (_, (transform, input)) in world.query_mut::<Query>() {
         // Shoot
         if input.button(0) {
-            commands.push((transform.translation, vec2!(200.0, 0.0)));
+            commands.push((transform.translation, input.look_axis()));
         }
     }
     for (o, v) in commands {
         world.spawn(bullet::prefab(o, v).build());
+        log::info!("{v:?}");
     }
 }

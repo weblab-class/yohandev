@@ -184,6 +184,8 @@ module Input {
         };
         // Buffer key presses and their timing(negative is release).
         const buf: { [key: string]: number } = {};
+        // Mouse control emulates a joystick
+        const origin = { x: 0.0, y: 0.0 };
         
         // Calculate the value of an axis
         function axis([neg, pos]: [string, string]): f32 {
@@ -195,6 +197,14 @@ module Input {
             } else {
                 return negv > 0 ? -1.0 : 0.0;
             }
+        }
+        // Emulate joystick using the mouse
+        function emulateJoystick(cx: number, cy: number) {
+            const x = (buf["MouseX"] ?? 0) - cx;
+            const y = (buf["MouseY"] ?? 0) - cy;
+            const v = Math.sqrt(x*x + y*y) ?? 1.0;
+
+            return { x: x / v, y: y / v };
         }
         document.addEventListener("keydown", (e) => {
             buf[e.key] = e.timeStamp;
@@ -208,6 +218,10 @@ module Input {
         document.addEventListener("mouseup", (e) => {
             buf["Mouse" + e.button] = -e.timeStamp;
         });
+        document.addEventListener("mousemove", (e) => {
+            buf["MouseX"] = e.clientX;
+            buf["MouseY"] = (e.view?.innerHeight ?? 0) - e.clientY;
+        });
         return {
             input_get_dx(): f32 {
                 return axis(bindings.axes.x);
@@ -215,12 +229,23 @@ module Input {
             input_get_dy(): f32 {
                 return axis(bindings.axes.y);
             },
+            input_get_ax(): f32 {
+                return emulateJoystick(origin.x, origin.y).x;
+            },
+            input_get_ay(): f32 {
+                return emulateJoystick(origin.x, origin.y).y;
+            },
             input_get_button(i: usize): boolean {
                 if (i >= bindings.buttons.length) {
                     return false;
                 }
                 return bindings.buttons[i].some((b) => buf[b] > 0)
             },
+            input_set_player_position(x: f32, y: f32): void {
+                // if (controls is joystick) return
+                origin.x = x;
+                origin.y = y;
+            }
         }
     }
 }

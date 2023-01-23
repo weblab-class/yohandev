@@ -161,9 +161,20 @@ module Input {
                 // Node is headless!
                 return 0.0;
             },
+            input_get_ax(): f32 {
+                // Node is headless!
+                return 0.0;
+            },
+            input_get_ay(): f32 {
+                // Node is headless!
+                return 0.0;
+            },
             input_get_button(_: usize): boolean {
                 // Node is headless!
                 return false;
+            },
+            input_set_player_position(x: f32, y: f32): void {
+                return;
             }
         }
     }
