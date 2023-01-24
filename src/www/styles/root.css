@@ -34,6 +34,12 @@ svg.cartesian {
 .h\:24px { height: 24px; }
 .h\:36px { height: 32px; }
 
+.z\:-100 { z-index: -100; }
+.z\:-50 { z-index: -50; }
+.z\:0 { z-index: 0; }
+.z\:50 { z-index: 50; }
+.z\:100 { z-index: 100; }
+
 .cursor\:pointer { cursor:pointer; }
 .cursor\:grab { cursor: grab; }
 
@@ -52,4 +58,21 @@ svg.cartesian {
 .column {
     display: flex;
     flex-direction: column;
+}
+
+.centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.overlap {
+    position: relative;
+}
+
+.overlap > * {
+    position: absolute;
+    top: 0;
+    left: 0;
 }

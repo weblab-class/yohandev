@@ -1,7 +1,5 @@
 .ability-icon {
-    width: 64px;
-    height: 64px;
-
+    background: var(--color-outline);
     border: solid 4px var(--color-outline);
     border-radius: 6px;
     box-shadow: inset 0 0 1px 5px rgba(255, 255, 255, 0.725);
@@ -11,6 +9,8 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+
+    border-radius: 2px;
 }
 
 .ability-icon > .binding-keyboard {

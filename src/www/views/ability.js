@@ -4,11 +4,11 @@ import "../styles/ability.css";
 
 /**
  * Component for a single ability's icon, optionally with button binding.
- * @param {{ icon: string, binding?: string }} param0
+ * @param {{ id: string, binding?: string }} param0
  */
-export function AbilityIcon({ id, binding }) {
+export function AbilityIcon({ id, binding, size=64 }) {
     return (
-        <div class="ability-icon">
+        <div class="ability-icon" style={`width: ${size}px; height: ${size}px;`}>
             <img class="unselectable" src={abilities[id].icon}/>
             {binding && (
                 <KeyboardBinding letter={binding}/>

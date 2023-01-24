@@ -2,10 +2,14 @@ import { render } from "preact";
 import { Game } from "./views/game";
 
 import "./styles/root.css";
+import { Menu } from "./views/menu";
 
 function App() {
     return (
-        <Game/>
+        <div class="overlap">
+            <Game/>
+            <Menu class="z:100"/>
+        </div>
     );
 }
 
