@@ -1,10 +1,10 @@
 [abilities.assault-rifle]
 name = "Assault Rifle"
-icon = "assault-rifle.jpg"
+icon = "icons/assault-rifle.jpg"
 
 [abilities.shotgun]
 name = "Shotgun"
-icon = "shotgun.jpg"
+icon = "icons/shotgun.jpg"
 
 [abilities.sniper]
 name = "Sniper Rifle"
@@ -12,32 +12,32 @@ icon = ""
 
 [abilities.dual-gun]
 name = "Laser Guns"
-icon = "dual-gun.jpg"
+icon = "icons/dual-gun.jpg"
 
 [abilities.heal]
 name = "Love Potion"
-icon = "heal.jpg"
+icon = "icons/heal.jpg"
 
 [abilities.push]
 name = "Almighty Push"
-icon = "push.jpg"
+icon = "icons/push.jpg"
 
 [abilities.time-freeze]
 name = "ZA WARUDO"
-icon = "time-freeze.jpg"
+icon = "icons/time-freeze.jpg"
 
 [abilities.shield]
 name = "Shield"
-icon = "shield.jpg"
+icon = "icons/shield.jpg"
 
 [abilities.bubble-shield]
 name = "Force Field"
-icon = "bubble-shield.jpg"
+icon = "icons/bubble-shield.jpg"
 
 [abilities.grappling]
 name = "ODM Gear"
-icon = "grappling.jpg"
+icon = "icons/grappling.jpg"
 
 [abilities.lightning]
 name = "EL THOR"
-icon = "lightning.jpg"
+icon = "icons/lightning.jpg"

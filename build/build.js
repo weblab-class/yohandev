@@ -22,6 +22,7 @@ const CONFIGS = {
         bundle: true,
         plugins: [
             Cargo.plugin("inline", ["server"]),
+            Toml.plugin(),
         ],
 
         // Node
@@ -39,6 +40,7 @@ const CONFIGS = {
         sourcemap: true,
         plugins: [
             Cargo.plugin("fetch", ["client"]),
+            Toml.plugin(),
         ],
 
         // Preact
@@ -199,9 +201,46 @@ const Cargo = {
                 build.onLoad({ filter: /.*/, namespace: "cargo-stub" }, loadStub);
                 build.onLoad({ filter: /.*/, namespace: "cargo-binary" }, loadBinary);
             }
-        }
+        };
     },
 };
+
+/**
+ * ESBuild plugin for TOML.
+ */
+import { parse as parseToml } from "toml";
+
+const Toml = {
+    /**
+     * Creates an `esbuild` plugin that imports `.toml` as JS objects.
+     * @returns {import("esbuild").Plugin}
+     */   
+    plugin() {
+        // 1. Resolve all `.toml`
+        function resolveToml(args) {
+            return {
+                path: resolve(args.resolveDir, args.path),
+                namespace: "toml"
+            };
+        }
+        // 2. Parse and import as JSON
+        async function loadToml(args) {
+            const toml = await readFile(args.path);
+            const json = parseToml(toml);
+            return {
+                contents: JSON.stringify(json),
+                loader: "json"
+            };
+        }
+        return {
+            name: "toml",
+            setup(build) {
+                build.onResolve({ filter: /\.toml$/ }, resolveToml);
+                build.onLoad({ filter: /.*/, namespace: "toml" }, loadToml);
+            }
+        };
+    }
+}
 
 import { fork } from "node:child_process";
 
