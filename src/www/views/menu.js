@@ -1,11 +1,19 @@
-import { AbilityIcon } from "./ability";
+import { useCallback } from "preact/hooks"
 
+import { POST } from "../utils";
+import { AbilityIcon } from "./ability";
 import "../styles/menu.css";
 
 /**
  * Main menu component.
  */
 export function Menu({ ...props }) {
+    // Callback that signs in the user
+    const signIn = useCallback(() => {
+        POST("/api/login", { id: prompt("Username?") }).then((res) => {
+            console.log(res);
+        });
+    });
     return (
         <div {...props}>
             {/* Black overlay */}
@@ -17,7 +25,9 @@ export function Menu({ ...props }) {
             <div class="menu centered column">
                 <div class="row">
                     <span class="logo">bbox</span>
-                    <span class="sign-in">Sign-in</span>
+                    <button class="sign-in" onclick={signIn}>
+                        Sign-in
+                    </button>
                 </div>
                 <div class="row">
                     <div class="ability-deck row">

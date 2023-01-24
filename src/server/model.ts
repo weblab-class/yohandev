@@ -3,7 +3,7 @@ import { model, Schema } from "mongoose";
 export const User = model("stats-user", new Schema({
     name: String,           // Display username
     deck: [String],         // IDs of the cards in the user's deck
-    collection: [String],   // IDs of the cards unlocked by the user
+    unlocked: [String],     // IDs of the cards unlocked by the user
 }));
 
 export const StatsJoinGame = model("stats-join-game", new Schema({

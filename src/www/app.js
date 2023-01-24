@@ -1,8 +1,8 @@
 import { render } from "preact";
 import { Game } from "./views/game";
 
-import "./styles/root.css";
 import { Menu } from "./views/menu";
+import "./styles/root.css";
 
 function App() {
     return (
