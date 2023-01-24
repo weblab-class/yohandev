@@ -8,3 +8,5 @@ build/pkg/*
 !build/pkg/
 !build/pkg/index.html
 !build/build.js
+
+src/server/db.txt
