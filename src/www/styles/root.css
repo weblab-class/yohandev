@@ -3,6 +3,7 @@
  */
  :root {
     --color-bg: white;
+    --color-outline: rgb(26, 26, 27);
 }
 
 body {

@@ -18,10 +18,10 @@ export function Game() {
     return (
         <div ref={ref} class="w:100vw h:100vh">
             <div class="ability-bar row">
-                <AbilityIcon id="push"/>
-                <AbilityIcon id="shotgun"/>
-                <AbilityIcon id="heal"/>
-                <AbilityIcon id="shield"/>
+                <AbilityIcon id="push" binding="1"/>
+                <AbilityIcon id="shotgun" binding="2"/>
+                <AbilityIcon id="heal" binding="3"/>
+                <AbilityIcon id="shield" binding="4"/>
             </div>
         </div>
     );
