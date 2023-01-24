@@ -28,4 +28,6 @@ io.addServer(server);
 server.listen(8000);
 
 // Create game
-game(io).then(() => console.log("Success!"));
+await game(io)
+
+console.log("Success!");
