@@ -9,7 +9,7 @@ import "../styles/ability.css";
 export function AbilityIcon({ id, binding }) {
     return (
         <div class="ability-icon">
-            <img src={abilities[id].icon}/>
+            <img class="unselectable" src={abilities[id].icon}/>
             {binding && (
                 <KeyboardBinding letter={binding}/>
             )}
