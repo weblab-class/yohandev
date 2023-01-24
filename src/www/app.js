@@ -1,4 +1,12 @@
-import { game } from "../platform/web";
+import { render } from "preact";
+import { Game } from "./views/game";
+
 import "./styles/root.css";
 
-game().then(() => console.log("Sucess!"));
+function App() {
+    return (
+        <Game/>
+    );
+}
+
+render(<App/>, document.body);

@@ -10,7 +10,8 @@ import { game } from "../platform/node";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const app = express()
-    .use(express.static(join(ROOT, "build/pkg/")));
+    .use("/", express.static(join(ROOT, "build/pkg/")))
+    .use("/assets/", express.static(join(ROOT, "src/assets/")));
 const server = http.createServer(app);
 const io = geckos();
 

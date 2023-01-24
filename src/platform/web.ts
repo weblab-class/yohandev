@@ -2,21 +2,21 @@
  * Platform implementation for a web browser.
  */
 import { geckos, RawMessage } from "@geckos.io/client";
-import { Shape, SVG } from "@svgdotjs/svg.js";
+import { Shape, Svg, SVG } from "@svgdotjs/svg.js";
 import {
     Memory, Ref, RefMut, Uninit,
     cstring,
     Packet, Connection,
-    Sprite,
     usize, u32, f32, u8,
     instantiate,
 } from "./mod";
 
 export async function game() {
+    const draw = SVG();
     const wasm = await instantiate({
         ...Log.imports(() => wasm.memory),
         ...Net.imports(() => wasm.memory),
-        ...Render.imports(),
+        ...Render.imports(draw),
         ...Input.imports(),
         ...Time.imports(),
     });
@@ -25,6 +25,12 @@ export async function game() {
         requestAnimationFrame(loop);
         wasm.tick();
     });
+
+    return {
+        hook(node: HTMLElement): void {
+            draw.addTo(node);
+        }
+    }
 }
 
 module Log {
@@ -138,12 +144,9 @@ module Net {
 }
 
 module Render {
-    export function imports() {
-        // TODO: somehow return this to attach to DOM node
-        const draw = SVG()
-            .size("100%", "100%")
-            .addClass("cartesian")
-            .addTo(document.body);
+    export function imports(draw: Svg) {
+        draw.size("100%", "100%")
+            .addClass("cartesian");
         // Entity -> SVG cache
         const cache: { [id: u32]: Shape } = {};
         return {

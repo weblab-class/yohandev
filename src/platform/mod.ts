@@ -36,12 +36,6 @@ export type Packet = void;
 /** Unique identifier for a channel. */
 export type Connection = number;
 
-/** Enumeration of sprites in the game. */
-export enum Sprite {
-    Rect,
-    Circle,
-}
-
 export interface Imports extends WebAssembly.ModuleImports {
     log_info(ptr: Ref<u8>): void;
     log_error(ptr: Ref<u8>): void;

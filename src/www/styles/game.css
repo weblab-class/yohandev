@@ -1,0 +1,10 @@
+.ability-bar {
+    position: absolute;
+    left: 20px;
+    bottom: 30px;
+    z-index: 2;
+}
+
+.ability-bar > .ability-icon {
+    margin: 0 4px;
+}

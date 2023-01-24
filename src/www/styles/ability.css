@@ -1,0 +1,14 @@
+.ability-icon {
+    width: 64px;
+    height: 64px;
+
+    border: solid 4px rgb(26, 26, 27);
+    border-radius: 6px;
+    box-shadow: inset 0 0 1px 5px rgba(255, 255, 255, 0.725);
+}
+
+.ability-icon > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
