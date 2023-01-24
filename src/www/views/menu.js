@@ -2,6 +2,7 @@ import { useCallback } from "preact/hooks"
 
 import { POST } from "../utils";
 import { AbilityIcon } from "./ability";
+import { LoginButton } from "./login";
 import "../styles/menu.css";
 
 /**
@@ -25,9 +26,7 @@ export function Menu({ ...props }) {
             <div class="menu centered column">
                 <div class="row">
                     <span class="logo">bbox</span>
-                    <button class="sign-in" onclick={signIn}>
-                        Sign-in
-                    </button>
+                    <LoginButton/>
                 </div>
                 <div class="row">
                     <div class="ability-deck row">
