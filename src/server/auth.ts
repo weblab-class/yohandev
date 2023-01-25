@@ -5,6 +5,9 @@ import { User } from "./model";
 const CLIENT_ID = "825478233856-jub75iqs08474an082n9hptsj94tses3.apps.googleusercontent.com";
 const client = new OAuth2Client(CLIENT_ID);
 
+/**
+ * Verify a "Sign in with Google" certificate and return its Google-issued ID.
+ */
 export async function verifyToken(token: string) {
     const ticket = await client.verifyIdToken({
         idToken: token,
@@ -12,21 +15,23 @@ export async function verifyToken(token: string) {
     });
     const payload = ticket.getPayload();
     const userid = payload?.['sub'];
-    
-    console.log(JSON.stringify(payload));
 
     return userid;
 }
 
-export async function findOrCreateUser(id: string) {
-    const user = await User.findOne({ name: id });
+/**
+ * Find a user from their Google-issued ID.
+ */
+export async function findOrCreateUser(gid: string) {
+    const user = await User.findOne({ gid });
     if (user) {
         // Account already exists
         return user;
     }
     // Create new user
     return new User({
-        name: id,
+        name: "player1234",
+        gid,
         deck: [],
         collection: [],
     }).save();

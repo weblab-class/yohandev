@@ -1,20 +1,18 @@
 import { useCallback } from "preact/hooks"
 
-import { POST } from "../utils";
 import { AbilityIcon } from "./ability";
 import { LoginButton } from "./login";
+import { POST } from "../utils";
 import "../styles/menu.css";
 
 /**
  * Main menu component.
  */
 export function Menu({ ...props }) {
-    // Callback that signs in the user
-    const signIn = useCallback(() => {
-        POST("/api/login", { id: prompt("Username?") }).then((res) => {
-            console.log(res);
-        });
-    });
+    // Record user statistics:
+    const onPlay = useCallback(() => {
+        POST("/api/join-game");
+    }, []);
     return (
         <div {...props}>
             {/* Black overlay */}
@@ -50,7 +48,9 @@ export function Menu({ ...props }) {
                         <div class="player-stats">
 
                         </div>
-                        <button class="play">Play</button>
+                        <button class="play" onclick={onPlay}>
+                            Play
+                        </button>
                     </div>
                 </div>
             </div>

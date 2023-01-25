@@ -32,39 +32,3 @@ export function LoginButton() {
         </>
     );
 }
-
-// export function LoginButton() {
-//     const [loaded, setLoaded] = useState(false);
-    
-//     const signIn = useCallback(() => {
-//         // Requires OAuth2 to be loaded.
-//         if (!loaded) {
-//             return;
-//         }
-//         window.gapi.auth2
-//             .getAuthInstance()
-//             .signIn()
-//             .then((res) => {
-//                 console.log("Signed-in:", res);
-//             })
-//             .catch((err) => {
-//                 console.error("Sign-in error:", err);
-//             });
-//     }, [loaded]);
-//     // Load Google API and OAuth2
-//     useEffect(async () => {
-//         await import("https://apis.google.com/js/platform.js");
-//         await window.gapi.load("auth2");
-//         await new Promise((resolve) => setTimeout(resolve, 50));
-//         await window.gapi.auth2.init({ client_id: CLIENT_ID });
-        
-//         setLoaded(true);
-//         if (window.gapi.auth2.getAuthInstance().isSignedIn.get()) {
-//             console.log("Signed in:", auth2.currentUser.get());
-//         }
-//     }, []);
-
-//     return loaded && (
-//         <button onclick={signIn}>Login with Google</button>
-//     );
-// }
