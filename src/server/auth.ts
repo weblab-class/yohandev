@@ -1,6 +1,8 @@
 import { OAuth2Client } from "google-auth-library";
 
 import { User } from "./model";
+// @ts-ignore
+import { abilities } from "../assets/abilities.toml";
 
 const CLIENT_ID = "825478233856-jub75iqs08474an082n9hptsj94tses3.apps.googleusercontent.com";
 const client = new OAuth2Client(CLIENT_ID);
@@ -32,7 +34,9 @@ export async function findOrCreateUser(gid: string) {
     return new User({
         name: "player1234",
         gid,
-        deck: [],
-        collection: [],
+        // TODO: Until the collection aspect of the game is implemented,
+        // every single ability is unlocked(yay!)
+        deck: ["shotgun", "push", "grappling", "dual-gun"],
+        unlocked: Object.keys(abilities),
     }).save();
 }
