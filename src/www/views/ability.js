@@ -4,14 +4,46 @@ import "../styles/ability.css";
 
 /**
  * Component for a single ability's icon, optionally with button binding.
- * @param {{ id: string, binding?: string }} param0
+ * @param {{ id: string, binding?: string }} props
  */
 export function AbilityIcon({ id, binding, size=64 }) {
     return (
         <div class="ability-icon" style={`width: ${size}px; height: ${size}px;`}>
-            <img class="unselectable" src={abilities[id].icon}/>
+            <img class="unselectable" src={abilities[id]?.icon}/>
             {binding && (
                 <KeyboardBinding letter={binding}/>
+            )}
+        </div>
+    );
+}
+
+/**
+ * Component that displays 4 `AbilityIcon`'s
+ */
+export function AbilityDeck({ deck }) {
+    console.assert(deck.length === 4);
+    return (
+        <div class="ability-deck row">
+            {deck.map((id, i) => (
+                <AbilityIcon id={id} key={i} size={72}/>
+            ))}
+        </div>
+    );
+}
+
+/**
+ * Component that displays a player's unlocked ability cards.
+ */
+export function AbilityCollection({ collection }) {
+    return (
+        <div class="ability-collection">
+            {collection.map((id, i) => (
+                <AbilityIcon id={id} key={i} size={72}/>
+            ))}
+            {!collection.length && (
+                <div class="centered">
+                    No cards unlocked.
+                </div>
             )}
         </div>
     );

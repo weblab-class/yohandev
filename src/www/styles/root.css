@@ -52,12 +52,12 @@ svg.cartesian {
 
 .row {
     display: flex;
-    flex-direction: row;
+    flex-flow: row nowrap;
 }
 
 .column {
     display: flex;
-    flex-direction: column;
+    flex-flow: column nowrap;
 }
 
 .centered {

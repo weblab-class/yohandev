@@ -2,11 +2,11 @@ import { POST } from "../utils";
 
 const CLIENT_ID = "825478233856-jub75iqs08474an082n9hptsj94tses3.apps.googleusercontent.com";
 
-export function LoginButton() {
+export function LoginButton({ onLogin }) {
     // Register callbacks:
     window.onLogin = ({ credential }) => {
         POST("/api/login", { credential }).then((res) => {
-            console.log(res);
+            onLogin(res);
         });
     };
     // Generated from:

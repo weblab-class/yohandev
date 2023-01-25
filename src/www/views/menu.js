@@ -1,6 +1,6 @@
-import { useCallback } from "preact/hooks"
+import { useCallback, useState } from "preact/hooks"
 
-import { AbilityIcon } from "./ability";
+import { AbilityCollection, AbilityDeck, AbilityIcon } from "./ability";
 import { LoginButton } from "./login";
 import { POST } from "../utils";
 import "../styles/menu.css";
@@ -9,10 +9,16 @@ import "../styles/menu.css";
  * Main menu component.
  */
 export function Menu({ ...props }) {
-    // Record user statistics:
-    const onPlay = useCallback(() => {
-        POST("/api/join-game");
-    }, []);
+    // User progress
+    const [deck, setDeck] = useState(Array(4).fill(undefined));
+    const [collection, setCollection] = useState([]);
+
+    const onLogin = useCallback(({ id: _id, deck, unlocked }) => {
+        setDeck(deck);
+        setCollection(unlocked);
+    });
+    const onPlay = useCallback(() => POST("/api/join-game"), []);
+
     return (
         <div {...props}>
             {/* Black overlay */}
@@ -24,26 +30,16 @@ export function Menu({ ...props }) {
             <div class="menu centered column">
                 <div class="row">
                     <span class="logo">bbox</span>
-                    <LoginButton/>
+                    <LoginButton onLogin={onLogin}/>
                 </div>
                 <div class="row">
-                    <div class="ability-deck row">
-                        <AbilityIcon id="push" size={72}/>
-                        <AbilityIcon id="lightning" size={72}/>
-                        <AbilityIcon id="grappling" size={72}/>
-                        <AbilityIcon id="dual-gun" size={72}/>
-                    </div>
+                    <AbilityDeck deck={deck}/>
                     <div class="player-preview">
 
                     </div>
                 </div>
                 <div class="row">
-                    <div class="ability-collection">
-                        {/* TODO: fetch users' abilities from db */}
-                        {Array(20).fill().map((_, i) => (
-                            <AbilityIcon id="shotgun" key={i} size={72}/>
-                        ))}
-                    </div>
+                    <AbilityCollection collection={collection}/>
                     <div class="column">
                         <div class="player-stats">
 

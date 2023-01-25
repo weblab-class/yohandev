@@ -21,6 +21,8 @@
     "google-auth-library": "^8.7.0",
     "mongoose": "^6.8.4",
     "preact": "^10.11.3",
+    "react": "npm:@preact/compat",
+    "react-dom": "npm:@preact/compat",
     "toml": "^3.0.0"
   },
   "devDependencies": {
