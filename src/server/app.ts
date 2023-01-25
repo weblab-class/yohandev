@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import geckos from "@geckos.io/server";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
+import session from "express-session";
 import express from "express";
 import http from "node:http";
 
@@ -19,6 +20,11 @@ const app = express()
     .use("/assets", express.static(join(ROOT, "src/assets/")))
     .use(bodyParser.urlencoded({ extended: false }))
     .use(bodyParser.json())
+    .use(session({
+        secret: "session-secret",
+        resave: false,
+        saveUninitialized: false,
+    }))
     .use("/api", api);
 // -- HTTP Server --
 const server = http.createServer(app);
