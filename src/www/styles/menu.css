@@ -23,7 +23,7 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
 
-    padding-top: 50px;
+    padding-top: 15px;
     height: 300px;
     overflow: scroll;
 }
@@ -33,7 +33,7 @@
     background: linear-gradient(to bottom, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
 
     width: calc(88px * 4);
-    height: 50px;
+    height: 15px;
 
     position: fixed;
     transform: translate(0, -100%);
