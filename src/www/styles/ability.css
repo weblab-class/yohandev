@@ -2,7 +2,12 @@
     background: var(--color-outline);
     border: solid 4px var(--color-outline);
     border-radius: 6px;
-    box-shadow: inset 0 0 1px 5px rgba(255, 255, 255, 0.725);
+    box-shadow: 0 3px 0 0 var(--color-bevel);
+}
+
+.ability-icon:hover {
+    box-shadow: none;
+    transform: translate(0, 3px);
 }
 
 .ability-icon > img {
@@ -11,6 +16,45 @@
     object-fit: cover;
 
     border-radius: 2px;
+    box-shadow: inset 0 0 1px 5px rgba(255, 255, 255, 0.725);
+}
+
+.ability-deck,
+.ability-collection > .columns\:4 {
+    row-gap: 10px;
+    column-gap: 10px;
+}
+
+.ability-deck {
+    position: fixed;
+    z-index: 10;
+
+    background: white;
+    padding: 20px 0 10px 0;
+}
+
+.ability-deck::after {
+    content: "";
+    background: linear-gradient(to bottom, rgb(255, 255, 255) 0%, rgba(255, 255, 255, 0) 100%);
+
+    width: 100%;
+    height: 15px;
+
+    position: absolute;
+    bottom: 0;
+    transform: translate(0, 100%);
+}
+
+.ability-collection {
+    padding: 120px 0 20px 0;
+}
+
+.ability-icon-drop {
+    filter: grayscale();
+}
+
+.ability-inventory .ability-icon {
+    cursor: grab;
 }
 
 .ability-icon > .binding-keyboard {
@@ -27,7 +71,7 @@
     background: white;
     border: solid 3px var(--color-outline);
     border-radius: 6px;
-    box-shadow: 0 2px 0 0 var(--color-outline);
+    box-shadow: 0 2px 0 0 var(--color-bevel);
 
     display: flex;
     justify-content: center;

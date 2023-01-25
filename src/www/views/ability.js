@@ -1,4 +1,5 @@
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useState, useRef } from "preact/hooks";
+import { Sortable, Swap } from "sortablejs/modular/sortable.core.esm";
 import { abilities } from "../../assets/abilities.toml";
 import "../styles/ability.css";
 
@@ -8,11 +9,58 @@ import "../styles/ability.css";
  */
 export function AbilityIcon({ id, binding, size=64 }) {
     return (
-        <div class="ability-icon" style={`width: ${size}px; height: ${size}px;`}>
-            <img class="unselectable" src={abilities[id]?.icon}/>
+        <div
+            class="ability-icon"
+            style={`width: ${size}px; height: ${size}px;`}
+        >
+            <img src={abilities[id]?.icon}/>
             {binding && (
                 <KeyboardBinding letter={binding}/>
             )}
+        </div>
+    );
+}
+
+export function AbilityInventory({ deck, collection }) {
+    const deckRef = useRef();
+    const collectionRef = useRef();
+
+    // Implement sortable:
+    useEffect(() => {
+        const opts = {
+            group: "ability-inventory",
+            swapClass: "ability-icon-drop",
+            animation: 150,
+            swap: true,
+        }
+        Sortable.mount(new Swap());
+        Sortable.create(deckRef.current, opts);
+        Sortable.create(collectionRef.current, { sort: false, ...opts });
+    }, [deckRef, collectionRef]);
+
+    return (
+        <div class="ability-inventory">
+            <div class="ability-deck columns:4" ref={deckRef}>
+                {deck.map((id, i) => (
+                    <AbilityIcon id={id} key={i} size={72}/> 
+                ))}
+            </div>
+            <span class="ability-collection-header">
+                
+            </span>
+            <div class="ability-collection">
+                {collection.length ? "Unlocked Cards" : (
+                    <span class="centered" style="translate: 0 50px">
+                        <h2>No cards unlocked.</h2>
+                        <p>Did you forget to login?</p>
+                    </span>
+                )}
+                <div class="columns:4" ref={collectionRef}>
+                    {collection.map((id, i) => (
+                        <AbilityIcon id={id} key={i} size={72}/> 
+                    ))}
+                </div>
+            </div>
         </div>
     );
 }
@@ -25,7 +73,9 @@ export function AbilityDeck({ deck }) {
     return (
         <div class="ability-deck row">
             {deck.map((id, i) => (
-                <AbilityIcon id={id} key={i} size={72}/>
+                <div>
+                    <AbilityIcon id={id} key={i} size={72}/>
+                </div>
             ))}
         </div>
     );
@@ -35,10 +85,18 @@ export function AbilityDeck({ deck }) {
  * Component that displays a player's unlocked ability cards.
  */
 export function AbilityCollection({ collection }) {
+    function onDrop(e) {
+        console.log("DROP");
+    }
+    function allowDrop(e) {
+        e.preventDefault();
+    }
     return (
         <div class="ability-collection">
             {collection.map((id, i) => (
-                <AbilityIcon id={id} key={i} size={72}/>
+                <div draggable="true" onDrop={onDrop} onDragOver={allowDrop}>
+                    <AbilityIcon id={id} key={i} size={72}/>
+                </div>
             ))}
             {!collection.length && (
                 <div class="centered">

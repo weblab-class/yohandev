@@ -4,6 +4,7 @@
  :root {
     --color-bg: white;
     --color-outline: rgb(26, 26, 27);
+    --color-bevel: rgb(42, 42, 43);
 }
 
 body {
@@ -60,11 +61,22 @@ svg.cartesian {
     flex-flow: column nowrap;
 }
 
+.rows\:4 {
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+}
+
+.columns\:4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
 .centered {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    text-align: center;
 }
 
 .overlap {

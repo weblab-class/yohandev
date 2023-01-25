@@ -1,6 +1,6 @@
 import { useCallback, useState } from "preact/hooks"
 
-import { AbilityCollection, AbilityDeck, AbilityIcon } from "./ability";
+import { AbilityCollection, AbilityDeck, AbilityInventory } from "./ability";
 import { LoginButton } from "./login";
 import { POST } from "../utils";
 import "../styles/menu.css";
@@ -33,6 +33,20 @@ export function Menu({ ...props }) {
                     <LoginButton onLogin={onLogin}/>
                 </div>
                 <div class="row">
+                    <AbilityInventory deck={deck} collection={collection}/>
+                    <div class="column">
+                        <div class="player-preview">
+
+                        </div>
+                        <div class="player-stats">
+
+                        </div>
+                        <button onClick={onPlay}>
+                            Play
+                        </button>
+                    </div>
+                </div>
+                {/* <div class="row">
                     <AbilityDeck deck={deck}/>
                     <div class="player-preview">
 
@@ -48,7 +62,7 @@ export function Menu({ ...props }) {
                             Play
                         </button>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );
