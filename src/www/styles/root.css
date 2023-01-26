@@ -106,3 +106,8 @@ svg.cartesian {
     top: 0;
     left: 0;
 }
+
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.2s linear;
+}

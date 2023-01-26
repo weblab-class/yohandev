@@ -1,4 +1,4 @@
-import { useCallback, useState } from "preact/hooks"
+import { useCallback, useRef, useState } from "preact/hooks"
 
 import { AbilityInventory } from "./ability";
 import { LoginButton } from "./login";
@@ -9,12 +9,13 @@ import "../styles/menu.css";
 /**
  * Main menu component.
  */
-export function Menu({ ...props }) {
+export function Menu({ startGame, ...props }) {
     // User progress
     const [deck, setDeck] = useState(Array(4).fill(undefined));
     const [collection, setCollection] = useState([]);
     // Dynamic UI stuff
     const [hovered, setHovered] = useState(undefined);
+    const ref = useRef();
 
     const onLogin = useCallback(({ id: _id, deck, unlocked }) => {
         setDeck(deck);
@@ -32,16 +33,19 @@ export function Menu({ ...props }) {
             }
             return id;
         }));
-        console.log("post");
-        POST("/api/edit-deck", { added, removed }).then((res) => {
-            console.log(res);
-        });
+        POST("/api/edit-deck", { added, removed });
     }, []);
-    const onPlay = useCallback(() => POST("/api/join-game"), []);
+    const onPlay = useCallback(() => {
+        POST("/api/join-game");
+        // Fade-out
+        ref.current?.classList.add("fade-out");
+        // Disappear
+        setTimeout(startGame, 150);
+    }, [ref]);
     const onHover = useCallback((id) => setHovered(id), []);
 
     return (
-        <div {...props}>
+        <div ref={ref} {...props}>
             {/* Black overlay */}
             <div
                 class="w:100vw h:100vh"
