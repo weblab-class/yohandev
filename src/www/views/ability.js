@@ -50,7 +50,7 @@ export function AbilityInventory({ deck, collection }) {
             </span>
             <div class="ability-collection">
                 {collection.length ? "Unlocked Cards" : (
-                    <span class="centered" style="translate: 0 50px">
+                    <span class="center column" style="translate: 0 50px">
                         <h2>No cards unlocked.</h2>
                         <p>Did you forget to login?</p>
                     </span>

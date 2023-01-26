@@ -2,6 +2,7 @@ import { useCallback, useState } from "preact/hooks"
 
 import { AbilityCollection, AbilityDeck, AbilityInventory } from "./ability";
 import { LoginButton } from "./login";
+import { abilities } from "../../assets/abilities.toml";
 import { POST } from "../utils";
 import "../styles/menu.css";
 
@@ -29,7 +30,7 @@ export function Menu({ ...props }) {
             {/* Floating window */}
             <div class="menu centered column">
                 <div class="row">
-                    <span class="logo">bbox</span>
+                    <span class="logo">boxbrawl</span>
                     <LoginButton onLogin={onLogin}/>
                 </div>
                 <div class="row">
@@ -39,31 +40,43 @@ export function Menu({ ...props }) {
 
                         </div>
                         <div class="player-stats">
-
+                            <AbilityDescription id="sniper"/>
                         </div>
                         <button onClick={onPlay}>
                             Play
                         </button>
                     </div>
                 </div>
-                {/* <div class="row">
-                    <AbilityDeck deck={deck}/>
-                    <div class="player-preview">
-
-                    </div>
-                </div>
-                <div class="row">
-                    <AbilityCollection collection={collection}/>
-                    <div class="column">
-                        <div class="player-stats">
-
-                        </div>
-                        <button class="play" onclick={onPlay}>
-                            Play
-                        </button>
-                    </div>
-                </div> */}
             </div>
         </div>
     );
+}
+
+/**
+ * Component that displays player stats given their deck.
+ */
+function PlayerStats({ deck }) {
+
+}
+
+/**
+ * Ability that 
+ */
+function AbilityDescription({ id }) {
+    return (
+        <div class="ability-description">
+            <h1>{abilities[id].name}</h1>
+            <p>{abilities[id].description}</p>
+            <div class="ability-stats-container">
+                {abilities[id].statistics.map(({ name, value }) => (
+                    <>
+                        <p>{name}</p>
+                        <div class="ability-stats-bar">
+                            <div style={`width: ${value / 10}%;`}/>
+                        </div>
+                    </>
+                ))}
+            </div>
+        </div>
+    )
 }

@@ -1,7 +1,9 @@
 /**
  * Common CSS utilities + variables used throughout.
  */
- :root {
+ @import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@1,500&family=Koulen&family=Rubik+80s+Fade&display=swap');
+
+:root {
     --color-bg: white;
     --color-outline: rgb(26, 26, 27);
     --color-bevel: rgb(42, 42, 43);
@@ -13,6 +15,16 @@ body {
 
     margin: 0;
     overflow: hidden;
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Koulen', cursive;
+    margin: 0px 5px;
+}
+
+p {
+    font-family: 'Jost', sans-serif;
+    margin: -10px 5px;
 }
 
 svg.cartesian {
@@ -77,6 +89,12 @@ svg.cartesian {
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .overlap {

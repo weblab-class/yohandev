@@ -1,3 +1,8 @@
+.logo {
+    font-family: 'Rubik 80s Fade', cursive;
+    font-size: 24px;
+}
+
 .menu {
     background: white;
     border-radius: 20px;
@@ -11,7 +16,49 @@
 }
 
 .menu .ability-inventory {
-    width: 350px;
+    min-width: 350px;
     height: 300px;
     overflow: scroll;
+}
+
+.menu .player-preview {
+    height: 90px;
+}
+
+.ability-description {
+    text-align: left;
+}
+
+.player-stats {
+    margin: 0 10px;
+    padding-bottom: 40px;
+}
+
+.ability-stats-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+
+    margin-top: 15px;
+}
+
+.ability-stats-container > p {
+    margin: 0px 5px;
+
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.ability-stats-bar {
+    width: 100%;
+    height: 16px;
+    background-color: rgb(247, 247, 247);
+}
+
+.ability-stats-bar:nth-child(4n) {
+    background-color: rgb(253, 253, 253);
+}
+
+.ability-stats-bar > div {
+    height: 100%;
+    background: rgb(177, 35, 75);
 }

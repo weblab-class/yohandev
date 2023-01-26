@@ -1,43 +1,123 @@
 [abilities.assault-rifle]
 name = "Assault Rifle"
 icon = "assets/icons/assault-rifle.jpg"
+description = """
+A gun that shoots fast. Bonus freedom points if paired with the shogun.
+"""
+statistics = [
+    { name = "Damage", value = 100 },
+    { name = "Speed", value = 300 },
+    { name = "Range", value = 500 },
+]
 
 [abilities.shotgun]
 name = "Shotgun"
 icon = "assets/icons/shotgun.jpg"
+description = """
+Effective only at short ranges, you need to get up close and personal for
+this one.
+"""
+statistics = [
+    { name = "Damage", value = 400 },
+    { name = "Speed", value = 40 },
+    { name = "Range", value = 80 },
+]
 
 [abilities.sniper]
 name = "Sniper Rifle"
 icon = ""
+description = """
+Just point and click. How hard could that be?
+"""
+statistics = [
+    { name = "Damage", value = 600 },
+    { name = "Speed", value = 20 },
+    { name = "Range", value = 900 },
+]
 
 [abilities.dual-gun]
 name = "Laser Guns"
 icon = "assets/icons/dual-gun.jpg"
+description = """
+Pew pew pew
+"""
+statistics = [
+    { name = "Damage", value = 200 },
+    { name = "Speed", value = 200 },
+    { name = "Range", value = 400 },
+]
 
 [abilities.heal]
 name = "Love Potion"
 icon = "assets/icons/heal.jpg"
+description = """
+Quickly recover from damage taken.
+"""
+statistics = [
+    { name = "Hitpoints", value = 500 },
+    { name = "Duration", value = 40 },
+]
 
 [abilities.push]
 name = "Almighty Push"
 icon = "assets/icons/push.jpg"
+description = """
+Push back everyone and everything around you.
+"""
+statistics = [
+    { name = "Cool", value = 1000 },
+]
 
 [abilities.time-freeze]
 name = "ZA WARUDO"
 icon = "assets/icons/time-freeze.jpg"
+description = """
+To be continued...
+"""
+statistics = [
+    { name = "Duration", value = 200 },
+]
 
 [abilities.shield]
 name = "Shield"
 icon = "assets/icons/shield.jpg"
+description = """
+Just don't get stabbed in the back...
+"""
+statistics = [
+    { name = "Effectiveness", value = 1000 },
+]
 
 [abilities.bubble-shield]
 name = "Force Field"
 icon = "assets/icons/bubble-shield.jpg"
+description = """
+It's a shield but it shrinks over time. How useful could that be?
+"""
+statistics = [
+    { name = "Effectiveness", value = 1000 },
+    { name = "Duration", value = 400 },
+    { name = "Radius", value = 200 },
+]
 
 [abilities.grappling]
 name = "ODM Gear"
 icon = "assets/icons/grappling.jpg"
+description = """
+It's like a grappling hook but really cool.
+"""
+statistics = [
+    { name = "Range", value = 700 },
+    { name = "Speed", value = 200 },
+]
 
 [abilities.lightning]
 name = "EL THOR"
 icon = "assets/icons/lightning.jpg"
+description = """
+Summon lightning from the sky.
+"""
+statistics = [
+    { name = "Damage", value = 1000 },
+    { name = "Radius", value = 100 },
+]
