@@ -11,11 +11,11 @@ import {
     instantiate,
 } from "./mod";
 
-export async function game() {
+export async function game(port: number) {
     const draw = SVG();
     const wasm = await instantiate({
         ...Log.imports(() => wasm.memory),
-        ...Net.imports(() => wasm.memory),
+        ...Net.imports(() => wasm.memory, port),
         ...Render.imports(draw),
         ...Input.imports(),
         ...Time.imports(),
@@ -50,9 +50,8 @@ module Log {
 }
 
 module Net {
-    export function imports(mem: () => Memory) {
-        // TODO: this shouldn't be hard-coded
-        const channel = geckos({ port: 8000 });
+    export function imports(mem: () => Memory, port: number = 8000) {
+        const channel = geckos({ port });
         // Buffer incoming messages:
         const rx: RawMessage[] = [];
         

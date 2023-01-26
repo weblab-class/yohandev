@@ -11,6 +11,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const FLAGS = args
     .option("config", "The build configuration(s) to build")
     .option("run", "Optionally run the produced server artifact")
+    .option("port", "The port to build and serve on.", 8000)
     .parse(process.argv);
 
 const CONFIGS = {
@@ -23,6 +24,7 @@ const CONFIGS = {
         plugins: [
             Cargo.plugin("inline", ["server"]),
             Toml.plugin(),
+            Env.plugin(),
         ],
 
         // Node
@@ -41,6 +43,7 @@ const CONFIGS = {
         plugins: [
             Cargo.plugin("fetch", ["client"]),
             Toml.plugin(),
+            Env.plugin(),
         ],
 
         // Preact
@@ -239,6 +242,44 @@ const Toml = {
                 build.onLoad({ filter: /.*/, namespace: "toml" }, loadToml);
             }
         };
+    }
+}
+
+import parse from "mri";
+
+/**
+ * ESBuild plugin for command-line arguments and environment variables.
+ */
+const Env = {
+    /**
+     * Creates an `esbuild` plugin that imports compile-time constants from `env`.
+     * @returns {import("esbuild").Plugin}
+     */
+    plugin() {
+        // 1. Resolve all `env`
+        function resolveEnv(args) {
+            return {
+                path: args.path,
+                namespace: "argv"
+            }
+        }
+        // 2. Load environment variables and CLI arguments
+        function loadEnv(_) {
+            return {
+                contents: JSON.stringify({
+                    ...process.env,
+                    ...parse(process.argv.slice(2)),
+                }),
+                loader: 'json'
+            }
+        }
+        return {
+            name: "env",
+            setup(build) {
+                build.onResolve({ filter: /^env$/ }, resolveEnv);
+                build.onLoad({ filter: /.*/, namespace: "argv" }, loadEnv);
+            }
+        }
     }
 }
 

@@ -20,6 +20,7 @@
     "express-session": "^1.17.3",
     "google-auth-library": "^8.7.0",
     "mongoose": "^6.8.4",
+    "mri": "^1.2.0",
     "preact": "^10.11.3",
     "react": "npm:@preact/compat",
     "react-dom": "npm:@preact/compat",

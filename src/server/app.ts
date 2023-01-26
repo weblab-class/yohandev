@@ -8,6 +8,9 @@ import session from "express-session";
 import express from "express";
 import http from "node:http";
 
+// @ts-ignore
+import { port } from "env";
+
 import { game } from "../platform/node";
 import { api } from "./api";
 
@@ -36,7 +39,7 @@ const db = await mongoose
 const io = geckos();
 
 io.addServer(server);
-server.listen(8000);
+server.listen(port);
 
 // Create game
 await game(io)
