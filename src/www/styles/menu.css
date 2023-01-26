@@ -15,23 +15,31 @@
     padding: 10px;
 }
 
+.menu > .nav-bar {
+    display: flex;
+    justify-content: space-between;
+    /* align-items: center; */
+}
+
 .menu .ability-inventory {
     min-width: 350px;
     height: 300px;
     overflow: scroll;
 }
 
-.menu .player-preview {
+/* .menu .player-preview {
     height: 90px;
-}
+} */
 
 .ability-description {
     text-align: left;
 }
 
 .player-stats {
-    margin: 0 10px;
-    padding-bottom: 40px;
+    width: 200px;
+    height: 250px;
+
+    margin: 5px 10px;
 }
 
 .ability-stats-container {
@@ -61,4 +69,27 @@
 .ability-stats-bar > div {
     height: 100%;
     background: rgb(177, 35, 75);
+}
+
+.play-button {
+    height: 38px;
+    margin: 0 5px;
+
+    background: white;
+
+    border: solid 3px var(--color-outline);
+    border-radius: 5px;
+    box-shadow: 0 2px 0 0 var(--color-bevel);
+
+    font-family: 'Koulen', cursive;
+    font-size: 18px;
+}
+
+.play-button:hover {
+    box-shadow: none;
+    transform: translate(0, 2px);
+}
+
+.play-button:active {
+    background: rgb(219, 219, 219);
 }

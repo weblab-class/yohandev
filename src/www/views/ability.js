@@ -7,11 +7,12 @@ import "../styles/ability.css";
  * Component for a single ability's icon, optionally with button binding.
  * @param {{ id: string, binding?: string }} props
  */
-export function AbilityIcon({ id, binding, size=64 }) {
+export function AbilityIcon({ id, binding, size=64, ...props }) {
     return (
         <div
             class="ability-icon"
             style={`width: ${size}px; height: ${size}px;`}
+            {...props}
         >
             <img src={abilities[id]?.icon}/>
             {binding && (
@@ -21,9 +22,21 @@ export function AbilityIcon({ id, binding, size=64 }) {
     );
 }
 
-export function AbilityInventory({ deck, collection }) {
+export function AbilityInventory({ deck, collection, onHover }) {
     const deckRef = useRef();
     const collectionRef = useRef();
+
+    function AbilityIcon2({ id, i }) {
+        return (
+            <AbilityIcon
+                id={id}
+                key={i}
+                size={72}
+                onMouseOver={(_) => onHover(id)}
+                onMouseOut={(_) => onHover(undefined)}
+            /> 
+        );
+    }
 
     // Implement sortable:
     useEffect(() => {
@@ -42,22 +55,21 @@ export function AbilityInventory({ deck, collection }) {
         <div class="ability-inventory">
             <div class="ability-deck columns:4" ref={deckRef}>
                 {deck.map((id, i) => (
-                    <AbilityIcon id={id} key={i} size={72}/> 
+                    <AbilityIcon2 id={id} key={i}/> 
                 ))}
             </div>
-            <span class="ability-collection-header">
-                
-            </span>
             <div class="ability-collection">
-                {collection.length ? "Unlocked Cards" : (
-                    <span class="center column" style="translate: 0 50px">
-                        <h2>No cards unlocked.</h2>
-                        <p>Did you forget to login?</p>
-                    </span>
+                {collection.length
+                    ? (<h4>Unlocked Cards</h4>)
+                    : (
+                        <span class="center column" style="translate: 0 50px">
+                            <h2>No cards unlocked.</h2>
+                            <p>Did you forget to login?</p>
+                        </span>
                 )}
                 <div class="columns:4" ref={collectionRef}>
                     {collection.map((id, i) => (
-                        <AbilityIcon id={id} key={i} size={72}/> 
+                        <AbilityIcon2 id={id} key={i}/> 
                     ))}
                 </div>
             </div>

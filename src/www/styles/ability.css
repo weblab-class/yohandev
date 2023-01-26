@@ -46,7 +46,7 @@
 }
 
 .ability-collection {
-    padding: 120px 0 20px 0;
+    padding: 110px 0 20px 0;
 }
 
 .ability-icon-drop {
@@ -55,6 +55,11 @@
 
 .ability-inventory .ability-icon {
     cursor: grab;
+}
+
+.ability-collection > h4 {
+    text-align: left;
+    margin: 0;
 }
 
 .ability-icon > .binding-keyboard {

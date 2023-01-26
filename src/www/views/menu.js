@@ -13,6 +13,8 @@ export function Menu({ ...props }) {
     // User progress
     const [deck, setDeck] = useState(Array(4).fill(undefined));
     const [collection, setCollection] = useState([]);
+    // Dynamic UI stuff
+    const [hovered, setHovered] = useState();
 
     const onLogin = useCallback(({ id: _id, deck, unlocked }) => {
         setDeck(deck);
@@ -29,21 +31,28 @@ export function Menu({ ...props }) {
             />
             {/* Floating window */}
             <div class="menu centered column">
-                <div class="row">
+                <div class="nav-bar row">
                     <span class="logo">boxbrawl</span>
                     <LoginButton onLogin={onLogin}/>
                 </div>
                 <div class="row">
-                    <AbilityInventory deck={deck} collection={collection}/>
+                    <AbilityInventory
+                        deck={deck}
+                        collection={collection}
+                        onHover={setHovered}
+                    />
                     <div class="column">
                         <div class="player-preview">
 
                         </div>
                         <div class="player-stats">
-                            <AbilityDescription id="sniper"/>
+                            {hovered
+                                ? (<AbilityDescription id={hovered}/>)
+                                : (<></>)
+                            }
                         </div>
-                        <button onClick={onPlay}>
-                            Play
+                        <button class="play-button" onClick={onPlay}>
+                            Join Game
                         </button>
                     </div>
                 </div>
