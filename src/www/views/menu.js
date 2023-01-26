@@ -14,13 +14,27 @@ export function Menu({ ...props }) {
     const [deck, setDeck] = useState(Array(4).fill(undefined));
     const [collection, setCollection] = useState([]);
     // Dynamic UI stuff
-    const [hovered, setHovered] = useState();
+    const [hovered, setHovered] = useState(undefined);
 
     const onLogin = useCallback(({ id: _id, deck, unlocked }) => {
         setDeck(deck);
         setCollection(unlocked);
-    });
+    }, []);
+    const onEditDeck = useCallback((added, removed) => {
+        setDeck((prev) => prev.map((id) => {
+            // Swap into deck
+            if (id == removed) {
+                return added;
+            }
+            // Deck-deck reordering
+            if (id == added) {
+                return removed;
+            }
+            return id;
+        }));
+    }, []);
     const onPlay = useCallback(() => POST("/api/join-game"), []);
+    const onHover = useCallback((id) => setHovered(id), []);
 
     return (
         <div {...props}>
@@ -39,7 +53,8 @@ export function Menu({ ...props }) {
                     <AbilityInventory
                         deck={deck}
                         collection={collection}
-                        onHover={setHovered}
+                        onHover={onHover}
+                        onSwap={onEditDeck}
                     />
                     <div class="column">
                         <div class="player-preview">

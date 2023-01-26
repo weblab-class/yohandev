@@ -22,7 +22,7 @@ export function AbilityIcon({ id, binding, size=64, ...props }) {
     );
 }
 
-export function AbilityInventory({ deck, collection, onHover }) {
+export function AbilityInventory({ deck, collection, onHover, onSwap }) {
     const deckRef = useRef();
     const collectionRef = useRef();
 
@@ -34,9 +34,15 @@ export function AbilityInventory({ deck, collection, onHover }) {
                 size={72}
                 onMouseOver={(_) => onHover(id)}
                 onMouseOut={(_) => onHover(undefined)}
+                data-ability={id}
             /> 
         );
     }
+    // These effects are needed otherwise preact will re-render this entire
+    // component for no reaosn... weird stuff :P
+    useEffect(() => {}, [deck]);
+    useEffect(() => {}, [collection]);
+    useEffect(() => {}, [onHover]);
 
     // Implement sortable:
     useEffect(() => {
@@ -45,6 +51,17 @@ export function AbilityInventory({ deck, collection, onHover }) {
             swapClass: "ability-icon-drop",
             animation: 150,
             swap: true,
+            onAdd: (a) => {
+                //     added to deck           removed from deck
+                setTimeout(() => {
+                    onSwap(a.item.dataset.ability, a.swapItem.dataset.ability);
+                }, 150);
+            },
+            onSort: (a) => {
+                setTimeout(() => {
+                    onSwap(a.item.dataset.ability, a.swapItem.dataset.ability);
+                }, 150);
+            },
         }
         Sortable.mount(new Swap());
         Sortable.create(deckRef.current, opts);
@@ -68,7 +85,7 @@ export function AbilityInventory({ deck, collection, onHover }) {
                         </span>
                 )}
                 <div class="columns:4" ref={collectionRef}>
-                    {collection.map((id, i) => (
+                    {collection.filter((id) => !deck.includes(id)).map((id, i) => (
                         <AbilityIcon2 id={id} key={i}/> 
                     ))}
                 </div>
