@@ -1,6 +1,6 @@
 import { useCallback, useState } from "preact/hooks"
 
-import { AbilityCollection, AbilityDeck, AbilityInventory } from "./ability";
+import { AbilityInventory } from "./ability";
 import { LoginButton } from "./login";
 import { abilities } from "../../assets/abilities.toml";
 import { POST } from "../utils";

@@ -91,48 +91,6 @@ export function AbilityInventory({ deck, collection, onHover, onSwap }) {
 }
 
 /**
- * Component that displays 4 `AbilityIcon`'s
- */
-export function AbilityDeck({ deck }) {
-    console.assert(deck.length === 4);
-    return (
-        <div class="ability-deck row">
-            {deck.map((id, i) => (
-                <div>
-                    <AbilityIcon id={id} key={i} size={72}/>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-/**
- * Component that displays a player's unlocked ability cards.
- */
-export function AbilityCollection({ collection }) {
-    function onDrop(e) {
-        console.log("DROP");
-    }
-    function allowDrop(e) {
-        e.preventDefault();
-    }
-    return (
-        <div class="ability-collection">
-            {collection.map((id, i) => (
-                <div draggable="true" onDrop={onDrop} onDragOver={allowDrop}>
-                    <AbilityIcon id={id} key={i} size={72}/>
-                </div>
-            ))}
-            {!collection.length && (
-                <div class="centered">
-                    No cards unlocked.
-                </div>
-            )}
-        </div>
-    );
-}
-
-/**
  * Component for a keyboard ability binding.
  * TODO: add a GamepadBinding then generic Binding component.
  */
