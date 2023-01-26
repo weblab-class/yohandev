@@ -6,10 +6,12 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import session from "express-session";
 import express from "express";
+import https from "node:https";
 import http from "node:http";
+import fs from "node:fs/promises";
 
 // @ts-ignore
-import { port } from "env";
+import args, { port } from "env";
 
 import { game } from "../platform/node";
 import { api } from "./api";
@@ -29,8 +31,14 @@ const app = express()
         saveUninitialized: false,
     }))
     .use("/api", api);
-// -- HTTP Server --
-const server = http.createServer(app);
+// -- HTTP(S) Server --
+const server = args.https
+    ? https.createServer({
+        cert: await fs.readFile(join(ROOT, "src/certificates/cert.crt")),
+        ca: await fs.readFile(join(ROOT, "src/certificates/ca.ca-bundle")),
+        key: await fs.readFile(join(ROOT, "src/certificates/private.key")),
+    }, app)
+    : http.createServer(app);
 // -- Database --
 const db = await mongoose
     .set("strictQuery", true)

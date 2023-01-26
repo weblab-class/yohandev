@@ -12,6 +12,7 @@ const FLAGS = args
     .option("config", "The build configuration(s) to build")
     .option("run", "Optionally run the produced server artifact")
     .option("port", "The port to build and serve on.", 8000)
+    .option("https", "Whether the server should be HTTPS or not", false)
     .parse(process.argv);
 
 const CONFIGS = {

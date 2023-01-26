@@ -9,4 +9,5 @@ build/pkg/*
 !build/pkg/index.html
 !build/build.js
 
+certificates/
 src/server/db.txt
