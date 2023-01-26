@@ -51,20 +51,16 @@ export function AbilityInventory({ deck, collection, onHover, onSwap }) {
             swapClass: "ability-icon-drop",
             animation: 150,
             swap: true,
-            onAdd: (a) => {
-                //     added to deck           removed from deck
-                setTimeout(() => {
-                    onSwap(a.item.dataset.ability, a.swapItem.dataset.ability);
-                }, 150);
-            },
-            onSort: (a) => {
-                setTimeout(() => {
-                    onSwap(a.item.dataset.ability, a.swapItem.dataset.ability);
-                }, 150);
-            },
         }
         Sortable.mount(new Swap());
-        Sortable.create(deckRef.current, opts);
+        Sortable.create(deckRef.current, {
+            onSort: (e) => {
+                setTimeout(() => {
+                    onSwap(e.item.dataset.ability, e.swapItem.dataset.ability);
+                }, 200);
+            },
+            ...opts
+        });
         Sortable.create(collectionRef.current, { sort: false, ...opts });
     }, [deckRef, collectionRef]);
 

@@ -32,6 +32,10 @@ export function Menu({ ...props }) {
             }
             return id;
         }));
+        console.log("post");
+        POST("/api/edit-deck", { added, removed }).then((res) => {
+            console.log(res);
+        });
     }, []);
     const onPlay = useCallback(() => POST("/api/join-game"), []);
     const onHover = useCallback((id) => setHovered(id), []);
