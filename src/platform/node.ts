@@ -55,9 +55,8 @@ module Net {
 
         io.onConnection((channel) => {
             const id = nextId++;
-            console.log("got connection", id);
+            
             channel.onRaw((msg) => {
-                console.log("got msg");
                 rx.push([id, msg]);
             });
             channel.onDisconnect((_) => {

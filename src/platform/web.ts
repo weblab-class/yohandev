@@ -63,14 +63,12 @@ module Net {
         
         channel.onConnect((e) => {
             if (e) throw e;
-            console.log("got connection");
         });
         channel.onDisconnect((e) => {
             if (e) throw e;
             disconnected = true;
         });
         channel.onRaw((msg) => {
-            console.log("got msg");
             rx.push(msg);
         });
         channel.on("whoami", (msg) => {
