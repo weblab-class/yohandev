@@ -31,12 +31,6 @@ const app = express()
         saveUninitialized: false,
     }))
     .use("/api", api);
-if (https) {
-    app.enable("trust proxy");
-    app.use((req, res, next) => {
-        req.secure ? next() : res.redirect("https://" + req.headers.host + req.url);
-    });
-}
 // -- HTTP(S) Server --
 const server = args.https
     ? https.createServer({
@@ -45,6 +39,12 @@ const server = args.https
         key: await fs.readFile(join(ROOT, "src/certificates/private.key")),
     }, app)
     : http.createServer(app);
+// -- HTTP Rerouting --
+if (https) {
+    express()
+        .get('*', (_, res) => res.redirect("https://boxbrawl.com"))
+        .listen(80);
+}
 // -- Database --
 const db = await mongoose
     .set("strictQuery", true)
