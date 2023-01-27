@@ -31,6 +31,12 @@ const app = express()
         saveUninitialized: false,
     }))
     .use("/api", api);
+if (https) {
+    app.enable("trust proxy");
+    app.use((req, res, next) => {
+        req.secure ? next() : res.redirect("https://" + req.headers.host + req.url);
+    });
+}
 // -- HTTP(S) Server --
 const server = args.https
     ? https.createServer({
