@@ -13,6 +13,7 @@ const FLAGS = args
     .option("run", "Optionally run the produced server artifact")
     .option("port", "The port to build and serve on.", 8000)
     .option("https", "Whether the server should be HTTPS or not", false)
+    .option("release", "Whether to build in release mode", false)
     .parse(process.argv);
 
 const CONFIGS = {
@@ -85,6 +86,7 @@ const Cargo = {
             "rustc",
             "--target", TARGET,
             "--message-format", FORMAT,
+            "--profile", FLAGS.release ? "release" : "dev",
             "--",
             "--cfg", cfg.join(),
         ];
