@@ -82,7 +82,7 @@ pub fn update(world: &mut World, gamepad: &Gamepad) {
     for (_, input) in world.query_mut::<&mut Input>() {
         *input = new;
     }
-    for (_, t) in world.query_mut::<With<&Transform, &Player>>() {
+    for (_, t) in world.query_mut::<With<&Transform, (&Player, &Input)>>() {
         gamepad.set_player_position(t.translation.x, t.translation.y);
     }
 }
