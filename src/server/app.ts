@@ -48,6 +48,7 @@ const io = geckos();
 
 io.addServer(server);
 server.listen(port);
+console.log(server.address());
 
 // Create game
 await game(io)
