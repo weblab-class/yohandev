@@ -1,7 +1,7 @@
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import geckos from "@geckos.io/server";
+import geckos, { iceServers } from "@geckos.io/server";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import session from "express-session";
@@ -44,7 +44,7 @@ const db = await mongoose
     .set("strictQuery", true)
     .connect(DB);
 // -- UDP Socket --
-const io = geckos();
+const io = geckos({ iceServers });
 
 io.addServer(server);
 server.listen(port);
