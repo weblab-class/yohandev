@@ -1,7 +1,7 @@
 /**
  * Common CSS utilities + variables used throughout.
  */
- @import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@1,500&family=Koulen&family=Rubik+80s+Fade&display=swap');
+ @import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,500;1,500&family=Koulen&family=Rubik+80s+Fade&display=swap');
 
 :root {
     --color-bg: white;

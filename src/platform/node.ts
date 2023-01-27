@@ -6,7 +6,6 @@ import {
     Memory, Ref, RefMut, Uninit,
     cstring,
     Packet, Connection,
-    Sprite,
     usize, u32, f32, u8,
     instantiate,
 } from "./mod";
@@ -141,6 +140,9 @@ module Render {
     export function imports() {
         return {
             render_set_player_sprite(id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32): void {
+                // Node is headless!
+            },
+            render_set_bullet_sprite(id: u32, x: f32, y: f32): void {
                 // Node is headless!
             },
             render_remove_sprite(id: u32): void {
