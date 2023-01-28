@@ -107,7 +107,7 @@ pub fn platformer_controller(world: &mut World, time: &Time) {
         &'a Input
     );
     // TODO: these will be calculated from player abilities
-    const SPEED: f32 = 1200.0;
+    const SPEED: f32 = 1700.0;
     const JUMP: f32 = 1500.0;
     const JUMP_GRACE_PERIOD: f32 = 0.1;
     const JUMP_TERM_VELOCITY: f32 = 500.0;
