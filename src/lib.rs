@@ -5,6 +5,7 @@ mod transform;
 mod platform;
 mod network;
 mod physics;
+mod weapon;
 mod render;
 mod bullet;
 mod player;
@@ -38,6 +39,7 @@ pub fn main() {
         player::networked_despawn(&mut world, &socket);
         input::update(&mut world, &input);
         input::network_player_commands(&mut world, &socket);
+        transform::update_children(&mut world);
         // TODO: client-side prediction
         if cfg!(server) {
             player::platformer_controller(&mut world, &time);
@@ -52,5 +54,6 @@ pub fn main() {
         render::animate_player_sprites(&mut world);
         render::draw_player_sprites(&mut world, &canvas);
         render::draw_bullet_sprites(&mut world, &canvas);
+        render::draw_handheld_sprites(&mut world, &canvas);
     });
 }

@@ -6,6 +6,7 @@ import {
     Memory, Ref, RefMut, Uninit,
     cstring,
     Packet, Connection,
+    HandheldSpriteKind,
     usize, u32, f32, u8,
     instantiate,
 } from "./mod";
@@ -143,6 +144,9 @@ module Render {
                 // Node is headless!
             },
             render_set_bullet_sprite(id: u32, x: f32, y: f32): void {
+                // Node is headless!
+            },
+            render_set_handheld_sprite(id: u32, kind: HandheldSpriteKind, x: f32, y: f32) {
                 // Node is headless!
             },
             render_remove_sprite(id: u32): void {

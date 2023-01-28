@@ -2,7 +2,7 @@ use hecs::{ World, Entity };
 
 use crate::{
     platform::Canvas,
-    transform::Transform,
+    transform::{ Transform, Parent },
     math::Vec2
 };
 
@@ -87,6 +87,53 @@ pub fn draw_bullet_sprites(world: &mut World, canvas: &Canvas) {
         sprite.handle = Some(e);
         canvas.draw_bullet(
             e.id(),
+            transform.translation.x,
+            transform.translation.y,
+        );
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum HandheldSpriteKind {
+    Shotgun,
+    AssaultRifle,
+    DualGun,
+    Shield,
+}
+
+/// Component to give a handheld(gun, shield, etc.) appearance
+#[derive(Debug)]
+pub struct HandheldSprite {
+    pub kind: HandheldSpriteKind,
+    /// Owner so it can be removed from DOM when dropped(temporary)
+    handle: Option<Entity>,
+}
+
+impl HandheldSprite {
+    pub fn new(kind: HandheldSpriteKind) -> Self {
+        Self { kind, handle: None }
+    }
+}
+
+impl Drop for HandheldSprite {
+    fn drop(&mut self) {
+        if let Some(entity) = self.handle {
+            Canvas::remove(entity.id());
+        }
+    }
+}
+
+/// System the draws handheld sprites
+pub fn draw_handheld_sprites(world: &mut World, canvas: &Canvas) {
+    if cfg!(server) {
+        return;
+    }
+    for (e, (transform, sprite)) in world.query_mut::<(&Transform, &mut HandheldSprite)>() {
+        sprite.handle = Some(e);
+        canvas.draw_handheld(
+            e.id(),
+            sprite.kind,
             transform.translation.x,
             transform.translation.y,
         );

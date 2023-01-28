@@ -36,6 +36,13 @@ export type Packet = void;
 /** Unique identifier for a channel. */
 export type Connection = number;
 
+export enum HandheldSpriteKind {
+    Shotgun,
+    AssaultRifle,
+    DualGun,
+    Shield,
+}
+
 export interface Imports extends WebAssembly.ModuleImports {
     log_info(ptr: Ref<u8>): void;
     log_error(ptr: Ref<u8>): void;
@@ -52,6 +59,7 @@ export interface Imports extends WebAssembly.ModuleImports {
 
     render_set_player_sprite(id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32): void;
     render_set_bullet_sprite(id: u32, x: f32, y: f32): void;
+    render_set_handheld_sprite(id: u32, kind: HandheldSpriteKind, x: f32, y: f32);
     render_remove_sprite(id: u32): void;
 
     input_get_dx(): f32;

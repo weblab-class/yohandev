@@ -7,6 +7,7 @@ import {
     Memory, Ref, RefMut, Uninit,
     cstring,
     Packet, Connection,
+    HandheldSpriteKind,
     usize, u32, f32, u8,
     instantiate,
 } from "./mod";
@@ -148,10 +149,17 @@ module Render {
             .addClass("cartesian");
         // Entity -> SVG cache
         const cache: { [id: u32]: Shape } = {};
+        // Sprite -> path
+        const ASSETS = {
+            [HandheldSpriteKind.AssaultRifle]: "assets/weapons/assault-rifle.svg",
+            [HandheldSpriteKind.DualGun]: "assets/weapons/dual-gun.svg",
+            [HandheldSpriteKind.Shield]: "assets/weapons/shield.svg",
+            [HandheldSpriteKind.Shotgun]: "assets/weapons/shotgun.svg",
+        };
         return {
             render_set_player_sprite(id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32): void {
                 if (!(id in cache)) {
-                    cache[id] = draw.rect(30, 50);
+                    cache[id] = draw.rect(30, 50).fill("#EFC643")
                 }
                 cache[id].x(x).y(y).transform({
                     scaleX: sx,
@@ -162,6 +170,16 @@ module Render {
             render_set_bullet_sprite(id: u32, x: f32, y: f32): void {
                 if (!(id in cache)) {
                     cache[id] = draw.circle(3);
+                }
+                cache[id].x(x).y(y);
+            },
+            render_set_handheld_sprite(id: u32, kind: HandheldSpriteKind, x: f32, y: f32) {
+                if (!(id in cache)) {
+                    cache[id] = draw.group();
+
+                    draw.image(ASSETS[kind])
+                        .scale(0.2, -0.2)
+                        .addTo(cache[id]);
                 }
                 cache[id].x(x).y(y);
             },

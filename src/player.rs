@@ -4,8 +4,8 @@ use crate::{
     physics::{ KinematicBody, Grounded, Collider, Collisions, Gravity },
     input::Input,
     platform::{ Socket, Time, Connection },
-    render::PlayerSprite,
-    transform::{Transform, NetworkPosition},
+    render::{PlayerSprite, HandheldSprite},
+    transform::{Transform, NetworkPosition, Parent},
     math::vec2, network::Packet, bullet,
 };
 
@@ -55,6 +55,12 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
                 continue;
             };
             world.spawn_at(*e, prefab(&mut Default::default()).build());
+            // TODO: (remove this) temporarily spawn in weapon
+            world.spawn((
+                Transform::default(),
+                Parent { handle: *e, damping: 0.9 },
+                HandheldSprite::new(crate::render::HandheldSpriteKind::Shotgun),
+            ));
             // Owned entity
             if connection != c {
                 world.remove_one::<Input>(*e).unwrap();

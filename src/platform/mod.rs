@@ -5,7 +5,10 @@ use std::mem::{ MaybeUninit, self };
 use std::ffi::{ CString, c_char };
 use once_cell::unsync::OnceCell;
 
-use crate::network::Packet;
+use crate::{
+    network::Packet,
+    render::HandheldSpriteKind,
+};
 
 // ----------------[ FFI ]----------------
 extern {
@@ -31,6 +34,7 @@ extern {
 
     fn render_set_player_sprite(id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32);
     fn render_set_bullet_sprite(id: u32, x: f32, y: f32);
+    fn render_set_handheld_sprite(id: u32, kind: HandheldSpriteKind, x: f32, y: f32);
     fn render_remove_sprite(id: u32);
 
     fn input_get_dx() -> f32;
@@ -218,6 +222,13 @@ impl Canvas {
     pub fn draw_bullet(&self, id: u32, x: f32, y: f32) {
         unsafe {
             render_set_bullet_sprite(id, x, y);
+        }
+    }
+
+    /// Add or update the sprite associated with `id`.
+    pub fn draw_handheld(&self, id: u32, kind: HandheldSpriteKind, x: f32, y: f32) {
+        unsafe {
+            render_set_handheld_sprite(id, kind, x, y);
         }
     }
 
