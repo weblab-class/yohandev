@@ -4,8 +4,8 @@ use crate::{
     physics::{ KinematicBody, Grounded, Collider, Collisions, Gravity },
     input::Input,
     platform::{ Socket, Time, Connection },
-    render::{PlayerSprite, HandheldSprite},
-    transform::{Transform, NetworkPosition, Parent},
+    render::{ Sprite, Costume },
+    transform::{ Transform, NetworkPosition },
     math::vec2, network::Packet, bullet,
 };
 
@@ -18,7 +18,11 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
     fn prefab(builder: &mut EntityBuilder) -> &mut EntityBuilder {
         builder.add_bundle((
             Player,
-            PlayerSprite::default(),
+            Sprite::new(Costume::Player {
+                position: vec2!(0.0, 200.0),
+                scale: vec2!(1.0, 1.0),
+                lean: 0.0,
+            }),
             Input::default(),
             Collider::rect(30.0, 50.0),
             Collisions::default(),
@@ -55,12 +59,7 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
                 continue;
             };
             world.spawn_at(*e, prefab(&mut Default::default()).build());
-            // TODO: (remove this) temporarily spawn in weapon
-            world.spawn((
-                Transform::default(),
-                Parent { handle: *e, damping: 0.9 },
-                HandheldSprite::new(crate::render::HandheldSpriteKind::Shotgun),
-            ));
+            
             // Owned entity
             if connection != c {
                 world.remove_one::<Input>(*e).unwrap();

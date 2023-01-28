@@ -7,7 +7,7 @@ import {
     Memory, Ref, RefMut, Uninit,
     cstring,
     Packet, Connection,
-    HandheldSpriteKind,
+    Costume,
     usize, u32, f32, u8,
     instantiate,
 } from "./mod";
@@ -17,7 +17,7 @@ export async function game(port: number) {
     const wasm = await instantiate({
         ...Log.imports(() => wasm.memory),
         ...Net.imports(() => wasm.memory, port),
-        ...Render.imports(draw),
+        ...Render.imports(() => wasm.memory, draw),
         ...Input.imports(),
         ...Time.imports(),
     });
@@ -144,50 +144,78 @@ module Net {
 }
 
 module Render {
-    export function imports(draw: Svg) {
+    export function imports(mem: () => Memory, draw: Svg) {
         draw.size("100%", "100%")
             .addClass("cartesian");
+        
         // Entity -> SVG cache
-        const cache: { [id: u32]: Shape } = {};
-        // Sprite -> path
-        const ASSETS = {
-            [HandheldSpriteKind.AssaultRifle]: "assets/weapons/assault-rifle.svg",
-            [HandheldSpriteKind.DualGun]: "assets/weapons/dual-gun.svg",
-            [HandheldSpriteKind.Shield]: "assets/weapons/shield.svg",
-            [HandheldSpriteKind.Shotgun]: "assets/weapons/shotgun.svg",
-        };
-        return {
-            render_set_player_sprite(id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32): void {
-                if (!(id in cache)) {
-                    cache[id] = draw.rect(30, 50).fill("#EFC643")
-                }
-                cache[id].x(x).y(y).transform({
-                    scaleX: sx,
-                    scaleY: sy,
-                    skewX: skew,
-                });
-            },
-            render_set_bullet_sprite(id: u32, x: f32, y: f32): void {
-                if (!(id in cache)) {
-                    cache[id] = draw.circle(3);
-                }
-                cache[id].x(x).y(y);
-            },
-            render_set_handheld_sprite(id: u32, kind: HandheldSpriteKind, x: f32, y: f32) {
-                if (!(id in cache)) {
-                    cache[id] = draw.group();
+        const cache = {
+            inner: <Shape[]>[],
+            free: <u32[]>[],
+            add(element: Shape) {
+                // Use free or create new slot
+                const handle = cache.free.length
+                    ? cache.free.pop()!
+                    : cache.inner.push(element) - 1;
 
-                    draw.image(ASSETS[kind])
-                        .scale(0.2, -0.2)
-                        .addTo(cache[id]);
-                }
-                cache[id].x(x).y(y);
+                cache.inner[handle] = element;
+                return handle;
             },
-            render_remove_sprite(id: u32): void {
+            drop(handle: u32) {
+                delete cache.inner[handle];
+                cache.free.push(handle);
+            },
+            get(handle: u32) {
+                return cache.inner[handle];
+            }
+        };
+        
+        // Parse `Ref<Costume>` enum
+        function costume(ptr: Ref<Costume>): [tag: Costume, args: Float32Array] {
+            return [
+                new Uint32Array(mem().buffer, ptr)[0],
+                new Float32Array(mem().buffer, ptr + 4),
+            ];
+        }
+        return {
+            render_new_sprite(ptr: Ref<Costume>): u32 {
+                // Creates a new SVG element for the costume
+                const element = () => {
+                    switch (costume(ptr)[0]) {
+                        case Costume.Player:
+                            return draw.rect(30, 50).fill("#EFC643");
+                        case Costume.Bullet:
+                            return draw.circle(3);
+                    }
+                };
+                return cache.add(element());
+            },
+            render_update_sprite(handle: u32, ptr: Ref<Costume>) {
+                const [tag, args] = costume(ptr);
+                const element = cache.get(handle);
+
+                // Position
+                switch (tag) {
+                    case Costume.Player:
+                    case Costume.Bullet:
+                        element
+                            .x(args[0])
+                            .y(args[1]);
+                }
+                // Player
+                if (tag == Costume.Player) {
+                    element.transform({
+                        scaleX: args[2],
+                        scaleY: args[3],
+                        skewX: args[4],
+                    });
+                }
+            },
+            render_drop_sprite(handle: u32) {
                 // Remove from DOM
-                cache[id]?.remove();
+                cache.get(handle)?.remove();
                 // Remove from cache
-                delete cache[id];
+                cache.drop(handle);
             },
         }
     }

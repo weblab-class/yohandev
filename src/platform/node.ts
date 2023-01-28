@@ -6,7 +6,7 @@ import {
     Memory, Ref, RefMut, Uninit,
     cstring,
     Packet, Connection,
-    HandheldSpriteKind,
+    Costume,
     usize, u32, f32, u8,
     instantiate,
 } from "./mod";
@@ -140,16 +140,14 @@ module Net {
 module Render {
     export function imports() {
         return {
-            render_set_player_sprite(id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32): void {
+            render_new_sprite(ptr: Ref<Costume>): u32 {
+                // Node is headless!
+                return 0;
+            },
+            render_update_sprite(handle: u32, ptr: Ref<Costume>) {
                 // Node is headless!
             },
-            render_set_bullet_sprite(id: u32, x: f32, y: f32): void {
-                // Node is headless!
-            },
-            render_set_handheld_sprite(id: u32, kind: HandheldSpriteKind, x: f32, y: f32) {
-                // Node is headless!
-            },
-            render_remove_sprite(id: u32): void {
+            render_drop_sprite(handle: u32) {
                 // Node is headless!
             },
         }

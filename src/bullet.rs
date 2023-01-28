@@ -5,8 +5,8 @@ use crate::{
     physics::{ Collider, KinematicBody },
     transform::Transform,
     network::Packet,
-    platform::{Socket, Time},
-    render::BulletSprite,
+    platform::{ Socket, Time },
+    render::{ Sprite, Costume },
 };
 
 // TODO: this is a lazy workaround for now, but a system like this could be
@@ -22,7 +22,9 @@ pub fn prefab(origin: Vec2<f32>, velocity: Vec2<f32>) -> EntityBuilder {
     let mut builder = EntityBuilder::new();
     
     builder.add_bundle((
-        BulletSprite::default(),
+        Sprite::new(Costume::Bullet {
+            position: origin,
+        }),
         Collider::circle(3.0),
         KinematicBody { velocity },
         Transform {

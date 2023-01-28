@@ -5,9 +5,10 @@ use std::mem::{ MaybeUninit, self };
 use std::ffi::{ CString, c_char };
 use once_cell::unsync::OnceCell;
 
+use crate::render::Sprite;
 use crate::{
     network::Packet,
-    render::HandheldSpriteKind,
+    render::Costume,
 };
 
 // ----------------[ FFI ]----------------
@@ -32,10 +33,12 @@ extern {
     fn net_poll_connections(ptr: *mut MaybeUninit<Connection>) -> bool;
     fn net_poll_disconnections(ptr: *mut MaybeUninit<Connection>) -> bool;
 
-    fn render_set_player_sprite(id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32);
-    fn render_set_bullet_sprite(id: u32, x: f32, y: f32);
-    fn render_set_handheld_sprite(id: u32, kind: HandheldSpriteKind, x: f32, y: f32);
-    fn render_remove_sprite(id: u32);
+    // SAFETY:
+    // 1. Lifetime of `ptr` can only be guarenteed for the duration
+    //    of the function call. Copy if needed for longer.
+    fn render_new_sprite(ptr: *const Costume) -> u32;
+    fn render_update_sprite(handle: u32, ptr: *const Costume);
+    fn render_drop_sprite(handle: u32);
 
     fn input_get_dx() -> f32;
     fn input_get_dy() -> f32;
@@ -212,30 +215,24 @@ pub struct Canvas;
 
 impl Canvas {
     /// Add or update the sprite associated with `id`.
-    pub fn draw_player(&self, id: u32, x: f32, y: f32, skew: f32, sx: f32, sy: f32) {
-        unsafe {
-            render_set_player_sprite(id, x, y, skew, sx, sy);
-        }
-    }
-
-    /// Add or update the sprite associated with `id`.
-    pub fn draw_bullet(&self, id: u32, x: f32, y: f32) {
-        unsafe {
-            render_set_bullet_sprite(id, x, y);
-        }
-    }
-
-    /// Add or update the sprite associated with `id`.
-    pub fn draw_handheld(&self, id: u32, kind: HandheldSpriteKind, x: f32, y: f32) {
-        unsafe {
-            render_set_handheld_sprite(id, kind, x, y);
+    pub fn draw(&self, sprite: &mut Sprite) {
+        if let Some(handle) = sprite.handle {
+            unsafe {
+                render_update_sprite(handle, &sprite.costume as _);
+            }
+        } else {
+            sprite.handle = Some(unsafe {
+                render_new_sprite(&sprite.costume as _)
+            });
         }
     }
 
     // Remove the sprite associated with `id`.
-    pub fn remove(id: u32) {
+    pub fn remove(sprite: &mut Sprite) {
         unsafe {
-            render_remove_sprite(id);
+            if let Some(handle) = sprite.handle.take() {
+                render_drop_sprite(handle);
+            }
         }
     }
 }

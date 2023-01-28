@@ -26,15 +26,6 @@ impl From<&Transform> for Isometry2<f32> {
 #[derive(Debug, Default)]
 pub struct NetworkPosition;
 
-/// Component that store's an entity's parent
-#[derive(Debug)]
-pub struct Parent {
-    /// Entity that is the parent
-    pub handle: Entity,
-    /// Damping factor for child to follow(1.0 = none)
-    pub damping: f32,
-}
-
 // TODO: LocalPos, LocalRot and etc. systems
 // TODO: Networked position buffer
 
@@ -56,22 +47,6 @@ pub fn networked_position(world: &mut World, socket: &Socket) {
         };
         if let Ok(mut transform) = world.get::<&mut Transform>(*e) {
             transform.translation = *position;
-        }
-    }
-}
-
-/// System that updates children's positions according to their [Parent]
-pub fn update_children(world: &mut World) {
-    for (e, (transform, parent)) in &mut world.query::<(&mut Transform, &Parent)>() {
-        if e != parent.handle {
-            let Ok(target) = (unsafe {
-                // SAFETY:
-                // Asserted this entity isn't parented to itself
-                world.get_unchecked::<&Transform>(parent.handle)
-            }) else {
-                continue;
-            };
-            transform.translation += parent.damping * (target.translation - transform.translation);
         }
     }
 }
