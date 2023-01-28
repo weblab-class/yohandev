@@ -5,7 +5,7 @@ use std::mem::{ MaybeUninit, self };
 use std::ffi::{ CString, c_char };
 use once_cell::unsync::OnceCell;
 
-use crate::render::Sprite;
+use crate::render::{Sprite, Visibility};
 use crate::{
     network::Packet,
     render::Costume,
@@ -37,7 +37,7 @@ extern {
     // 1. Lifetime of `ptr` can only be guarenteed for the duration
     //    of the function call. Copy if needed for longer.
     fn render_new_sprite(ptr: *const Costume) -> u32;
-    fn render_update_sprite(handle: u32, ptr: *const Costume);
+    fn render_update_sprite(handle: u32, ptr: *const Costume, visibility: Visibility);
     fn render_drop_sprite(handle: u32);
 
     fn input_get_dx() -> f32;
@@ -218,7 +218,7 @@ impl Canvas {
     pub fn draw(&self, sprite: &mut Sprite) {
         if let Some(handle) = sprite.handle {
             unsafe {
-                render_update_sprite(handle, &sprite.costume as _);
+                render_update_sprite(handle, &sprite.costume as _, sprite.visibility);
             }
         } else {
             sprite.handle = Some(unsafe {

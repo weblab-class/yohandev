@@ -3,7 +3,7 @@ use hecs::World;
 use crate::{
     platform::Canvas,
     transform::Transform,
-    math::Vec2
+    math::Vec2, ability::Ability
 };
 
 /// A type of [Sprite]
@@ -22,7 +22,21 @@ pub enum Costume {
     },
     Bullet {
         position: Vec2<f32>,
-    }
+    },
+    Shotgun {
+        position: Vec2<f32>,
+    },
+}
+
+/// Whether a [Sprite] is visible or not.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum Visibility {
+    /// Sprite is shown.
+    #[default]
+    Shown,
+    /// Sprite is not shown, but still exists in DOM.
+    Hidden,
 }
 
 /// Component for entities with a 2D costume
@@ -30,6 +44,8 @@ pub enum Costume {
 pub struct Sprite {
     /// Type of sprite. It cannot changed after initialization
     pub costume: Costume,
+    /// Whether the sprite is visible.
+    pub visibility: Visibility,
     /// Handle of the `platform`'s object(for drop management).
     pub handle: Option<u32>,
 }
@@ -37,7 +53,11 @@ pub struct Sprite {
 impl Sprite {
     /// Create a new sprite component
     pub fn new(costume: Costume) -> Self {
-        Self { costume, handle: None }
+        Self {
+            costume,
+            visibility: Default::default(),
+            handle: None,
+        }
     }
 }
 
@@ -85,12 +105,33 @@ pub fn animate_bullet_sprites(world: &mut World) {
     }
 }
 
+pub fn animate_shotgun_sprites(world: &mut World) {
+    if cfg!(server) {
+        return;
+    }
+    for (e, (transform, ability, sprite)) in world.query_mut::<(&Transform, &Ability, &mut Sprite)>() {
+        let Costume::Shotgun { position } = &mut sprite.costume else {
+            continue;
+        };
+        let target = transform.translation;
+        let delta = target - *position;
+
+        // Damping
+        *position += 0.9 * delta;
+        // Visibility
+        sprite.visibility = match ability.active {
+            true => Visibility::Shown,
+            false => Visibility::Hidden,
+        };
+    }
+}
+
 /// System that draws sprites
 pub fn draw_sprites(world: &mut World, canvas: &Canvas) {
     if cfg!(server) {
         return;
     }
-    for (e, sprite) in world.query_mut::<&mut Sprite>() {
+    for (_, sprite) in world.query_mut::<&mut Sprite>() {
         canvas.draw(sprite);
     }
 }

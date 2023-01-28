@@ -6,7 +6,7 @@ import {
     Memory, Ref, RefMut, Uninit,
     cstring,
     Packet, Connection,
-    Costume,
+    Costume, Visibility,
     usize, u32, f32, u8,
     instantiate,
 } from "./mod";
@@ -144,7 +144,7 @@ module Render {
                 // Node is headless!
                 return 0;
             },
-            render_update_sprite(handle: u32, ptr: Ref<Costume>) {
+            render_update_sprite(handle: u32, ptr: Ref<Costume>, visibility: Visibility) {
                 // Node is headless!
             },
             render_drop_sprite(handle: u32) {

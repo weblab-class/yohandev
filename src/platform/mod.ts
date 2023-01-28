@@ -39,6 +39,11 @@ export type Connection = number;
 export enum Costume {
     Player,
     Bullet,
+    Shotgun,
+}
+export enum Visibility {
+    Shown,
+    Hidden,
 }
 
 export interface Imports extends WebAssembly.ModuleImports {
@@ -56,7 +61,7 @@ export interface Imports extends WebAssembly.ModuleImports {
     net_poll_disconnections(ptr: RefMut<Uninit<Connection>>): boolean;
 
     render_new_sprite(ptr: Ref<Costume>): u32;
-    render_update_sprite(handle: u32, ptr: Ref<Costume>);
+    render_update_sprite(handle: u32, ptr: Ref<Costume>, visibility: Visibility);
     render_drop_sprite(handle: u32);
 
     input_get_dx(): f32;

@@ -22,6 +22,20 @@ impl From<&Transform> for Isometry2<f32> {
     }
 }
 
+/// Component for an entity's parent.
+#[derive(Debug)]
+pub struct Parent(Entity);
+
+impl Parent {
+    pub fn new(parent: Entity) -> Self {
+        Self(parent)
+    }
+}
+
+/// Component for an entity's position relative to its [Parent].
+#[derive(Debug)]
+pub struct LocalPosition(pub Vec2<f32>);
+
 /// Marker trait that an entity's position should be replicated.
 #[derive(Debug, Default)]
 pub struct NetworkPosition;
@@ -47,6 +61,22 @@ pub fn networked_position(world: &mut World, socket: &Socket) {
         };
         if let Ok(mut transform) = world.get::<&mut Transform>(*e) {
             transform.translation = *position;
+        }
+    }
+}
+
+/// System that updates the [Transform]s of children of [Parent]s
+pub fn local_to_world(world: &mut World) {
+    for (e, (transform, parent, position)) in &mut world.query::<(&mut Transform, &Parent, &LocalPosition)>() {
+        if e != parent.0 {
+            let Ok(target) = (unsafe {
+                // SAFETY:
+                // Asserted this entity isn't parented to itself
+                world.get_unchecked::<&Transform>(parent.0)
+            }) else {
+                continue;
+            };
+            transform.translation = target.translation + position.0;
         }
     }
 }

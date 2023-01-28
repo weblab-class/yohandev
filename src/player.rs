@@ -6,7 +6,7 @@ use crate::{
     platform::{ Socket, Time, Connection },
     render::{ Sprite, Costume },
     transform::{ Transform, NetworkPosition },
-    math::vec2, network::Packet, bullet,
+    math::vec2, network::Packet, bullet, ability::shotgun_prefab,
 };
 
 /// Component that marks an entity as a player.
@@ -59,7 +59,8 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
                 continue;
             };
             world.spawn_at(*e, prefab(&mut Default::default()).build());
-            
+            // TODO: don't hardcode in ability
+            world.spawn(shotgun_prefab(*e).build());
             // Owned entity
             if connection != c {
                 world.remove_one::<Input>(*e).unwrap();

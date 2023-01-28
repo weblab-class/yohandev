@@ -1,21 +1,42 @@
-use hecs::{World, Entity, EntityBuilder};
+use hecs::{ Entity, EntityBuilder };
 
-use crate::{math::Vec2, transform::Transform, vec2};
+use crate::{
+    transform::{ Transform, Parent, LocalPosition },
+    math::vec2,
+    render::{ Sprite, Costume }
+};
 
-pub enum AbilityKind {
-    Shotgun,
-    AssaultRifle,
-    DualGun,
-    Shield,
-}
-
+/// Component that marks this entity as an ability
+#[derive(Debug)]
 pub struct Ability {
-    /// Kind of ability,
-    pub kind: AbilityKind,
     /// Parent entity
     pub owner: Entity,
     /// Ability active this frame?
     pub active: bool,
+}
+
+/// Component that marks this entity as a shotgun ability
+#[derive(Debug, Default)]
+pub struct Shotgun;
+
+pub fn shotgun_prefab(owner: Entity) -> EntityBuilder {
+    let mut builder = EntityBuilder::new();
+    
+    builder.add_bundle((
+        Shotgun,
+        Ability {
+            owner,
+            // TODO: ability switcher, this should be false.
+            active: true,
+        },
+        Sprite::new(Costume::Shotgun {
+            position: Default::default(),
+        }),
+        Transform::default(),
+        Parent::new(owner),
+        LocalPosition(vec2!(-5.0, 20.0)),
+    ));
+    builder
 }
 
 // Shotgun:
@@ -25,35 +46,4 @@ pub struct Ability {
 //  - Shotgun
 //
 //  - system that toggles on/off active for [Ability]'s
-//  - system that sets the shotgun's transform
 //  - system that listens to [Input] and [Ability] to fire shotgun bullets
-
-impl Shotgun {
-    pub fn prefab(parent: Entity) -> EntityBuilder {
-        let mut builder = EntityBuilder::new();
-
-        builder.add_bundle((
-            Shotgun { parent },
-            Transform::default(),
-        ));
-        builder
-    }
-}
-
-pub fn update_shotgun_position(world: &mut World) {
-    for (e, (transform, shotgun)) in &mut world.query::<(&mut Transform, &Shotgun)>() {
-        if e != shotgun.parent {
-            let Ok(target) = (unsafe {
-                // SAFETY:
-                // Asserted this entity isn't parented to itself
-                world.get_unchecked::<&Transform>(shotgun.parent)
-            }) else {
-                continue;
-            };
-            // Offset position
-            let target = target.translation + vec2!(-5.0, 20.0);
-            // Lightly damp
-            transform.translation += 0.9 * (target - transform.translation);
-        }
-    }
-}

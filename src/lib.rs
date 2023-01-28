@@ -5,7 +5,7 @@ mod transform;
 mod platform;
 mod network;
 mod physics;
-// mod ability;
+mod ability;
 mod render;
 mod bullet;
 mod player;
@@ -44,6 +44,7 @@ pub fn main() {
             player::platformer_controller(&mut world, &time);
             player::weapon_controller(&mut world);
         }
+        transform::local_to_world(&mut world);
         physics::compute_gravity(&mut world, &time);
         physics::compute_kinematics(&mut world, &time);
         physics::resolve_collisions(&mut world, &time);
@@ -52,6 +53,7 @@ pub fn main() {
         bullet::despawn_bullets(&mut world, &time);
         render::animate_player_sprites(&mut world);
         render::animate_bullet_sprites(&mut world);
+        render::animate_shotgun_sprites(&mut world);
         render::draw_sprites(&mut world, &canvas);
     });
 }

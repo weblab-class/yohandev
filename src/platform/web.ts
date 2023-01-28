@@ -7,7 +7,7 @@ import {
     Memory, Ref, RefMut, Uninit,
     cstring,
     Packet, Connection,
-    Costume,
+    Costume, Visibility,
     usize, u32, f32, u8,
     instantiate,
 } from "./mod";
@@ -186,18 +186,35 @@ module Render {
                             return draw.rect(30, 50).fill("#EFC643");
                         case Costume.Bullet:
                             return draw.circle(3);
+                        case Costume.Shotgun:
+                            return draw
+                                .group()
+                                .add(draw
+                                    .image("assets/weapons/shotgun.svg")
+                                    .scale(0.2, -0.2)
+                                );
                     }
                 };
                 return cache.add(element());
             },
-            render_update_sprite(handle: u32, ptr: Ref<Costume>) {
+            render_update_sprite(handle: u32, ptr: Ref<Costume>, visibility: Visibility) {
                 const [tag, args] = costume(ptr);
                 const element = cache.get(handle);
 
+                // Visibility
+                switch (visibility) {
+                    case Visibility.Shown:
+                        element.show();
+                        break;
+                    case Visibility.Hidden:
+                        element.hide();
+                        break;
+                }
                 // Position
                 switch (tag) {
                     case Costume.Player:
                     case Costume.Bullet:
+                    case Costume.Shotgun:
                         element
                             .x(args[0])
                             .y(args[1]);
