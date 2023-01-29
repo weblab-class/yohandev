@@ -8,7 +8,7 @@ use crate::{
     transform::{ Transform, NetworkPosition },
     math::vec2,
     network::Packet,
-    ability::shotgun_prefab,
+    ability::{ AbilityKind, self },
     health::{ Health, self },
 };
 
@@ -58,7 +58,7 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
                     .build()
             );
             // TODO: don't hardcode in ability
-            world.spawn(shotgun_prefab(e).build());
+            world.spawn(ability::prefab(e, AbilityKind::Shotgun).build());
             // TODO: reliable transport
             socket.broadcast(&Packet::PlayerSpawn(e, connection));
         }
@@ -74,7 +74,7 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
             // Health bar:
             world.spawn(health::gui_prefab(*e).build());
             // Abilities(TODO: don't hardcode):
-            world.spawn(shotgun_prefab(*e).build());
+            world.spawn(ability::prefab(*e, AbilityKind::Shotgun).build());
             // Owned entity
             if connection != c {
                 world.remove_one::<Input>(*e).unwrap();

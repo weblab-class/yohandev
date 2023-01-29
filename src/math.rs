@@ -1,4 +1,7 @@
-pub use nalgebra::Vector2 as Vec2;
+pub use nalgebra::{
+    Vector2 as Vec2,
+    Rotation2 as Rot2,
+};
 
 pub use crate::vec2;
 
