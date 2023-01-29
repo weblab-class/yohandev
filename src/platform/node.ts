@@ -7,7 +7,7 @@ import {
     cstring,
     Packet, Connection,
     Costume, Visibility,
-    usize, u32, f32, u8,
+    usize, u32, f32, u8, f64,
     instantiate,
 } from "./mod";
 
@@ -189,6 +189,9 @@ module Time {
         return {
             time_now(): u32 {
                 return performance.now();
+            },
+            now(): f64 {
+                return Date.now();
             }
         }
     }

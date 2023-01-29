@@ -72,6 +72,7 @@ export interface Imports extends WebAssembly.ModuleImports {
     input_set_player_position(x: f32, y: f32): void;
 
     time_now(): u32;
+    now(): f64;
 }
 
 export interface Exports extends WebAssembly.Exports {

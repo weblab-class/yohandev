@@ -1,10 +1,10 @@
 use hecs::{ Entity, EntityBuilder, World };
-use nalgebra::ComplexField;
+use nalgebra::Rotation2;
 
 use crate::{
     transform::{ Transform, Parent, LocalPosition },
     math::vec2,
-    render::{ Sprite, Costume }, input::{Input, FollowLookDirection}, bullet, platform::Socket
+    render::{ Sprite, Costume }, input::{Input, FollowLookDirection}, bullet
 };
 
 /// Complete enumeration of all ability types
@@ -83,15 +83,12 @@ pub fn shotgun_controller(world: &mut World) {
         }
     }
     for (o, v) in shots {
-        world.spawn(bullet::prefab(o, v).build());
+        const N_BULLETS: usize = 20;    // how many bullets
+        const SPREAD: f32 = 0.2;        // (+/-) radians
+        // TODO: this can be greatly optimized by simply sending the random seed
+        for _ in 0..N_BULLETS {
+            let v = Rotation2::new(SPREAD * (fastrand::f32() - 0.5)) * v;
+            world.spawn(bullet::prefab(o, v).build());
+        }
     }
 }
-
-// Shotgun:
-//  - Ability
-//  - Sprite
-//  - Transform
-//  - Shotgun
-//
-//  - system that toggles on/off active for [Ability]'s
-//  - system that listens to [Input] and [Ability] to fire shotgun bullets
