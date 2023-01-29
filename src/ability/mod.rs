@@ -4,6 +4,7 @@ use hecs::{ Entity, EntityBuilder };
 
 mod gun;
 mod shotgun;
+mod rifle;
 
 /// Complete enumeration of all ability types
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -26,7 +27,7 @@ pub struct Ability {
 pub fn prefab(owner: Entity, kind: AbilityKind) -> EntityBuilder {
     match kind {
         AbilityKind::Shotgun => shotgun::prefab(owner),
-        AbilityKind::AssaultRifle => todo!(),
+        AbilityKind::AssaultRifle => rifle::prefab(owner),
         AbilityKind::DualGun => todo!(),
         AbilityKind::Shield => todo!(),
     }

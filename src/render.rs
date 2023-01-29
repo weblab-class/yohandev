@@ -30,6 +30,10 @@ pub enum Costume {
     HealthBar {
         position: Vec2<f32>,
         percentage: f32,
+    },
+    AssaultRifle {
+        position: Vec2<f32>,
+        rotation: f32,
     }
 }
 
@@ -110,13 +114,17 @@ pub fn animate_bullet_sprites(world: &mut World) {
     }
 }
 
-pub fn animate_shotgun_sprites(world: &mut World) {
+pub fn animate_basic_gun_sprites(world: &mut World) {
     if cfg!(server) {
         return;
     }
     for (_, (transform, ability, sprite)) in world.query_mut::<(&Transform, &Ability, &mut Sprite)>() {
-        let Costume::Shotgun { position, rotation } = &mut sprite.costume else {
-            continue;
+        let (position, rotation) = match &mut sprite.costume {
+            Costume::Shotgun { position, rotation } => (position, rotation),
+            Costume::AssaultRifle { position, rotation } => (position, rotation),
+            _ => {
+                continue;
+            }
         };
         let target = transform.translation;
         let delta = target - *position;

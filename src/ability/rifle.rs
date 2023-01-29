@@ -21,25 +21,22 @@ pub fn prefab(owner: Entity) -> EntityBuilder {
         },
         Gun {
             // TODO these should come from `abilities.toml`
-            cooldown: Cooldown(1.5),
+            cooldown: Cooldown(0.07),
             shoot: |world, owner, origin, velocity| {
-                // TODO: this can be greatly optimized by simply sending the random seed
-                for _ in 0..10 {
-                    let spread = Rot2::new(0.1 * (fastrand::f32() - 0.5));
-                    let velocity = 1500.0 * (spread * velocity);
-                    let damage = Damage {
-                        amount: 5.0,
-                        exclude: Some(owner),
-                        destroy: true,
-                    };
-                    world.spawn(bullet::prefab(origin, velocity)
-                        .add(damage)
-                        .build()
-                    );
-                }
+                let spread = Rot2::new(0.05 * (fastrand::f32() - 0.5));
+                let velocity = 2000.0 * (spread * velocity);
+                let damage = Damage {
+                    amount: 2.0,
+                    exclude: Some(owner),
+                    destroy: true,
+                };
+                world.spawn(bullet::prefab(origin, velocity)
+                    .add(damage)
+                    .build()
+                );
             },
         },
-        Sprite::new(Costume::Shotgun {
+        Sprite::new(Costume::AssaultRifle {
             position: Default::default(),
             rotation: Default::default(),
         }),

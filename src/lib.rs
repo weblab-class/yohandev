@@ -61,7 +61,7 @@ pub fn main() {
         bullet::despawn_bullets(&mut world, &time);
         render::animate_player_sprites(&mut world);
         render::animate_bullet_sprites(&mut world);
-        render::animate_shotgun_sprites(&mut world);
+        render::animate_basic_gun_sprites(&mut world);
         render::animate_health_bar_sprites(&mut world);
         render::draw_sprites(&mut world, &canvas);
     });

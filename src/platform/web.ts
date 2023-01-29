@@ -193,6 +193,13 @@ module Render {
                                     .image("assets/weapons/shotgun.svg")
                                     .scale(0.2, -0.2)
                                 );
+                        case Costume.AssaultRifle:
+                            return draw
+                                .group()
+                                .add(draw
+                                    .image("assets/weapons/assault-rifle.svg")
+                                    .scale(0.2, -0.2)
+                                );
                         case Costume.HealthBar:
                             return draw
                                 .group()
@@ -220,6 +227,7 @@ module Render {
                     case Costume.Player:
                     case Costume.Bullet:
                     case Costume.Shotgun:
+                    case Costume.AssaultRifle:
                     case Costume.HealthBar:
                         element
                             .cx(args[0])
@@ -228,6 +236,7 @@ module Render {
                 // Rotation
                 switch (tag) {
                     case Costume.Shotgun:
+                    case Costume.AssaultRifle:
                         element.transform({
                             rotate: 180 / Math.PI * args[2],
                             scaleY: Math.abs(args[2]) > Math.PI / 2 ? -1 : 1,
