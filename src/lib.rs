@@ -48,7 +48,7 @@ pub fn main() {
         physics::compute_kinematics(&mut world, &time);
         physics::resolve_collisions(&mut world, &time);
         transform::networked_position(&mut world, &socket);
-        ability::shotgun_controller(&mut world);
+        ability::shotgun_controller(&mut world, &time);
         input::network_look_direction(&mut world, &socket);
         input::follow_look_direction(&mut world);
         bullet::network_instantiate(&mut world, &socket);
