@@ -3,7 +3,7 @@ use nalgebra::Rotation2;
 
 use crate::{
     transform::{ Transform, Parent, LocalPosition },
-    math::vec2,
+    math::{ Vec2, vec2 },
     render::{ Sprite, Costume }, input::{Input, FollowLookDirection}, bullet, platform::Time, health::Damage
 };
 
@@ -34,26 +34,52 @@ pub fn prefab(owner: Entity, kind: AbilityKind) -> EntityBuilder {
     }
 }
 
-/// Component that marks this entity as a shotgun ability
-#[derive(Debug, Default)]
-pub struct Shotgun {
-    cooldown: f32,
+/// Component for a generic gun's stats.
+pub struct Gun {
+    /// Gun's cooldown after each shot
+    cooldown: Cooldown,
+    /// Function that instantiates bullets 
+    shoot: fn(world: &mut World, owner: Entity, origin: Vec2<f32>, velocity: Vec2<f32>),
 }
+
+/// Component for current cooldown time.
+#[derive(Debug, Default, Clone, Copy)]
+pub struct Cooldown(pub f32);
 
 pub fn shotgun_prefab(owner: Entity) -> EntityBuilder {
     let mut builder = EntityBuilder::new();
     
     builder.add_bundle((
-        Shotgun::default(),
         Ability {
             owner,
             // TODO: ability switcher, this should be false.
             active: true,
         },
+        Gun {
+            // TODO these should come from `abilities.toml`
+            cooldown: Cooldown(1.5),
+            shoot: |world, owner, origin, velocity| {
+                // TODO: this can be greatly optimized by simply sending the random seed
+                for _ in 0..10 {
+                    let spread = Rotation2::new(0.1 * (fastrand::f32() - 0.5));
+                    let velocity = 1500.0 * (spread * velocity);
+                    let damage = Damage {
+                        amount: 5.0,
+                        exclude: Some(owner),
+                        destroy: true,
+                    };
+                    world.spawn(bullet::prefab(origin, velocity)
+                        .add(damage)
+                        .build()
+                    );
+                }
+            },
+        },
         Sprite::new(Costume::Shotgun {
             position: Default::default(),
             rotation: Default::default(),
         }),
+        Cooldown::default(),
         Transform::default(),
         Parent(owner),
         FollowLookDirection(owner),
@@ -62,49 +88,33 @@ pub fn shotgun_prefab(owner: Entity) -> EntityBuilder {
     builder
 }
 
-/// System that does the shotgun functionality
-pub fn shotgun_controller(world: &mut World, time: &Time) {
+/// System that does the generic gun functionality
+pub fn gun_controller(world: &mut World, time: &Time) {
     if cfg!(client) {
         return;
     }
-    const N_BULLETS: usize = 10;        // how many bullets
-    const SPREAD: f32 = 0.1;            // (+/-) radians
-    const COOLDOWN: f32 = 1.5;          // seconds
-    const DAMAGE: f32 = 5.0;           // Per pellet
-    const BULLET_SPEED: f32 = 2000.0;   // Pixel/s
     /// Queries all weapon holders
     type Query<'a> = (
         &'a Ability,            // Needed to test if active or not
-        &'a mut Shotgun,        // Marker to query shotguns only
+        &'a Gun,                // Guns properties
+        &'a mut Cooldown,       // Test and reset cooldown
         &'a mut Transform,      // Origin of bullets
     );
     let mut shots = Vec::new();
-    for (_, (ability, shotgun, transform)) in &mut world.query::<Query>() {
+    for (_, (ability, gun, cooldown, transform)) in &mut world.query::<Query>() {
         // User input
         let Ok(input) = world.get::<&Input>(ability.owner) else {
             continue;
         };
         // Cooldown
-        shotgun.cooldown -= time.dt();
+        cooldown.0 -= time.dt();
         // Shooting
-        if ability.active && shotgun.cooldown <= 0.0 && input.button(0) {
-            shots.push((ability.owner, transform.translation, input.look_axis()));
-            shotgun.cooldown = COOLDOWN;
+        if ability.active && cooldown.0 <= 0.0 && input.button(0) {
+            shots.push((gun.shoot, ability.owner, transform.translation, input.look_axis()));
+            *cooldown = gun.cooldown;
         }
     }
-    for (e, o, v) in shots {
-        // TODO: this can be greatly optimized by simply sending the random seed
-        for _ in 0..N_BULLETS {
-            let v = BULLET_SPEED * (Rotation2::new(SPREAD * (fastrand::f32() - 0.5)) * v);
-            world.spawn(
-                bullet::prefab(o, v)
-                    .add(Damage {
-                        amount: DAMAGE,
-                        exclude: Some(e),
-                        destroy: true,
-                    })
-                    .build()
-            );
-        }
+    for (shoot, e, o, v) in shots {
+        (shoot)(world, e, o, v);
     }
 }
