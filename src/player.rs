@@ -2,7 +2,7 @@ use hecs::{World, EntityBuilder, With};
 
 use crate::{
     physics::{ KinematicBody, Grounded, Collider, Collisions, Gravity },
-    input::Input,
+    input::{Input, LookDirection},
     platform::{ Socket, Time, Connection },
     render::{ Sprite, Costume },
     transform::{ Transform, NetworkPosition },
@@ -34,6 +34,7 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
                 rotation: 0.0,
             },
             NetworkPosition::default(),
+            LookDirection::default(),
         ))
     }
     // Server spawns player for every connection

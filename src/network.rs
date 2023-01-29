@@ -1,9 +1,9 @@
 use hecs::Entity;
 
 use crate::{
-    input::Input,
+    input::{Input, LookDirection},
     math::Vec2,
-    platform::Connection,
+    platform::Connection, ability::AbilityKind
 };
 
 /// Server <-> Client messages.
@@ -23,5 +23,7 @@ pub enum Packet {
     ProjectileSpawn {
         origin: Vec2<f32>,
         velocity: Vec2<f32>,
-    }
+    },
+    /// Server -> Clients
+    EntityLookDirection(Entity, LookDirection),
 }

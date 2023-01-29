@@ -1,4 +1,4 @@
-use hecs::{World, With};
+use hecs::{World, With, Entity};
 
 use crate::{
     platform::{ Gamepad, Socket },
@@ -61,6 +61,14 @@ impl Input {
     }
 }
 
+/// Networked component that synchronizes the direction players are looking in.
+#[derive(Debug, Default, Clone, Copy)]
+pub struct LookDirection(f32);
+
+/// Component for an entity that should follow its parent's [LookDirection].
+#[derive(Debug)]
+pub struct FollowLookDirection(pub Entity);
+
 /// Client system that polls user inputs and updates them on the client.
 pub fn update(world: &mut World, gamepad: &Gamepad) {
     const MAX: f32 = i8::MAX as _;
@@ -111,6 +119,40 @@ pub fn network_player_commands(world: &mut World, socket: &Socket) {
             .into_iter()
             .find(|(_, (_, c))| *c == connection) {
                 *input = *command;
+        }
+    }
+}
+
+/// System that synchronizes player's look directions
+pub fn network_look_direction(world: &mut World, socket: &Socket) {
+    // Server sends clients' look directions
+    if cfg!(server) {
+        for (e, (look, input)) in world.query_mut::<(&mut LookDirection, &Input)>() {
+            // 1. compute look direction
+            let dir = input.look_axis();
+            look.0 = dir.y.atan2(dir.x);
+            // 2. network that
+            socket.broadcast(&Packet::EntityLookDirection(e, *look));
+        }
+    }
+    // Clients update look directions
+    if cfg!(client) {
+        for (_, packet) in socket.packets() {
+            let Packet::EntityLookDirection(e, look) = packet else {
+                continue;
+            };
+            if let Ok(mut cmp) = world.get::<&mut LookDirection>(*e) {
+                *cmp = *look;
+            }
+        }
+    }
+}
+
+/// System that rotates entities with [FollowLookDirection]
+pub fn follow_look_direction(world: &mut World) {
+    for (_, (transform, parent)) in &mut world.query::<(&mut Transform, &FollowLookDirection)>() {
+        if let Ok(look) = world.get::<&LookDirection>(parent.0) {
+            transform.rotation = look.0;
         }
     }
 }

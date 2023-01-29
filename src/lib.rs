@@ -49,6 +49,8 @@ pub fn main() {
         physics::resolve_collisions(&mut world, &time);
         transform::networked_position(&mut world, &socket);
         ability::shotgun_controller(&mut world);
+        input::network_look_direction(&mut world, &socket);
+        input::follow_look_direction(&mut world);
         bullet::network_instantiate(&mut world, &socket);
         bullet::despawn_bullets(&mut world, &time);
         render::animate_player_sprites(&mut world);
