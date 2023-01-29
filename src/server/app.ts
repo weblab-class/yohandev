@@ -54,7 +54,6 @@ const io = geckos({ iceServers });
 
 io.addServer(server);
 server.listen(port);
-console.log(server.address());
 
 // Create game
 await game(io)

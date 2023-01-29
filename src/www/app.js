@@ -8,12 +8,18 @@ import "./styles/root.css";
 
 function App() {
     const [showMenu, setShowMenu] = useState(true);
+    const [deck, setDeck] = useState([]);
     return (
         <div class="overlap">
-            <Game/>
+            <Game deck={deck}/>
             {showMenu && (
-                // TODO: startGame callback will pass user's abilities to game
-                <Menu class="z:100" startGame={() => setShowMenu(false)}/>
+                <Menu
+                    class="z:100"
+                    startGame={(deck) => {
+                        setShowMenu(false);
+                        setDeck(deck);
+                    }}
+                />
             )}
         </div>
     );

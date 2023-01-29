@@ -40,8 +40,8 @@ export function Menu({ startGame, ...props }) {
         // Fade-out
         ref.current?.classList.add("fade-out");
         // Disappear
-        setTimeout(startGame, 150);
-    }, [ref]);
+        setTimeout(() => startGame(deck), 150);
+    }, [ref, deck]);
     const onHover = useCallback((id) => setHovered(id), []);
 
     return (
