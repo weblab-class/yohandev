@@ -39,17 +39,20 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
     // Server spawns player for every connection
     if cfg!(server) {
         for &connection in socket.connections() {
+            // Existing players
+            for (e, &c) in world.query_mut::<With<&Connection, &Player>>() {
+                // TODO: reliable transport
+                socket.send(connection, &Packet::PlayerSpawn(e, c));
+            }
             let e = world.spawn(
                 prefab(&mut Default::default())
                     .add(connection)
                     .build()
             );
+            // TODO: don't hardcode in ability
+            world.spawn(shotgun_prefab(e).build());
             // TODO: reliable transport
             socket.broadcast(&Packet::PlayerSpawn(e, connection));
-            // Existing players
-            for (e, &c) in world.query_mut::<With<&Connection, &Player>>() {
-                socket.send(connection, &Packet::PlayerSpawn(e, c));
-            }
         }
     }
     // Client spawns player whenever it's told so
@@ -136,24 +139,5 @@ pub fn platformer_controller(world: &mut World, time: &Time) {
         }
         // Damping
         kb.velocity /= 1.0 + FRICTION * time.dt();
-    }
-}
-
-/// System that shoots projectiles
-pub fn weapon_controller(world: &mut World) {
-    /// Queries all weapon holders
-    type Query<'a> = (
-        &'a Transform,
-        &'a Input,
-    );
-    let mut commands = Vec::new();
-    for (_, (transform, input)) in world.query_mut::<Query>() {
-        // Shoot
-        if input.button(0) {
-            commands.push((transform.translation, input.look_axis()));
-        }
-    }
-    for (o, v) in commands {
-        world.spawn(bullet::prefab(o, v).build());
     }
 }

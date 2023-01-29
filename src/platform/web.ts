@@ -219,6 +219,14 @@ module Render {
                             .x(args[0])
                             .y(args[1]);
                 }
+                // Rotation
+                switch (tag) {
+                    case Costume.Shotgun:
+                        element.transform({
+                            rotate: 180 / Math.PI * args[2],
+                            scaleY: Math.abs(args[2]) > Math.PI / 2 ? -1 : 1,
+                        });
+                }
                 // Player
                 if (tag == Costume.Player) {
                     element.transform({

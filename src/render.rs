@@ -25,6 +25,7 @@ pub enum Costume {
     },
     Shotgun {
         position: Vec2<f32>,
+        rotation: f32,
     },
 }
 
@@ -109,15 +110,17 @@ pub fn animate_shotgun_sprites(world: &mut World) {
     if cfg!(server) {
         return;
     }
-    for (e, (transform, ability, sprite)) in world.query_mut::<(&Transform, &Ability, &mut Sprite)>() {
-        let Costume::Shotgun { position } = &mut sprite.costume else {
+    for (_, (transform, ability, sprite)) in world.query_mut::<(&Transform, &Ability, &mut Sprite)>() {
+        let Costume::Shotgun { position, rotation } = &mut sprite.costume else {
             continue;
         };
         let target = transform.translation;
         let delta = target - *position;
 
-        // Damping
+        // Damp position
         *position += 0.9 * delta;
+        // Rotation is exact
+        *rotation = transform.rotation;
         // Visibility
         sprite.visibility = match ability.active {
             true => Visibility::Shown,

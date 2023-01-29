@@ -42,13 +42,13 @@ pub fn main() {
         // TODO: client-side prediction
         if cfg!(server) {
             player::platformer_controller(&mut world, &time);
-            player::weapon_controller(&mut world);
         }
         transform::local_to_world(&mut world);
         physics::compute_gravity(&mut world, &time);
         physics::compute_kinematics(&mut world, &time);
         physics::resolve_collisions(&mut world, &time);
         transform::networked_position(&mut world, &socket);
+        ability::shotgun_controller(&mut world);
         bullet::network_instantiate(&mut world, &socket);
         bullet::despawn_bullets(&mut world, &time);
         render::animate_player_sprites(&mut world);
