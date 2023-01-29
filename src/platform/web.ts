@@ -193,6 +193,11 @@ module Render {
                                     .image("assets/weapons/shotgun.svg")
                                     .scale(0.2, -0.2)
                                 );
+                        case Costume.HealthBar:
+                            return draw
+                                .group()
+                                .add(draw.rect(40, 10).fill("grey"))
+                                .add(draw.rect(40, 10).fill("red"));
                     }
                 };
                 return cache.add(element());
@@ -215,9 +220,10 @@ module Render {
                     case Costume.Player:
                     case Costume.Bullet:
                     case Costume.Shotgun:
+                    case Costume.HealthBar:
                         element
-                            .x(args[0])
-                            .y(args[1]);
+                            .cx(args[0])
+                            .cy(args[1]);
                 }
                 // Rotation
                 switch (tag) {
@@ -234,6 +240,13 @@ module Render {
                         scaleY: args[3],
                         skewX: args[4],
                     });
+                }
+                // Health bar
+                if (tag == Costume.HealthBar) {
+                    element
+                        .last()
+                        .width(args[2] * 40);
+                    // console.log(args[2]);
                 }
             },
             render_drop_sprite(handle: u32) {

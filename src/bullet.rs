@@ -60,7 +60,7 @@ pub fn network_instantiate(world: &mut World, socket: &Socket) {
             let Packet::ProjectileSpawn { origin, velocity } = packet else {
                 continue;
             };
-            world.spawn(prefab(*origin, *velocity * 2000.0).build());
+            world.spawn(prefab(*origin, *velocity).build());
         }
     }
 }

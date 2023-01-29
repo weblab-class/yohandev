@@ -4,7 +4,7 @@ use nalgebra::Rotation2;
 use crate::{
     transform::{ Transform, Parent, LocalPosition },
     math::vec2,
-    render::{ Sprite, Costume }, input::{Input, FollowLookDirection}, bullet, platform::Time
+    render::{ Sprite, Costume }, input::{Input, FollowLookDirection}, bullet, platform::Time, health::Damage
 };
 
 /// Complete enumeration of all ability types
@@ -55,9 +55,9 @@ pub fn shotgun_prefab(owner: Entity) -> EntityBuilder {
             rotation: Default::default(),
         }),
         Transform::default(),
-        Parent::new(owner),
+        Parent(owner),
         FollowLookDirection(owner),
-        LocalPosition(vec2!(-15.0, 20.0)),
+        LocalPosition(vec2!(0.0, 0.0)),
     ));
     builder
 }
@@ -67,9 +67,11 @@ pub fn shotgun_controller(world: &mut World, time: &Time) {
     if cfg!(client) {
         return;
     }
-    const N_BULLETS: usize = 20;    // how many bullets
-    const SPREAD: f32 = 0.2;        // (+/-) radians
-    const COOLDOWN: f32 = 1.5;      // seconds
+    const N_BULLETS: usize = 10;        // how many bullets
+    const SPREAD: f32 = 0.1;            // (+/-) radians
+    const COOLDOWN: f32 = 1.5;          // seconds
+    const DAMAGE: f32 = 5.0;           // Per pellet
+    const BULLET_SPEED: f32 = 2000.0;   // Pixel/s
     /// Queries all weapon holders
     type Query<'a> = (
         &'a Ability,            // Needed to test if active or not
@@ -86,15 +88,23 @@ pub fn shotgun_controller(world: &mut World, time: &Time) {
         shotgun.cooldown -= time.dt();
         // Shooting
         if ability.active && shotgun.cooldown <= 0.0 && input.button(0) {
-            shots.push((transform.translation, input.look_axis()));
+            shots.push((ability.owner, transform.translation, input.look_axis()));
             shotgun.cooldown = COOLDOWN;
         }
     }
-    for (o, v) in shots {
+    for (e, o, v) in shots {
         // TODO: this can be greatly optimized by simply sending the random seed
         for _ in 0..N_BULLETS {
-            let v = Rotation2::new(SPREAD * (fastrand::f32() - 0.5)) * v;
-            world.spawn(bullet::prefab(o, v).build());
+            let v = BULLET_SPEED * (Rotation2::new(SPREAD * (fastrand::f32() - 0.5)) * v);
+            world.spawn(
+                bullet::prefab(o, v)
+                    .add(Damage {
+                        amount: DAMAGE,
+                        exclude: Some(e),
+                        destroy: true,
+                    })
+                    .build()
+            );
         }
     }
 }

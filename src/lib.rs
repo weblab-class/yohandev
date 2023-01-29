@@ -9,6 +9,7 @@ mod ability;
 mod render;
 mod bullet;
 mod player;
+mod health;
 mod input;
 mod math;
 
@@ -23,10 +24,13 @@ pub fn main() {
     world.spawn((
         physics::Collider::rect(5000.0, 20.0),
         physics::FixedBody::default(),
-        transform::Transform::default(),
+        transform::Transform {
+            translation: vec2!(0.0, 100.0),
+            rotation: 0.0,
+        },
     ));
     world.spawn((
-        physics::Collider::rect(20.0, 200.0),
+        physics::Collider::rect(20.0, 300.0),
         physics::FixedBody::default(),
         transform::Transform::default(),
     ));
@@ -47,15 +51,18 @@ pub fn main() {
         physics::compute_gravity(&mut world, &time);
         physics::compute_kinematics(&mut world, &time);
         physics::resolve_collisions(&mut world, &time);
+        physics::compute_collisions(&mut world);
         transform::networked_position(&mut world, &socket);
         ability::shotgun_controller(&mut world, &time);
         input::network_look_direction(&mut world, &socket);
         input::follow_look_direction(&mut world);
+        health::deal_damage(&mut world, &socket);
         bullet::network_instantiate(&mut world, &socket);
         bullet::despawn_bullets(&mut world, &time);
         render::animate_player_sprites(&mut world);
         render::animate_bullet_sprites(&mut world);
         render::animate_shotgun_sprites(&mut world);
+        render::animate_health_bar_sprites(&mut world);
         render::draw_sprites(&mut world, &canvas);
     });
 }

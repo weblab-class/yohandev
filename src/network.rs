@@ -3,7 +3,7 @@ use hecs::Entity;
 use crate::{
     input::{Input, LookDirection},
     math::Vec2,
-    platform::Connection, ability::AbilityKind
+    platform::Connection
 };
 
 /// Server <-> Client messages.
@@ -26,4 +26,6 @@ pub enum Packet {
     },
     /// Server -> Clients
     EntityLookDirection(Entity, LookDirection),
+    /// Server -> Clients
+    EntityHealth(Entity, f32),
 }

@@ -2,8 +2,8 @@ use hecs::World;
 
 use crate::{
     platform::Canvas,
-    transform::Transform,
-    math::Vec2, ability::Ability
+    transform::{Transform, Parent},
+    math::Vec2, ability::Ability, health::Health
 };
 
 /// A type of [Sprite]
@@ -27,6 +27,10 @@ pub enum Costume {
         position: Vec2<f32>,
         rotation: f32,
     },
+    HealthBar {
+        position: Vec2<f32>,
+        percentage: f32,
+    }
 }
 
 /// Whether a [Sprite] is visible or not.
@@ -73,7 +77,7 @@ pub fn animate_player_sprites(world: &mut World) {
     if cfg!(server) {
         return;
     }
-    for (e, (transform, sprite)) in world.query_mut::<(&Transform, &mut Sprite)>() {
+    for (_, (transform, sprite)) in world.query_mut::<(&Transform, &mut Sprite)>() {
         let Costume::Player { position, scale, lean } = &mut sprite.costume else {
             continue;
         };
@@ -94,7 +98,7 @@ pub fn animate_bullet_sprites(world: &mut World) {
     if cfg!(server) {
         return;
     }
-    for (e, (transform, sprite)) in world.query_mut::<(&Transform, &mut Sprite)>() {
+    for (_, (transform, sprite)) in world.query_mut::<(&Transform, &mut Sprite)>() {
         let Costume::Bullet { position } = &mut sprite.costume else {
             continue;
         };
@@ -126,6 +130,26 @@ pub fn animate_shotgun_sprites(world: &mut World) {
             true => Visibility::Shown,
             false => Visibility::Hidden,
         };
+    }
+}
+
+pub fn animate_health_bar_sprites(world: &mut World) {
+    if cfg!(server) {
+        return;
+    }
+    for (_, (transform, parent, sprite)) in &mut world.query::<(&Transform, &Parent, &mut Sprite)>() {
+        let Costume::HealthBar { position, percentage } = &mut sprite.costume else {
+            continue;
+        };
+        let target = transform.translation;
+        let delta = target - *position;
+
+        // Damp position
+        *position += 0.9 * delta;
+        // Percentage
+        if let Ok(health) = world.get::<&Health>(parent.0) {
+            *percentage = health.now / health.max;
+        }
     }
 }
 

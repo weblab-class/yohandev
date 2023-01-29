@@ -6,7 +6,10 @@ use crate::{
     platform::{ Socket, Time, Connection },
     render::{ Sprite, Costume },
     transform::{ Transform, NetworkPosition },
-    math::vec2, network::Packet, bullet, ability::shotgun_prefab,
+    math::vec2,
+    network::Packet,
+    ability::shotgun_prefab,
+    health::{ Health, self },
 };
 
 /// Component that marks an entity as a player.
@@ -19,10 +22,14 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
         builder.add_bundle((
             Player,
             Sprite::new(Costume::Player {
-                position: vec2!(0.0, 200.0),
+                position: vec2!(0.0, 500.0),
                 scale: vec2!(1.0, 1.0),
                 lean: 0.0,
             }),
+            Health {
+                now: 100.0,
+                max: 100.0,
+            },
             Input::default(),
             Collider::rect(30.0, 50.0),
             Collisions::default(),
@@ -62,8 +69,11 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
             let Packet::PlayerSpawn(e, c) = packet else {
                 continue;
             };
+            // Player:
             world.spawn_at(*e, prefab(&mut Default::default()).build());
-            // TODO: don't hardcode in ability
+            // Health bar:
+            world.spawn(health::gui_prefab(*e).build());
+            // Abilities(TODO: don't hardcode):
             world.spawn(shotgun_prefab(*e).build());
             // Owned entity
             if connection != c {

@@ -24,13 +24,7 @@ impl From<&Transform> for Isometry2<f32> {
 
 /// Component for an entity's parent.
 #[derive(Debug)]
-pub struct Parent(Entity);
-
-impl Parent {
-    pub fn new(parent: Entity) -> Self {
-        Self(parent)
-    }
-}
+pub struct Parent(pub Entity);
 
 /// Component for an entity's position relative to its [Parent].
 #[derive(Debug)]

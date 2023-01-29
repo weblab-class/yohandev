@@ -186,3 +186,28 @@ pub fn resolve_collisions(world: &mut World, time: &Time) {
         }
     }
 }
+
+/// System that computes collisions and stores them in [Collisions]
+pub fn compute_collisions(world: &mut World) {
+    for (e1, (t1, c1, collisions)) in &mut world.query::<(&Transform, &Collider, &mut Collisions)>() {
+        collisions.0.clear();
+        for (e2, (t2, c2)) in &mut world.query::<(&Transform, &Collider)>() {
+            // Don't collide with self!
+            if e1 == e2 {
+                continue;
+            }
+            // Compute collision:
+            let Ok(contact) = query::intersection_test(
+                &(&*t1).into(),
+                c1.deref(),
+                &t2.into(),
+                c2.deref(),
+            ) else {
+                continue;
+            };
+            if contact {
+                collisions.0.push(e2);
+            }
+        }
+    }
+}
