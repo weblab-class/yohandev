@@ -35,7 +35,6 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
             },
             Input::default(),
             Collider::rect(30.0, 50.0),
-            Collisions::default(),
             KinematicBody::default(),
             Grounded::default(),
             Gravity { acceleration: vec2!(0.0, -2500.0) },

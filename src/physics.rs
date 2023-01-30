@@ -5,6 +5,7 @@ use parry2d::{
     shape::{ Cuboid, Ball, Shape },
     query::{self, Contact},
 };
+use smallvec::SmallVec;
 
 use crate::{
     math::{ Vec2, vec2 },
@@ -45,7 +46,7 @@ impl Deref for Collider {
 /// Component that stores *all* entities collided with in the past frame,
 /// for entities that care about it. 
 #[derive(Debug, Default, Clone)]
-pub struct Collisions(pub Vec<Entity>);
+pub struct Collisions(pub SmallVec<[Entity; 8]>);
 
 /// Component for entities whose position is affected by its velocity
 /// and collisions.

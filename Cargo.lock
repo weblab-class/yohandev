@@ -45,6 +45,7 @@ dependencies = [
  "once_cell",
  "parry2d",
  "rudp",
+ "smallvec",
 ]
 
 [[package]]

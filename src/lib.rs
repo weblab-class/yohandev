@@ -57,7 +57,7 @@ pub fn main() {
         ability::gun_controller(&mut world, &time);
         input::network_look_direction(&mut world, &socket);
         input::follow_look_direction(&mut world);
-        health::deal_damage(&mut world, &socket);
+        bullet::impact_and_damage(&mut world, &socket);
         bullet::network_instantiate(&mut world, &socket);
         bullet::despawn_bullets(&mut world, &time);
         render::animate_player_sprites(&mut world);
