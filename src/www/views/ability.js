@@ -10,7 +10,7 @@ import "../styles/ability.css";
 export function AbilityIcon({ id, binding, size=64, ...props }) {
     return (
         <div
-            class="ability-icon"
+            class="ability-icon unselectable"
             style={`width: ${size}px; height: ${size}px;`}
             {...props}
         >
