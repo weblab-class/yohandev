@@ -8,6 +8,7 @@ mod rifle;
 
 /// Complete enumeration of all ability types
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
 pub enum AbilityKind {
     Shotgun,
     AssaultRifle,

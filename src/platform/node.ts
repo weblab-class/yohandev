@@ -1,20 +1,21 @@
 /**
  * Headless platform implementation for node.
  */
-import { GeckosServer, RawMessage, ServerChannel } from "@geckos.io/server";
+import { ChannelId, GeckosServer, RawMessage, ServerChannel } from "@geckos.io/server";
 import {
     Memory, Ref, RefMut, Uninit,
     cstring,
     Packet, Connection,
-    Costume, Visibility,
+    AbilityKind, Costume, Visibility,
     usize, u32, f32, u8, f64,
     instantiate,
 } from "./mod";
 
 export async function game(io: GeckosServer) {
+    const joins: { uuid: string, deck: string[] }[] = [];
     const wasm = await instantiate({
         ...Log.imports(() => wasm.memory),
-        ...Net.imports(() => wasm.memory, io),
+        ...Net.imports(() => wasm.memory, io, joins),
         ...Render.imports(),
         ...Input.imports(),
         ...Time.imports(),
@@ -22,7 +23,13 @@ export async function game(io: GeckosServer) {
     wasm.main();
     setInterval(function loop() {
         wasm.tick();
-    }, 1000/60)
+    }, 1000 / 60);
+
+    return {
+        spawnPlayer(uuid: string, deck: string[]) {
+            joins.push({ uuid, deck });
+        }
+    };
 }
 
 module Log {
@@ -42,7 +49,11 @@ module Log {
 }
 
 module Net {
-    export function imports(mem: () => Memory, io: GeckosServer) {
+    export function imports(
+        mem: () => Memory,
+        io: GeckosServer,
+        joins: { uuid: string, deck: string[] }[]
+    ) {
         // Maps connection IDs to their client channel.
         const clients: { [_: Connection]: ServerChannel } = {};
         // Buffer incoming messages:
@@ -73,6 +84,26 @@ module Net {
             clients[id] = channel;
         });
 
+        /** Find a client from its UUID */
+        function findClient(id: ChannelId): Connection | undefined {
+            for (const [connection, channel] of Object.entries(clients)) {
+                if (channel.id === id) {
+                    return +connection;
+                }
+            }
+        }
+        /** Parse ability kinds */
+        function abilityKind(ability: string): AbilityKind {
+            switch (ability) {
+                case "shotgun": return AbilityKind.Shotgun;
+                case "assault-rifle": return AbilityKind.AssaultRifle;
+                case "dual-gun": return AbilityKind.DualGun;
+                case "shield": return AbilityKind.Shield;
+                default:
+                    // These come from DB, client can't crash the server
+                    throw `Unknown ability kind "${ability}"`;
+            }
+        }
         return {
             net_emit(to: Connection, ptr: Ref<Packet>, len: usize): void {
                 if (!clients.hasOwnProperty(to)) {
@@ -133,6 +164,30 @@ module Net {
 
                 return true;
             },
+            net_poll_joins(
+                who: RefMut<Uninit<Connection>>,
+                ptr: RefMut<Uninit<AbilityKind[]>>
+            ): boolean {
+                if (!joins.length) {
+                    return false;
+                }
+                const { uuid, deck } = joins.shift()!;
+
+                const id = findClient(uuid);
+                const abilities = deck.map((c) => abilityKind(c));
+                if (id === undefined) {
+                    return false;
+                }
+                if (abilities.length != 4) {
+                    throw "Invalid deck!";
+                }
+                // SAFETY:
+                // Caller guarentees the pointer is of correct size.
+                new Uint32Array(mem().buffer, who).set([id]);
+                new Uint32Array(mem().buffer, ptr).set(abilities);
+
+                return true;
+            }
         }
     }
 }

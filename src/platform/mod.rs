@@ -5,6 +5,7 @@ use std::mem::{ MaybeUninit, self };
 use std::ffi::{ CString, c_char };
 use once_cell::unsync::OnceCell;
 
+use crate::ability::AbilityKind;
 use crate::render::{Sprite, Visibility};
 use crate::{
     network::Packet,
@@ -32,6 +33,11 @@ extern {
     ) -> bool;
     fn net_poll_connections(ptr: *mut MaybeUninit<Connection>) -> bool;
     fn net_poll_disconnections(ptr: *mut MaybeUninit<Connection>) -> bool;
+    // Quick n dirty, this is invoked in nodejs only(ie. server)
+    fn net_poll_joins(
+        who: *mut MaybeUninit<Connection>,
+        ptr: *mut MaybeUninit<[AbilityKind; 4]>
+    ) -> bool;
 
     // SAFETY:
     // 1. Lifetime of `ptr` can only be guarenteed for the duration
@@ -133,6 +139,8 @@ pub struct Socket {
     connections: Vec<Connection>,
     /// Buffered new disconnections.
     disconnections: Vec<Connection>,
+    /// Players to spawn.
+    joins: Vec<(Connection, [AbilityKind; 4])>,
 }
 
 /// Unique identifier for a networked connection.
@@ -160,6 +168,7 @@ impl Socket {
         self.recv.clear();
         self.connections.clear();
         self.disconnections.clear();
+        self.joins.clear();
 
         // Packets
         let mut packet = MaybeUninit::uninit();
@@ -191,6 +200,15 @@ impl Socket {
                 conn.assume_init_read()
             });
         }
+        // Player spawns
+        let mut deck = MaybeUninit::uninit();
+        while unsafe { net_poll_joins(&mut conn as _, &mut deck as _) } {
+            self.joins.push(unsafe {
+                // SAFETY:
+                // Poll will return true iff initialized.
+                (conn.assume_init(), deck.assume_init())
+            })
+        }
     }
 
     /// Iterate over the packets received since last tick.
@@ -206,6 +224,11 @@ impl Socket {
     /// Iterate over the disconnections since last tick.
     pub fn disconnections(&self) -> impl Iterator<Item = &Connection> {
         self.disconnections.iter()
+    }
+
+    /// Iterate clients that have hit "join"
+    pub fn joins(&self) -> impl Iterator<Item = &(Connection, [AbilityKind; 4])> {
+        self.joins.iter()
     }
 }
 

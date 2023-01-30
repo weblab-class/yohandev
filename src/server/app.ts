@@ -13,7 +13,7 @@ import fs from "node:fs/promises";
 // @ts-ignore
 import args, { port } from "env";
 
-import { game } from "../platform/node";
+import * as game from "./game";
 import { api } from "./api";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -54,8 +54,6 @@ const io = geckos({ iceServers });
 
 io.addServer(server);
 server.listen(port);
-
-// Create game
-await game(io)
+await game.init(io);
 
 console.log("Success!");

@@ -44,23 +44,27 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
             LookDirection::default(),
         ))
     }
-    // Server spawns player for every connection
     if cfg!(server) {
+        // Server spawns player for every connection
+        for (connection, deck) in socket.joins() {
+            let e = world.spawn(
+                prefab(&mut Default::default())
+                    .add(*connection)
+                    .build()
+            );
+            log::info!("deck: {deck:?}");
+            // TODO: don't hardcode in ability
+            world.spawn(ability::prefab(e, AbilityKind::AssaultRifle).build());
+            // TODO: reliable transport
+            socket.broadcast(&Packet::PlayerSpawn(e, *connection));
+        }
+        // Synchronize world state with every new connection
         for &connection in socket.connections() {
             // Existing players
             for (e, &c) in world.query_mut::<With<&Connection, &Player>>() {
                 // TODO: reliable transport
                 socket.send(connection, &Packet::PlayerSpawn(e, c));
             }
-            let e = world.spawn(
-                prefab(&mut Default::default())
-                    .add(connection)
-                    .build()
-            );
-            // TODO: don't hardcode in ability
-            world.spawn(ability::prefab(e, AbilityKind::AssaultRifle).build());
-            // TODO: reliable transport
-            socket.broadcast(&Packet::PlayerSpawn(e, connection));
         }
     }
     // Client spawns player whenever it's told so

@@ -7,7 +7,7 @@ import {
     Memory, Ref, RefMut, Uninit,
     cstring,
     Packet, Connection,
-    Costume, Visibility,
+    AbilityKind, Costume, Visibility,
     usize, u32, f32, u8, f64,
     instantiate,
 } from "./mod";
@@ -142,6 +142,13 @@ module Net {
                 
                 return true;
             },
+            net_poll_joins(
+                who: RefMut<Uninit<Connection>>,
+                ptr: RefMut<Uninit<AbilityKind[]>>
+            ): boolean {
+                // Node.js only
+                return false;
+            }
         }
     }
 }

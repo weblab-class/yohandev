@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import { verifyToken, findOrCreateUser } from "./auth";
 import { StatsJoinGame, User } from "./model";
+import { instance } from "./game";
 
 export const api = Router();
 
@@ -20,17 +21,28 @@ api.post("/login", async (req, res) => {
 
 api.post("/join-game", async (req, res) => {
     const user = req.session["user"];
-    console.log(req.body);
-    if (!req.body.uuid) {
+    const uuid = req.body.uuid;
+    // Default deck(not logged in)
+    let deck = [
+        "shotgun",
+        "shotgun",
+        "shotgun",
+        "shotgun",
+    ];
+    
+    if (!uuid) {
         // Client sends its own WebRTC ID
         return res.status(400).send({
             reason: "No UUID!"
         });
     }
-    
     if (user) {
+        // Stats
         new StatsJoinGame({ gid: user.gid }).save();
+        // Deck
+        deck = user.deck;
     }
+    instance.spawnPlayer(uuid, deck);
     res.send({});
 });
 

@@ -36,6 +36,13 @@ export type Packet = void;
 /** Unique identifier for a channel. */
 export type Connection = number;
 
+export enum AbilityKind {
+    Shotgun,
+    AssaultRifle,
+    DualGun,
+    Shield,
+}
+
 export enum Costume {
     Player,
     Bullet,
@@ -61,7 +68,10 @@ export interface Imports extends WebAssembly.ModuleImports {
     ): boolean;
     net_poll_connections(ptr: RefMut<Uninit<Connection>>): boolean;
     net_poll_disconnections(ptr: RefMut<Uninit<Connection>>): boolean;
-
+    net_poll_joins(
+        who: RefMut<Uninit<Connection>>,
+        ptr: RefMut<Uninit<AbilityKind[]>>
+    ): boolean;
     render_new_sprite(ptr: Ref<Costume>): u32;
     render_update_sprite(handle: u32, ptr: Ref<Costume>, visibility: Visibility);
     render_drop_sprite(handle: u32);
