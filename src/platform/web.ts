@@ -215,10 +215,13 @@ module Render {
                                 .group()
                                 .add(draw
                                     .image("assets/weapons/dual-gun.svg")
+                                    .x(70)
                                     .scale(0.2, -0.2)
-                                    .x(100))
+                                    .width(117)
+                                    .height(80)
+                                )
                                 // Pivot hack
-                                .add(draw.circle(1).x(-20).opacity(0));
+                                .add(draw.circle(1).opacity(0));
                         case Costume.HealthBar:
                             return draw
                                 .group()
