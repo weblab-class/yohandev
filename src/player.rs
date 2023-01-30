@@ -1,7 +1,7 @@
-use hecs::{World, EntityBuilder, With};
+use hecs::{ World, EntityBuilder };
 
 use crate::{
-    physics::{ KinematicBody, Grounded, Collider, Collisions, Gravity },
+    physics::{ KinematicBody, Grounded, Collider, Gravity },
     input::{Input, LookDirection},
     platform::{ Socket, Time, Connection },
     render::{ Sprite, Costume },
@@ -56,7 +56,7 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
                     .build()
             );
             for (i, kind) in deck.iter().enumerate() {
-                world.spawn(ability::prefab(e, i, *kind).build());
+                ability::instantiate(world, e, i, *kind);
             }
             // TODO: reliable transport
             socket.broadcast(&Packet::PlayerSpawn(e, *connection, *deck));
@@ -82,7 +82,7 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
             world.spawn(health::gui_prefab(*e).build());
             // Abilities:
             for (i, kind) in deck.iter().enumerate() {
-                world.spawn(ability::prefab(*e, i, *kind).build());
+                ability::instantiate(world, *e, i, *kind);
             }
             // Owned entity
             if connection != c {

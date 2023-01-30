@@ -6,7 +6,7 @@ use crate::{
     transform::Transform,
     network::Packet,
     platform::{ Socket, Time },
-    render::{ Sprite, Costume }, health::{Damage, Health},
+    render::{ Sprite, Costume }, health::{Damage, Health}, ability::{Shield, Ability, self},
 };
 
 // TODO: this is a lazy workaround for now, but a system like this could be
@@ -103,6 +103,12 @@ pub fn impact_and_damage(world: &mut World, socket: &Socket) {
                     continue;
                 }
             }
+            // Ignore inactive abilities(ie. shields)
+            if let Ok(ability) = world.get::<&Ability>(e2) {
+                if !ability.active {
+                    continue;
+                }
+            }
             // Destroy
             if damage.destroy && destroy.last() != Some(&e1) {
                 // No bullet/bullet collisions
@@ -131,6 +137,13 @@ pub fn impact_and_damage(world: &mut World, socket: &Socket) {
                 if matches!(world.satisfies::<&FixedBody>(e2), Ok(true)) {
                     destroy.push(e);
                     break;
+                }
+                let Ok(mut q) = world.query_one::<With<&Ability, &Shield>>(e2) else {
+                    continue;
+                };
+                if matches!(q.get(), Some(Ability { active: true, .. })) {
+                    destroy.push(e);
+                    break;    
                 }
             }
         }

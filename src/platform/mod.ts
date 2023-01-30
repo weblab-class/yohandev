@@ -50,6 +50,7 @@ export enum Costume {
     HealthBar,
     AssaultRifle,
     DualGun,
+    Shield,
 }
 export enum Visibility {
     Shown,

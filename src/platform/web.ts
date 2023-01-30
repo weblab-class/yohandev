@@ -227,6 +227,15 @@ module Render {
                                 .group()
                                 .add(draw.rect(40, 10).fill("grey"))
                                 .add(draw.rect(40, 10).fill("red"));
+                        case Costume.Shield:
+                            return draw
+                                .group()
+                                // .add(draw.rect(10, 40))
+                                .add(draw
+                                    .image("assets/weapons/shield.svg")
+                                    .width(40)
+                                    .height(40)
+                                );
                     }
                 };
                 return cache.add(element());
@@ -252,6 +261,7 @@ module Render {
                     case Costume.AssaultRifle:
                     case Costume.DualGun:
                     case Costume.HealthBar:
+                    case Costume.Shield:
                         element
                             .cx(args[0])
                             .cy(args[1]);
@@ -261,6 +271,7 @@ module Render {
                     case Costume.Shotgun:
                     case Costume.AssaultRifle:
                     case Costume.DualGun:
+                    case Costume.Shield:
                         element.transform({
                             rotate: 180 / Math.PI * args[2],
                             scaleY: Math.abs(args[2]) > Math.PI / 2 ? -1 : 1,

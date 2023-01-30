@@ -39,6 +39,10 @@ pub enum Costume {
         position: Vec2<f32>,
         rotation: f32,
     },
+    Shield {
+        position: Vec2<f32>,
+        rotation: f32,
+    }
 }
 
 /// Whether a [Sprite] is visible or not.
@@ -118,7 +122,7 @@ pub fn animate_bullet_sprites(world: &mut World) {
     }
 }
 
-pub fn animate_basic_gun_sprites(world: &mut World) {
+pub fn animate_handheld_sprites(world: &mut World) {
     if cfg!(server) {
         return;
     }
@@ -127,6 +131,7 @@ pub fn animate_basic_gun_sprites(world: &mut World) {
             Costume::Shotgun { position, rotation } => (position, rotation),
             Costume::AssaultRifle { position, rotation } => (position, rotation),
             Costume::DualGun { position, rotation } => (position, rotation),
+            Costume::Shield { position, rotation } => (position, rotation),
             _ => {
                 continue;
             }

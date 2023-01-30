@@ -27,7 +27,7 @@ api.post("/join-game", async (req, res) => {
         "shotgun",
         "dual-gun",
         "assault-rifle",
-        "shotgun",
+        "shield",
     ];
     
     if (!uuid) {

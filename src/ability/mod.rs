@@ -1,6 +1,7 @@
 pub use gun::*;
+pub use shield::{ Shield, position_shield };
 
-use hecs::{ Entity, EntityBuilder, World };
+use hecs::{ Entity, World };
 
 use crate::{platform::Socket, input::Input, network::Packet};
 
@@ -8,6 +9,7 @@ mod gun;
 mod shotgun;
 mod rifle;
 mod pistols;
+mod shield;
 
 /// Complete enumeration of all ability types
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -30,12 +32,12 @@ pub struct Ability {
     pub active: bool,
 }
 
-pub fn prefab(owner: Entity, binding: usize, kind: AbilityKind) -> EntityBuilder {
+pub fn instantiate(world: &mut World, owner: Entity, binding: usize, kind: AbilityKind) -> Entity {
     match kind {
-        AbilityKind::Shotgun => shotgun::prefab(owner, binding),
-        AbilityKind::AssaultRifle => rifle::prefab(owner, binding),
-        AbilityKind::DualGun => pistols::prefab(owner, binding),
-        AbilityKind::Shield => todo!(),
+        AbilityKind::Shotgun => shotgun::instantiate(world, owner, binding),
+        AbilityKind::AssaultRifle => rifle::instantiate(world, owner, binding),
+        AbilityKind::DualGun => pistols::instantiate(world, owner, binding),
+        AbilityKind::Shield => shield::instantiate(world, owner, binding),
     }
 }
 

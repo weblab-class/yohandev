@@ -48,6 +48,7 @@ pub fn main() {
             player::platformer_controller(&mut world, &time);
         }
         transform::local_to_world(&mut world);
+        ability::position_shield(&mut world);
         physics::compute_gravity(&mut world, &time);
         physics::compute_kinematics(&mut world, &time);
         physics::resolve_collisions(&mut world, &time);
@@ -62,7 +63,7 @@ pub fn main() {
         bullet::despawn_bullets(&mut world, &time);
         render::animate_player_sprites(&mut world);
         render::animate_bullet_sprites(&mut world);
-        render::animate_basic_gun_sprites(&mut world);
+        render::animate_handheld_sprites(&mut world);
         render::animate_health_bar_sprites(&mut world);
         render::draw_sprites(&mut world, &canvas);
     });

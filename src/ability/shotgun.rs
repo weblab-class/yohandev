@@ -1,4 +1,4 @@
-use hecs::{ EntityBuilder, Entity };
+use hecs::{ Entity, World };
 
 use crate::{
     ability::{ Ability, Gun, Cooldown },
@@ -10,10 +10,8 @@ use crate::{
     bullet, physics::KinematicBody,
 };
 
-pub fn prefab(owner: Entity, binding: usize) -> EntityBuilder {
-    let mut builder = EntityBuilder::new();
-    
-    builder.add_bundle((
+pub fn instantiate(world: &mut World, owner: Entity, binding: usize) -> Entity {
+    world.spawn((
         Ability {
             owner,
             binding,
@@ -52,6 +50,5 @@ pub fn prefab(owner: Entity, binding: usize) -> EntityBuilder {
         Parent(owner),
         FollowLookDirection(owner),
         LocalPosition(vec2!(0.0, 0.0)),
-    ));
-    builder
+    ))
 }

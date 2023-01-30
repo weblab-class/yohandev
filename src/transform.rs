@@ -4,7 +4,7 @@ use hecs::{ World, With, Entity };
 use crate::{
     platform::Socket,
     network::Packet,
-    math::Vec2,
+    math::{ Vec2, Rot2 },
 };
 
 /// Component for an entity's global transform.
@@ -70,7 +70,7 @@ pub fn local_to_world(world: &mut World) {
             }) else {
                 continue;
             };
-            transform.translation = target.translation + position.0;
+            transform.translation = target.translation + Rot2::new(target.rotation) * position.0;
         }
     }
 }
