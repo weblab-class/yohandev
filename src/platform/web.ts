@@ -296,12 +296,13 @@ module Input {
                 x: ["ArrowLeft", "ArrowRight"],
                 y: ["ArrowDown", "ArrowUp"],
             },
-            buttons: [
-                ["1", "Mouse0"],
-                ["2", "Mouse2"],
-                ["3"],
-                ["4"],
-            ]
+            buttons: {
+                fire: "Mouse0",
+                ability0: "1",
+                ability1: "2",
+                ability2: "3",
+                ability3: "4",
+            },
         };
         // Buffer key presses and their timing(negative is release).
         const buf: { [key: string]: number } = {};
@@ -356,11 +357,18 @@ module Input {
             input_get_ay(): f32 {
                 return emulateJoystick(origin.x, origin.y).y;
             },
-            input_get_button(i: usize): boolean {
-                if (i >= bindings.buttons.length) {
+            input_get_fire(): boolean {
+                return buf[bindings.buttons.fire] > 0;
+            },
+            input_get_ability(i: usize): boolean {
+                if (i < 0 || i > 3) {
                     return false;
                 }
-                return bindings.buttons[i].some((b) => buf[b] > 0)
+                const last = ["ability0", "ability1", "ability2", "ability3"]
+                    .map((k) => buf[bindings.buttons[k]] ?? 0)
+                    .map((p, i) => [Math.abs(p), i])
+                    .sort(([a, _], [b, __]) => a - b)[3][1];
+                return last === i;
             },
             input_set_player_position(x: f32, y: f32): void {
                 // if (controls is joystick) return

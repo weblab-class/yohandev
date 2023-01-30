@@ -81,7 +81,8 @@ export interface Imports extends WebAssembly.ModuleImports {
     input_get_dy(): f32;
     input_get_ax(): f32;
     input_get_ay(): f32;
-    input_get_button(i: usize): boolean;
+    input_get_fire(): boolean;
+    input_get_ability(i: usize): boolean;
     input_set_player_position(x: f32, y: f32): void;
 
     time_now(): u32;

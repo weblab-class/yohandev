@@ -50,7 +50,8 @@ extern {
     fn input_get_dy() -> f32;
     fn input_get_ax() -> f32;
     fn input_get_ay() -> f32;
-    fn input_get_button(i: usize) -> bool;
+    fn input_get_fire() -> bool;
+    fn input_get_ability(i: usize) -> bool;
     fn input_set_player_position(x: f32, y: f32);
 
     fn time_now() -> u32;
@@ -279,10 +280,17 @@ impl Gamepad {
         }
     }
 
-    /// Get whether the `ith` button is down right now
-    pub fn button(&self, i: usize) -> bool {
+    /// Get whether the `ith` ability button is down right now
+    pub fn ability(&self, i: usize) -> bool {
         unsafe {
-            input_get_button(i)
+            input_get_ability(i)
+        }
+    }
+
+    /// Get whether the user is firing right now
+    pub fn fire(&self) -> bool {
+        unsafe {
+            input_get_fire()
         }
     }
 

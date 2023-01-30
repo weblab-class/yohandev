@@ -19,7 +19,9 @@ pub struct Input {
     /// Attack direction Y component(quantized)
     ay: i8,
     /// Ability buttons(bitfield)
-    btn: u8,
+    ability: u8,
+    /// Fire button
+    fire: bool,
 }
 
 impl Input {
@@ -47,9 +49,14 @@ impl Input {
         self.ay.max(-Self::MAX) as f32 / Self::MAX as f32
     }
 
-    /// Get the `ith` button input
-    pub fn button(&self, i: usize) -> bool {
-        (self.btn & (1 << i)) != 0
+    /// Get the `ith` abilty button input
+    pub fn ability(&self, i: usize) -> bool {
+        (self.ability & (1 << i)) != 0
+    }
+
+    /// Is the player fring right now?
+    pub fn fire(&self) -> bool {
+        self.fire
     }
 
     pub fn move_axis(&self) -> Vec2<f32> {
@@ -82,9 +89,10 @@ pub fn update(world: &mut World, gamepad: &Gamepad) {
         dy: (MAX * gamepad.dy()) as _,
         ax: (MAX * gamepad.ax()) as _,
         ay: (MAX * gamepad.ay()) as _,
-        btn: (0..8)
-            .map(|i| (gamepad.button(i) as u8) << i)
+        ability: (0..8)
+            .map(|i| (gamepad.ability(i) as u8) << i)
             .fold(0, |accum, btn| accum | btn),
+        fire: gamepad.fire(),
     };
 
     for (_, input) in world.query_mut::<&mut Input>() {

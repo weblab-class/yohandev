@@ -41,7 +41,7 @@ pub fn gun_controller(world: &mut World, time: &Time) {
         // Cooldown
         cooldown.0 -= time.dt();
         // Shooting
-        if ability.active && cooldown.0 <= 0.0 && input.button(0) {
+        if ability.active && cooldown.0 <= 0.0 && input.fire() {
             shots.push((gun.shoot, ability.owner, transform.translation, input.look_axis()));
             *cooldown = gun.cooldown;
         }

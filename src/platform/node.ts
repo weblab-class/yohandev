@@ -228,7 +228,11 @@ module Input {
                 // Node is headless!
                 return 0.0;
             },
-            input_get_button(_: usize): boolean {
+            input_get_fire(): boolean {
+                // Node is headless!
+                return false;
+            },
+            input_get_ability(i: usize): boolean {
                 // Node is headless!
                 return false;
             },

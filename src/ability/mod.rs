@@ -45,7 +45,7 @@ pub fn toggle_abilities(world: &mut World, socket: &Socket) {
     if cfg!(server) {
         for (e, input) in &mut world.query::<&Input>() {
             // Chosen ability
-            let chosen = (0..4).find(|&i| input.button(i));
+            let chosen = (0..4).find(|&i| input.ability(i));
 
             for (_, ability) in &mut world.query::<&mut Ability>() {
                 if ability.owner != e {
