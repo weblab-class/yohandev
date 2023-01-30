@@ -3,7 +3,7 @@ use hecs::Entity;
 use crate::{
     input::{Input, LookDirection},
     math::Vec2,
-    platform::Connection
+    platform::Connection, ability::AbilityKind
 };
 
 /// Server <-> Client messages.
@@ -12,7 +12,7 @@ use crate::{
 #[derive(Debug, Clone)]
 pub enum Packet {
     /// Server -> Clients
-    PlayerSpawn(Entity, Connection),
+    PlayerSpawn(Entity, Connection, [AbilityKind; 4]),
     /// Server -> Clients
     PlayerDespawn(Entity),
     /// Client -> Server
@@ -28,4 +28,5 @@ pub enum Packet {
     EntityLookDirection(Entity, LookDirection),
     /// Server -> Clients
     EntityHealth(Entity, f32),
+    PlayerToggleAbility(Entity, Option<usize>),
 }

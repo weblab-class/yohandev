@@ -10,14 +10,14 @@ use crate::{
     bullet,
 };
 
-pub fn prefab(owner: Entity) -> EntityBuilder {
+pub fn prefab(owner: Entity, binding: usize,) -> EntityBuilder {
     let mut builder = EntityBuilder::new();
     
     builder.add_bundle((
         Ability {
             owner,
-            // TODO: ability switcher, this should be false.
-            active: true,
+            binding,
+            active: false,
         },
         Gun {
             // TODO these should come from `abilities.toml`

@@ -25,8 +25,8 @@ api.post("/join-game", async (req, res) => {
     // Default deck(not logged in)
     let deck = [
         "shotgun",
-        "shotgun",
-        "shotgun",
+        "dual-gun",
+        "assault-rifle",
         "shotgun",
     ];
     

@@ -13,14 +13,17 @@ use crate::{
 };
 
 /// Component that marks an entity as a player.
-pub struct Player;
+pub struct Player {
+    deck: [AbilityKind; 4],
+}
 
 /// System that instantiates players over the network.
 pub fn networked_instantiate(world: &mut World, socket: &Socket) {
     /// Prefab for a player entity
-    fn prefab(builder: &mut EntityBuilder) -> &mut EntityBuilder {
+    fn prefab(deck: [AbilityKind; 4]) -> EntityBuilder {
+        let mut builder = EntityBuilder::new();
         builder.add_bundle((
-            Player,
+            Player { deck },
             Sprite::new(Costume::Player {
                 position: vec2!(0.0, 500.0),
                 scale: vec2!(1.0, 1.0),
@@ -42,43 +45,46 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
             },
             NetworkPosition::default(),
             LookDirection::default(),
-        ))
+        ));
+        builder
     }
     if cfg!(server) {
         // Server spawns player for every connection
         for (connection, deck) in socket.joins() {
             let e = world.spawn(
-                prefab(&mut Default::default())
+                prefab(*deck)
                     .add(*connection)
                     .build()
             );
-            log::info!("deck: {deck:?}");
-            // TODO: don't hardcode in ability
-            world.spawn(ability::prefab(e, AbilityKind::DualGun).build());
+            for (i, kind) in deck.iter().enumerate() {
+                world.spawn(ability::prefab(e, i, *kind).build());
+            }
             // TODO: reliable transport
-            socket.broadcast(&Packet::PlayerSpawn(e, *connection));
+            socket.broadcast(&Packet::PlayerSpawn(e, *connection, *deck));
         }
         // Synchronize world state with every new connection
         for &connection in socket.connections() {
             // Existing players
-            for (e, &c) in world.query_mut::<With<&Connection, &Player>>() {
+            for (e, (c, player)) in world.query_mut::<(&Connection, &Player)>() {
                 // TODO: reliable transport
-                socket.send(connection, &Packet::PlayerSpawn(e, c));
+                socket.send(connection, &Packet::PlayerSpawn(e, *c, player.deck));
             }
         }
     }
     // Client spawns player whenever it's told so
     if cfg!(client) {
         for (connection, packet) in socket.packets() {
-            let Packet::PlayerSpawn(e, c) = packet else {
+            let Packet::PlayerSpawn(e, c, deck) = packet else {
                 continue;
             };
             // Player:
-            world.spawn_at(*e, prefab(&mut Default::default()).build());
+            world.spawn_at(*e, prefab(*deck).build());
             // Health bar:
             world.spawn(health::gui_prefab(*e).build());
-            // Abilities(TODO: don't hardcode):
-            world.spawn(ability::prefab(*e, AbilityKind::DualGun).build());
+            // Abilities:
+            for (i, kind) in deck.iter().enumerate() {
+                world.spawn(ability::prefab(*e, i, *kind).build());
+            }
             // Owned entity
             if connection != c {
                 world.remove_one::<Input>(*e).unwrap();

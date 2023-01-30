@@ -53,6 +53,7 @@ pub fn main() {
         physics::resolve_collisions(&mut world, &time);
         physics::compute_collisions(&mut world);
         transform::networked_position(&mut world, &socket);
+        ability::toggle_abilities(&mut world, &socket);
         ability::gun_controller(&mut world, &time);
         input::network_look_direction(&mut world, &socket);
         input::follow_look_direction(&mut world);
