@@ -210,6 +210,15 @@ module Render {
                                     .image("assets/weapons/assault-rifle.svg")
                                     .scale(0.2, -0.2)
                                 );
+                        case Costume.DualGun:
+                            return draw
+                                .group()
+                                .add(draw
+                                    .image("assets/weapons/dual-gun.svg")
+                                    .scale(0.2, -0.2)
+                                    .x(100))
+                                // Pivot hack
+                                .add(draw.circle(1).x(-20).opacity(0));
                         case Costume.HealthBar:
                             return draw
                                 .group()
@@ -238,6 +247,7 @@ module Render {
                     case Costume.Bullet:
                     case Costume.Shotgun:
                     case Costume.AssaultRifle:
+                    case Costume.DualGun:
                     case Costume.HealthBar:
                         element
                             .cx(args[0])
@@ -247,6 +257,7 @@ module Render {
                 switch (tag) {
                     case Costume.Shotgun:
                     case Costume.AssaultRifle:
+                    case Costume.DualGun:
                         element.transform({
                             rotate: 180 / Math.PI * args[2],
                             scaleY: Math.abs(args[2]) > Math.PI / 2 ? -1 : 1,
@@ -265,7 +276,6 @@ module Render {
                     element
                         .last()
                         .width(args[2] * 40);
-                    // console.log(args[2]);
                 }
             },
             render_drop_sprite(handle: u32) {

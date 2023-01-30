@@ -54,7 +54,7 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
             );
             log::info!("deck: {deck:?}");
             // TODO: don't hardcode in ability
-            world.spawn(ability::prefab(e, AbilityKind::AssaultRifle).build());
+            world.spawn(ability::prefab(e, AbilityKind::DualGun).build());
             // TODO: reliable transport
             socket.broadcast(&Packet::PlayerSpawn(e, *connection));
         }
@@ -78,7 +78,7 @@ pub fn networked_instantiate(world: &mut World, socket: &Socket) {
             // Health bar:
             world.spawn(health::gui_prefab(*e).build());
             // Abilities(TODO: don't hardcode):
-            world.spawn(ability::prefab(*e, AbilityKind::AssaultRifle).build());
+            world.spawn(ability::prefab(*e, AbilityKind::DualGun).build());
             // Owned entity
             if connection != c {
                 world.remove_one::<Input>(*e).unwrap();

@@ -34,7 +34,11 @@ pub enum Costume {
     AssaultRifle {
         position: Vec2<f32>,
         rotation: f32,
-    }
+    },
+    DualGun {
+        position: Vec2<f32>,
+        rotation: f32,
+    },
 }
 
 /// Whether a [Sprite] is visible or not.
@@ -122,6 +126,7 @@ pub fn animate_basic_gun_sprites(world: &mut World) {
         let (position, rotation) = match &mut sprite.costume {
             Costume::Shotgun { position, rotation } => (position, rotation),
             Costume::AssaultRifle { position, rotation } => (position, rotation),
+            Costume::DualGun { position, rotation } => (position, rotation),
             _ => {
                 continue;
             }
