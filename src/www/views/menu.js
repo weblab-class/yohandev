@@ -36,7 +36,6 @@ export function Menu({ startGame, ...props }) {
         POST("/api/edit-deck", { added, removed });
     }, []);
     const onPlay = useCallback(() => {
-        POST("/api/join-game");
         // Fade-out
         ref.current?.classList.add("fade-out");
         // Disappear

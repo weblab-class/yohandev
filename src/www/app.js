@@ -7,16 +7,17 @@ import { Menu } from "./views/menu";
 import "./styles/root.css";
 
 function App() {
-    const [showMenu, setShowMenu] = useState(true);
+    const [playing, setPlaying] = useState(false);
     const [deck, setDeck] = useState([]);
+
     return (
         <div class="overlap">
-            <Game deck={deck}/>
-            {showMenu && (
+            <Game deck={deck} playing={playing}/>
+            {!playing && (
                 <Menu
                     class="z:100"
                     startGame={(deck) => {
-                        setShowMenu(false);
+                        setPlaying(true);
                         setDeck(deck);
                     }}
                 />

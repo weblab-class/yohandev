@@ -1,7 +1,7 @@
 /**
  * Platform implementation for a web browser.
  */
-import { geckos, RawMessage } from "@geckos.io/client";
+import { geckos, RawMessage, ClientChannel, ChannelId } from "@geckos.io/client";
 import { Shape, Svg, SVG } from "@svgdotjs/svg.js";
 import {
     Memory, Ref, RefMut, Uninit,
@@ -14,9 +14,10 @@ import {
 
 export async function game(port: number) {
     const draw = SVG();
+    const channel = geckos({ port });
     const wasm = await instantiate({
         ...Log.imports(() => wasm.memory),
-        ...Net.imports(() => wasm.memory, port),
+        ...Net.imports(() => wasm.memory, channel),
         ...Render.imports(() => wasm.memory, draw),
         ...Input.imports(),
         ...Time.imports(),
@@ -26,11 +27,14 @@ export async function game(port: number) {
         requestAnimationFrame(loop);
         wasm.tick();
     });
-
+    console.log(channel.id);
     return {
         hook(node: HTMLElement): void {
             draw.addTo(node);
-        }
+        },
+        uuid(): ChannelId {
+            return channel.id;
+        },
     }
 }
 
@@ -51,8 +55,7 @@ module Log {
 }
 
 module Net {
-    export function imports(mem: () => Memory, port: number = 8000) {
-        const channel = geckos({ port });
+    export function imports(mem: () => Memory, channel: ClientChannel) {
         // Buffer incoming messages:
         const rx: RawMessage[] = [];
         

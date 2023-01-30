@@ -20,6 +20,14 @@ api.post("/login", async (req, res) => {
 
 api.post("/join-game", async (req, res) => {
     const user = req.session["user"];
+    console.log(req.body);
+    if (!req.body.uuid) {
+        // Client sends its own WebRTC ID
+        return res.status(400).send({
+            reason: "No UUID!"
+        });
+    }
+    
     if (user) {
         new StatsJoinGame({ gid: user.gid }).save();
     }
