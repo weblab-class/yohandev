@@ -1,4 +1,4 @@
-use hecs::{ World, EntityBuilder };
+use hecs::{ World, EntityBuilder, Entity };
 
 use crate::{
     physics::{ KinematicBody, Grounded, Collider, Gravity },
@@ -7,7 +7,7 @@ use crate::{
     render::{ Sprite, Costume },
     transform::{ Transform, NetworkPosition, Parent },
     math::vec2,
-    network::Packet,
+    network::{Packet, NetEntities},
     ability::{ AbilityKind, self, Ability },
     health::{ Health, self },
 };
@@ -17,44 +17,48 @@ pub struct Player {
     deck: [AbilityKind; 4],
 }
 
+/// Prefab for a player entity
+fn prefab(deck: [AbilityKind; 4]) -> EntityBuilder {
+    let mut builder = EntityBuilder::new();
+    builder.add_bundle((
+        Player { deck },
+        Sprite::new(Costume::Player {
+            position: vec2!(0.0, 500.0),
+            scale: vec2!(1.0, 1.0),
+            lean: 0.0,
+        }),
+        Health {
+            now: 100.0,
+            max: 100.0,
+        },
+        Input::default(),
+        Collider::rect(30.0, 50.0),
+        KinematicBody::default(),
+        Grounded::default(),
+        Gravity { acceleration: vec2!(0.0, -2500.0) },
+        Transform {
+            translation: vec2!(0.0, 200.0),
+            rotation: 0.0,
+        },
+        NetworkPosition::default(),
+        LookDirection::default(),
+    ));
+    builder
+}
+
 /// System that instantiates players over the network.
-pub fn networked_instantiate(world: &mut World, socket: &Socket) {
-    /// Prefab for a player entity
-    fn prefab(deck: [AbilityKind; 4]) -> EntityBuilder {
-        let mut builder = EntityBuilder::new();
-        builder.add_bundle((
-            Player { deck },
-            Sprite::new(Costume::Player {
-                position: vec2!(0.0, 500.0),
-                scale: vec2!(1.0, 1.0),
-                lean: 0.0,
-            }),
-            Health {
-                now: 100.0,
-                max: 100.0,
-            },
-            Input::default(),
-            Collider::rect(30.0, 50.0),
-            KinematicBody::default(),
-            Grounded::default(),
-            Gravity { acceleration: vec2!(0.0, -2500.0) },
-            Transform {
-                translation: vec2!(0.0, 200.0),
-                rotation: 0.0,
-            },
-            NetworkPosition::default(),
-            LookDirection::default(),
-        ));
-        builder
-    }
+pub fn networked_instantiate(
+    world: &mut World,
+    socket: &Socket,
+    reserved: &mut impl Iterator<Item = Entity>
+) {
     if cfg!(server) {
         // Server spawns player for every connection
         for (connection, deck) in socket.joins() {
-            let e = world.spawn(
-                prefab(*deck)
-                    .add(*connection)
-                    .build()
-            );
+            let e = reserved.next().unwrap_or_else(|| world.reserve_entity());
+            // Player
+            world.spawn_at(e, prefab(*deck).add(*connection).build());
+            // Abilities
             for (i, kind) in deck.iter().enumerate() {
                 ability::instantiate(world, e, i, *kind);
             }

@@ -19,6 +19,10 @@ pub fn main() {
     let mut time = Time::default();
     let canvas = Canvas::default();
     let input = Gamepad::default();
+    let mut reserved = world
+        .reserve_entities(512)
+        .collect::<Vec<_>>()
+        .into_iter();
 
     // Test game level
     world.spawn((
@@ -39,7 +43,7 @@ pub fn main() {
         socket.poll();
         time.poll();
 
-        player::networked_instantiate(&mut world, &socket);
+        player::networked_instantiate(&mut world, &socket, &mut reserved);
         player::networked_despawn(&mut world, &socket);
         input::update(&mut world, &input);
         input::network_player_commands(&mut world, &socket);

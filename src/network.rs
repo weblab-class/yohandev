@@ -6,6 +6,9 @@ use crate::{
     platform::Connection, ability::AbilityKind
 };
 
+/// Shorthand for iterator of reserved entity IDs
+pub trait NetEntities: Iterator<Item = Entity> { }
+
 /// Server <-> Client messages.
 /// TODO: serialize these since each variant has differnet width, the
 /// raw byte repr is not suitable over the wire
