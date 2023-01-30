@@ -5,10 +5,10 @@ use crate::{
     input::{Input, LookDirection},
     platform::{ Socket, Time, Connection },
     render::{ Sprite, Costume },
-    transform::{ Transform, NetworkPosition },
+    transform::{ Transform, NetworkPosition, Parent },
     math::vec2,
     network::Packet,
-    ability::{ AbilityKind, self },
+    ability::{ AbilityKind, self, Ability },
     health::{ Health, self },
 };
 
@@ -105,7 +105,17 @@ pub fn networked_despawn(world: &mut World, socket: &Socket) {
                     continue;
                 };
             world.despawn(e).unwrap();
-            // TODO: reliable transprot
+            // Abilities
+            let mut destroy = Vec::new();
+            for (e2, ability) in world.query_mut::<&Ability>() {
+                if ability.owner == e {
+                    destroy.push(e2);
+                }
+            }
+            for e in destroy {
+                world.despawn(e).unwrap();
+            }
+            // TODO: reliable transport
             socket.broadcast(&Packet::PlayerDespawn(e));
         }
     }
@@ -117,6 +127,25 @@ pub fn networked_despawn(world: &mut World, socket: &Socket) {
             };
             if let Err(_) = world.despawn(*e) {
                 log::warn!("Server tried to despawn a dead entity");
+            }
+            // Abilities
+            let mut destroy = Vec::new();
+            for (e2, ability) in world.query_mut::<&Ability>() {
+                if ability.owner == *e {
+                    destroy.push(e2);
+                }
+            }
+            // Healthbar
+            for (e2, (parent, sprite)) in world.query_mut::<(&Parent, &Sprite)>() {
+                let Costume::HealthBar { .. } = &sprite.costume else {
+                    continue;
+                };
+                if parent.0 == *e {
+                    destroy.push(e2);
+                }
+            }
+            for e in destroy {
+                world.despawn(e).unwrap();
             }
         }
     }
