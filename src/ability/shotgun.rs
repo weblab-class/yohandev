@@ -7,7 +7,7 @@ use crate::{
     math::{ Rot2, vec2 },
     input::FollowLookDirection,
     health::Damage,
-    bullet,
+    bullet, physics::KinematicBody,
 };
 
 pub fn prefab(owner: Entity, binding: usize) -> EntityBuilder {
@@ -32,10 +32,14 @@ pub fn prefab(owner: Entity, binding: usize) -> EntityBuilder {
                         exclude: Some(owner),
                         destroy: true,
                     };
-                    world.spawn(bullet::prefab(origin, velocity)
+                    world.spawn(bullet::prefab(origin, velocity, 0.3)
                         .add(damage)
                         .build()
                     );
+                }
+                // Recoil
+                if let Ok(mut kb) = world.get::<&mut KinematicBody>(owner) {
+                    kb.velocity -= velocity * 250.0;
                 }
             },
         },

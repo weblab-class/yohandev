@@ -18,7 +18,7 @@ struct Payload(Option<Packet>);
 struct BulletLifetime(f32);
 
 /// Create a bullet locally
-pub fn prefab(origin: Vec2<f32>, velocity: Vec2<f32>) -> EntityBuilder {
+pub fn prefab(origin: Vec2<f32>, velocity: Vec2<f32>, ttl: f32) -> EntityBuilder {
     let mut builder = EntityBuilder::new();
     
     builder.add_bundle((
@@ -31,13 +31,14 @@ pub fn prefab(origin: Vec2<f32>, velocity: Vec2<f32>) -> EntityBuilder {
             translation: origin,
             ..Default::default()
         },
-        BulletLifetime(2.0),
+        BulletLifetime(ttl),
     ));
     // Replicate on the network.
     if cfg!(server) {
         builder.add(Payload(Some(Packet::ProjectileSpawn {
             origin,
-            velocity
+            velocity,
+            ttl
         })));
     }
     builder
@@ -57,10 +58,10 @@ pub fn network_instantiate(world: &mut World, socket: &Socket) {
     // Client spawns whatever it's told to
     if cfg!(client) {
         for (_, packet) in socket.packets() {
-            let Packet::ProjectileSpawn { origin, velocity } = packet else {
+            let Packet::ProjectileSpawn { origin, velocity, ttl } = packet else {
                 continue;
             };
-            world.spawn(prefab(*origin, *velocity).build());
+            world.spawn(prefab(*origin, *velocity, *ttl).build());
         }
     }
 }

@@ -30,7 +30,7 @@ pub fn prefab(owner: Entity, binding: usize,) -> EntityBuilder {
                     exclude: Some(owner),
                     destroy: true,
                 };
-                world.spawn(bullet::prefab(origin, velocity)
+                world.spawn(bullet::prefab(origin, velocity, 2.0)
                     .add(damage)
                     .build()
                 );

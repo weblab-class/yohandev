@@ -23,6 +23,7 @@ pub enum Packet {
     ProjectileSpawn {
         origin: Vec2<f32>,
         velocity: Vec2<f32>,
+        ttl: f32,
     },
     /// Server -> Clients
     EntityLookDirection(Entity, LookDirection),
