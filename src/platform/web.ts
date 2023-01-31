@@ -156,11 +156,9 @@ module Net {
 
 module Render {
     export function imports(mem: () => Memory, root: Svg) {
-        const draw = root.size("100%", "100%")
+        const draw = root.size("200%", "100%")
             .addClass("cartesian")
             .group()
-            .width("100%")
-            .height("100%");
 
         // Entity -> SVG cache
         const cache = {
