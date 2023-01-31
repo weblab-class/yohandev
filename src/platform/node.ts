@@ -104,6 +104,7 @@ module Net {
                 case "dual-gun": return AbilityKind.DualGun;
                 case "shield": return AbilityKind.Shield;
                 case "push": return AbilityKind.Push;
+                case "time-freeze": return AbilityKind.Freeze;
                 default:
                     // These come from DB, client can't crash the server
                     throw `Unknown ability kind "${ability}"`;

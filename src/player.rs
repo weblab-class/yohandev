@@ -8,7 +8,7 @@ use crate::{
     transform::{ Transform, NetworkPosition, Parent },
     math::vec2,
     network::{Packet, NetEntities},
-    ability::{ AbilityKind, self, Ability },
+    ability::{ AbilityKind, self, Ability, TimeScale },
     health::{ Health, self },
 };
 
@@ -162,7 +162,8 @@ pub fn platformer_controller(world: &mut World, time: &Time) {
     type Query<'a> = (
         &'a mut KinematicBody,
         &'a Grounded,
-        &'a Input
+        &'a Input,
+        Option<&'a TimeScale>,
     );
     // TODO: these will be calculated from player abilities
     const SPEED: f32 = 1700.0;
@@ -171,9 +172,12 @@ pub fn platformer_controller(world: &mut World, time: &Time) {
     const JUMP_TERM_VELOCITY: f32 = 500.0;
     const FRICTION: f32 = 5.0;
 
-    for (_, (kb, grounded, input)) in world.query_mut::<Query>() {
+    for (_, (kb, grounded, input, scale)) in world.query_mut::<Query>() {
+        let scale = scale
+            .map(|s| s.0)
+            .unwrap_or(1.0);
         // Movement
-        kb.velocity.x +=  SPEED * input.dx() * time.dt();
+        kb.velocity.x +=  SPEED * input.dx() * time.dt() * scale;
         // Jump
         if input.dy() > 0.0 {
             let can_jump = match grounded {
@@ -193,6 +197,6 @@ pub fn platformer_controller(world: &mut World, time: &Time) {
             kb.velocity.y = JUMP_TERM_VELOCITY;
         }
         // Damping
-        kb.velocity /= 1.0 + FRICTION * time.dt();
+        kb.velocity /= 1.0 + FRICTION * time.dt() * scale;
     }
 }

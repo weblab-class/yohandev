@@ -10,7 +10,7 @@ use smallvec::SmallVec;
 use crate::{
     math::{ Vec2, vec2 },
     transform::Transform,
-    platform::Time,
+    platform::Time, ability::TimeScale,
 };
 
 /// Collider component
@@ -106,9 +106,13 @@ pub fn compute_gravity(world: &mut World, time: &Time) {
     type Query<'a> = (
         &'a mut KinematicBody,
         &'a Gravity,
+        Option<&'a TimeScale>,
     );
-    for (_, (kb, gravity)) in world.query_mut::<Query>() {
-        kb.velocity += gravity.acceleration * time.dt();
+    for (_, (kb, gravity, scale)) in world.query_mut::<Query>() {
+        let scale = scale
+            .map(|s| s.0)
+            .unwrap_or(1.0);
+        kb.velocity += gravity.acceleration * time.dt() * scale;
     }
 }
 
@@ -117,9 +121,13 @@ pub fn compute_kinematics(world: &mut World, time: &Time) {
     type Query<'a> = (
         &'a mut Transform,
         &'a KinematicBody,
+        Option<&'a TimeScale>,
     );
-    for (_, (transform, kb)) in world.query_mut::<Query>() {
-        transform.translation += kb.velocity * time.dt();
+    for (_, (transform, kb, scale)) in world.query_mut::<Query>() {
+        let scale = scale
+            .map(|s| s.0)
+            .unwrap_or(1.0);
+        transform.translation += kb.velocity * time.dt() * scale;
     }
 }
 
@@ -132,16 +140,20 @@ pub fn resolve_collisions(world: &mut World, time: &Time) {
         &'a mut KinematicBody,
         &'a Collider,
         Option<(&'a mut Grounded, &'a Gravity)>,
+        Option<&'a TimeScale>,
     );
     type FixedQuery<'a> = With<(&'a Transform, &'a Collider), &'a FixedBody>;
 
     // Simple O(n^2) `a` intersects `b` test.
-    for (_, (t1, kb, c1, mut ground)) in &mut world.query::<KinematicQuery>() {
+    for (_, (t1, kb, c1, mut ground, scale)) in &mut world.query::<KinematicQuery>() {
         // Cache the body's gravity for groundedness computations.
         let gravity = match ground {
             Some((_, g)) => g.acceleration.normalize(),
             _ => vec2!(0.0, 0.0)
         };
+        let scale = scale
+            .map(|s| s.0)
+            .unwrap_or(1.0);
         // Find at least one "ground"
         let mut grounded = false;
 
@@ -176,10 +188,10 @@ pub fn resolve_collisions(world: &mut World, time: &Time) {
         if let Some((g, _)) = &mut ground {
             **g = match g.clone() {
                 Grounded::Yes { time: t } if grounded => Grounded::Yes {
-                    time: t + time.dt(),
+                    time: t + time.dt() * scale,
                 },
                 Grounded::No { time: t } if !grounded => Grounded::No {
-                    time: t + time.dt(),
+                    time: t + time.dt() * scale,
                 },
                 Grounded::No { .. } => Grounded::Yes { time: 0.0 },
                 Grounded::Yes { .. } => Grounded::No { time: 0.0 },

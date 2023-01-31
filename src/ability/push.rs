@@ -53,7 +53,7 @@ pub fn push_controller(world: &mut World, time: &Time, socket: &Socket) {
             if let Ok(transform) = world.get::<&Transform>(ability.owner) {
                 pushes.push(transform.translation);
             }
-            *cooldown = Cooldown(3.0);
+            *cooldown = Cooldown(15.0);
         }
     }
     for origin in pushes {

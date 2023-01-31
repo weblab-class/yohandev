@@ -317,7 +317,6 @@ impl Gamepad {
 }
 
 /// Abstraction over time measurements.
-#[derive(Default)]
 pub struct Time {
     /// Start time, in ms
     start: u32,
@@ -325,6 +324,19 @@ pub struct Time {
     now: u32,
     /// Second most recent time polled
     last: Option<u32>,
+    /// Time scale multiplier.
+    pub scale: f32,
+}
+
+impl Default for Time {
+    fn default() -> Self {
+        Self {
+            start: Default::default(),
+            now: Default::default(),
+            last: Default::default(),
+            scale: 1.0,
+        }
+    }
 }
 
 impl Time {
@@ -350,7 +362,7 @@ impl Time {
 
     /// Seconds between this frame and the one before.
     pub fn dt(&self) -> f32 {
-        self.dt_ms() as f32 / 1000.0
+        self.scale * self.dt_ms() as f32 / 1000.0
     }
 
     /// Milliseconds between this frame and the one before.
