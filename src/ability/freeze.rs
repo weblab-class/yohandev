@@ -56,7 +56,7 @@ pub fn freeze_controller(world: &mut World, time: &mut Time, socket: &Socket) {
         if ability.active && cooldown.0 <= 0.0 {
             time.scale = SCALE;
             freeze.frames = Some(240);
-            *cooldown = Cooldown(5.0);
+            *cooldown = Cooldown(25.0);
             add.push(ability.owner);
         }
         if let Some(frames) = &mut freeze.frames {
