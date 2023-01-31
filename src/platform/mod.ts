@@ -54,6 +54,7 @@ export enum Costume {
     DualGun,
     Shield,
     Push,
+    Freeze,
 }
 export enum Visibility {
     Shown,

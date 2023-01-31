@@ -32,11 +32,24 @@ pub fn instantiate(world: &mut World, owner: Entity, binding: usize) -> Entity {
 pub fn freeze_controller(world: &mut World, time: &mut Time, socket: &Socket) {
     const SCALE: f32 = 0.3;
     if cfg!(client) {
+        for (_, packet) in socket.packets() {
+            let Packet::EffectSpawn(costume) = packet else {
+                continue;
+            };
+            if !matches!(costume, Costume::Freeze) {
+                continue;
+            }
+            // Add sprite
+            world.spawn((
+                Sprite::new(costume.clone()),
+                TimeToLive::Frames(100)
+            ));
+        }
         return;
     }
     let mut add = Vec::new();
     let mut remove = Vec::new();
-    for (e, (ability, cooldown, freeze)) in &mut world.query::<(&Ability, &mut Cooldown, &mut Freeze)>() {
+    for (_, (ability, cooldown, freeze)) in &mut world.query::<(&Ability, &mut Cooldown, &mut Freeze)>() {
         // Cooldown
         cooldown.0 -= time.dt();
         // Trigger
@@ -56,6 +69,8 @@ pub fn freeze_controller(world: &mut World, time: &mut Time, socket: &Socket) {
     }
     for e in add {
         world.insert_one(e, TimeScale(1.0 / SCALE)).unwrap();
+        // Sprite
+        socket.broadcast(&Packet::EffectSpawn(Costume::Freeze));
     }
     for e in remove {
         world.remove_one::<TimeScale>(e).unwrap();

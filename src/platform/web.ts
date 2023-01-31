@@ -3,6 +3,7 @@
  */
 import { geckos, RawMessage, ClientChannel, ChannelId } from "@geckos.io/client";
 import { Shape, Svg, SVG } from "@svgdotjs/svg.js";
+import "@svgdotjs/svg.filter.js";
 import {
     Memory, Ref, RefMut, Uninit,
     cstring,
@@ -157,8 +158,10 @@ module Render {
     export function imports(mem: () => Memory, root: Svg) {
         const draw = root.size("100%", "100%")
             .addClass("cartesian")
-            .group();
-        
+            .group()
+            .width("100%")
+            .height("100%");
+
         // Entity -> SVG cache
         const cache = {
             inner: <Shape[]>[],
@@ -202,6 +205,29 @@ module Render {
                     screenShake(frames - 1, amt * decay, decay);
                 });
             }
+        }
+        function screenDistort() {
+            root.filterWith((filter) => {
+                const turbulence = filter
+                    .width("100%")
+                    .height("100%")
+                    .turbulence(0, 1, 1234, "noStitch", "turbulence")
+                turbulence
+                    .animate(1500, 0, "now")
+                    .attr("baseFrequency", "0.01")
+                    .loop(1, true);
+                filter.displacementMap(
+                    "SourceGraphic",
+                    turbulence,
+                    10,
+                    "R",
+                    "R"
+                );
+            });
+            setTimeout(() => {
+                screenShake(10, 10, 0.9)
+                root.unfilter();
+            }, 4500);
         }
         return {
             render_new_sprite(ptr: Ref<Costume>): u32 {
@@ -268,6 +294,11 @@ module Render {
                             screenShake(20, 20, 0.9);
                                 
                             return a;
+                        case Costume.Freeze:
+                            screenShake(10, 10, 0.9);
+                            screenDistort();
+                            // Dummy element
+                            return draw.circle(0);
                     }
                 };
                 return cache.add(element());

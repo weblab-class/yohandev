@@ -47,7 +47,8 @@ pub enum Costume {
     },
     Push {
         position: Vec2<f32>,
-    }
+    },
+    Freeze,
 }
 
 /// Whether a [Sprite] is visible or not.
