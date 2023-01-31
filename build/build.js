@@ -14,6 +14,7 @@ const FLAGS = args
     .option("port", "The port to build and serve on.", 8000)
     .option("https", "Whether the server should be HTTPS or not", false)
     .option("release", "Whether to build in release mode", false)
+    .option("tick-rate", "How many ticks per second on server.")
     .parse(process.argv);
 
 const CONFIGS = {

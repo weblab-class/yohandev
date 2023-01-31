@@ -33,7 +33,6 @@ fn prefab(deck: [AbilityKind; 4]) -> EntityBuilder {
         },
         Input::default(),
         Collider::rect(30.0, 50.0),
-        KinematicBody::default(),
         Grounded::default(),
         Gravity { acceleration: vec2!(0.0, -2500.0) },
         Transform {
@@ -43,6 +42,9 @@ fn prefab(deck: [AbilityKind; 4]) -> EntityBuilder {
         NetworkPosition::default(),
         LookDirection::default(),
     ));
+    if cfg!(server) {
+        builder.add(KinematicBody::default());
+    }
     builder
 }
 

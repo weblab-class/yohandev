@@ -10,6 +10,8 @@ import {
     usize, u32, f32, u8, f64,
     instantiate,
 } from "./mod";
+// @ts-ignore
+import args from "env";
 
 export async function game(io: GeckosServer) {
     const joins: { uuid: string, deck: string[] }[] = [];
@@ -23,7 +25,9 @@ export async function game(io: GeckosServer) {
     wasm.main();
     setInterval(function loop() {
         wasm.tick();
-    }, 1000 / 60);
+    }, 1000 / (args["tick-rate"] ?? 30));
+
+    console.log(`Starting game with tick rate: ${args["tick-rate"] ?? 30}`);
 
     return {
         spawnPlayer(uuid: string, deck: string[]) {

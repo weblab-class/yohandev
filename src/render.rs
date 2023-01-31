@@ -3,7 +3,9 @@ use hecs::World;
 use crate::{
     platform::Canvas,
     transform::{Transform, Parent},
-    math::Vec2, ability::Ability, health::Health
+    math::{ Vec2, vec2 },
+    ability::Ability,
+    health::Health
 };
 
 /// A type of [Sprite]
@@ -95,13 +97,30 @@ pub fn animate_player_sprites(world: &mut World) {
         };
         let target = transform.translation;
         let delta = target - *position;
+
+        let target_lean = delta.x;
+        let target_scale = vec2!(
+            1.0 - 0.01 * delta.y.abs(),
+            1.0 + 0.02 * delta.y.abs()
+        );
+        let target_lean = target_lean.min(15.0).max(-15.0);
+        let target_scale = target_scale.map(|n| n.max(0.5).min(2.0));
         
-        *position = target;
+        *position += delta * 0.6;
         // Lean in direction of movement unless jumping/falling
-        *lean = delta.x;
+        *lean += (target_lean - *lean) * 0.2;
         // Squash/stretch
-        scale.x = 1.0 - 0.01 * delta.y.abs();
-        scale.y = 1.0 + 0.02 * delta.y.abs();
+        scale.x += (target_scale.x - scale.x) * 0.6;
+        scale.y += (target_scale.y - scale.y) * 0.6;
+
+        // Snap back
+        if delta.norm_squared() > 500.0 {
+            *position = target;
+            *lean = 0.0;
+            *scale = vec2!(1.0, 1.0);
+            log::info!("snap");
+        }
+        log::info!("{}", delta);
     }
 }
 
