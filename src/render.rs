@@ -114,7 +114,7 @@ pub fn animate_player_sprites(world: &mut World) {
         scale.y += (target_scale.y - scale.y) * 0.6;
 
         // Snap back
-        if delta.norm_squared() > 5000.0 {
+        if delta.norm_squared() > 10000.0 {
             *position = target;
             *lean = 0.0;
             *scale = vec2!(1.0, 1.0);
