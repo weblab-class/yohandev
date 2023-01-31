@@ -14,7 +14,7 @@ use crate::{
 /// This type is passed directly to `platform/`.
 /// For Typescript binding simplicity, every field should be
 /// aligned to 4 bytes(ie. `u32`, `f32`).
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 #[repr(u32)]
 pub enum Costume {
     Player {
@@ -44,6 +44,9 @@ pub enum Costume {
     Shield {
         position: Vec2<f32>,
         rotation: f32,
+    },
+    Push {
+        position: Vec2<f32>,
     }
 }
 

@@ -1,7 +1,11 @@
-use hecs::{World, Entity, With};
+use hecs::{ World, Entity, With };
 
 use crate::{
-    ability::{ Ability, Cooldown }, input::Input, platform::Time, transform::Transform, physics::KinematicBody,
+    ability::{ Ability, Cooldown },
+    platform::{Time, Socket},
+    transform::Transform,
+    physics::KinematicBody,
+    render::{ Sprite, Costume }, bullet::TimeToLive, network::Packet,
 };
 
 /// Component that marks this entity as the push ability
@@ -20,8 +24,21 @@ pub fn instantiate(world: &mut World, owner: Entity, binding: usize) -> Entity {
 }
 
 /// System that controls the almighty push
-pub fn push_controller(world: &mut World, time: &Time) {
+pub fn push_controller(world: &mut World, time: &Time, socket: &Socket) {
     if cfg!(client) {
+        for (_, packet) in socket.packets() {
+            let Packet::EffectSpawn(costume) = packet else {
+                continue;
+            };
+            if !matches!(costume, Costume::Push { .. }) {
+                continue;
+            }
+            // Add sprite
+            world.spawn((
+                Sprite::new(costume.clone()),
+                TimeToLive::Frames(100)
+            ));
+        }
         return;
     }
     /// Queries all weapon holders
@@ -36,10 +53,13 @@ pub fn push_controller(world: &mut World, time: &Time) {
             if let Ok(transform) = world.get::<&Transform>(ability.owner) {
                 pushes.push(transform.translation);
             }
-            *cooldown = Cooldown(15.0);
+            *cooldown = Cooldown(3.0);
         }
     }
     for origin in pushes {
+        // Sprite
+        socket.broadcast(&Packet::EffectSpawn(Costume::Push { position: origin }));
+        // Push everything
         for (_, (t, kb)) in world.query_mut::<(&Transform, &mut KinematicBody)>() {
             if let Some(delta) = (t.translation - origin).try_normalize(0.01) {
                 kb.velocity = 2000.0 * delta;

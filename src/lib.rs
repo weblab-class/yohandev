@@ -53,7 +53,7 @@ pub fn main() {
         }
         transform::local_to_world(&mut world);
         ability::position_shield(&mut world);
-        ability::push_controller(&mut world, &time);
+        ability::push_controller(&mut world, &time, &socket);
         physics::compute_gravity(&mut world, &time);
         physics::compute_kinematics(&mut world, &time);
         physics::resolve_collisions(&mut world, &time);
@@ -65,7 +65,7 @@ pub fn main() {
         input::follow_look_direction(&mut world);
         bullet::impact_and_damage(&mut world, &socket);
         bullet::network_instantiate(&mut world, &socket);
-        bullet::despawn_bullets(&mut world, &time);
+        bullet::despawn_time_to_live(&mut world, &time);
         render::animate_player_sprites(&mut world);
         render::animate_bullet_sprites(&mut world);
         render::animate_handheld_sprites(&mut world);

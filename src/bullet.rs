@@ -6,7 +6,9 @@ use crate::{
     transform::Transform,
     network::Packet,
     platform::{ Socket, Time },
-    render::{ Sprite, Costume }, health::{Damage, Health}, ability::{Shield, Ability, self},
+    render::{ Sprite, Costume },
+    health::{ Damage, Health },
+    ability::{ Shield, Ability },
 };
 
 // TODO: this is a lazy workaround for now, but a system like this could be
@@ -14,8 +16,11 @@ use crate::{
 /// Component that marks this entity as having payload to send.
 struct Payload(Option<Packet>);
 
-/// Component for entity that should life for `.0` seconds
-struct BulletLifetime(f32);
+/// Component for entity that should life for
+pub enum TimeToLive {
+    Frames(usize),
+    Seconds(f32),
+}
 
 /// Create a bullet locally
 pub fn prefab(origin: Vec2<f32>, velocity: Vec2<f32>, ttl: f32) -> EntityBuilder {
@@ -32,7 +37,7 @@ pub fn prefab(origin: Vec2<f32>, velocity: Vec2<f32>, ttl: f32) -> EntityBuilder
             translation: origin,
             ..Default::default()
         },
-        BulletLifetime(ttl),
+        TimeToLive::Seconds(ttl),
     ));
     // Replicate on the network.
     if cfg!(server) {
@@ -67,13 +72,22 @@ pub fn network_instantiate(world: &mut World, socket: &Socket) {
     }
 }
 
-/// System that automatically despawns stale bullets
-pub fn despawn_bullets(world: &mut World, time: &Time) {
+/// System that automatically despawns stale tti
+pub fn despawn_time_to_live(world: &mut World, time: &Time) {
     let mut kill = Vec::new();
     
-    for (e, BulletLifetime(t)) in world.query_mut::<&mut BulletLifetime>() {
-        *t -= time.dt();
-        if *t <= 0.0 {
+    for (e, ttl) in world.query_mut::<&mut TimeToLive>() {
+        let dead = match ttl {
+            TimeToLive::Frames(t) => {
+                *t -= 1;
+                *t <= 0
+            },
+            TimeToLive::Seconds(t) => {
+                *t -= time.dt();
+                *t <= 0.0
+            },
+        };
+        if dead {
             kill.push(e);
         }
     }
@@ -112,7 +126,7 @@ pub fn impact_and_damage(world: &mut World, socket: &Socket) {
             // Destroy
             if damage.destroy && destroy.last() != Some(&e1) {
                 // No bullet/bullet collisions
-                if matches!(world.satisfies::<&BulletLifetime>(e2), Ok(true)) {
+                if matches!(world.satisfies::<&Damage>(e2), Ok(true)) {
                     continue;
                 }
                 destroy.push(e1);
@@ -132,7 +146,7 @@ pub fn impact_and_damage(world: &mut World, socket: &Socket) {
     // Client can't know when bullets hit, so small visual hack is
     // to just stop them when something static is hit
     if cfg!(client) {
-        for (e, collisions) in &mut world.query::<With<&Collisions, &BulletLifetime>>() {
+        for (e, collisions) in &mut world.query::<With<&Collisions, &TimeToLive>>() {
             for &e2 in &collisions.0 {
                 if matches!(world.satisfies::<&FixedBody>(e2), Ok(true)) {
                     destroy.push(e);

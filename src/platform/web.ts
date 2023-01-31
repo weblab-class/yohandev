@@ -154,9 +154,10 @@ module Net {
 }
 
 module Render {
-    export function imports(mem: () => Memory, draw: Svg) {
-        draw.size("100%", "100%")
-            .addClass("cartesian");
+    export function imports(mem: () => Memory, root: Svg) {
+        const draw = root.size("100%", "100%")
+            .addClass("cartesian")
+            .group();
         
         // Entity -> SVG cache
         const cache = {
@@ -186,6 +187,21 @@ module Render {
                 new Uint32Array(mem().buffer, ptr)[0],
                 new Float32Array(mem().buffer, ptr + 4),
             ];
+        }
+        function screenShake(frames: number, amt: number, decay: number) {
+            if (frames == 0) {
+                draw.transform({
+                    translate: [0, 0]
+                });
+            } else {
+                draw.dmove(
+                    amt * (Math.random() - 0.5),
+                    amt * (Math.random() - 0.5),
+                );
+                requestAnimationFrame(() => {
+                    screenShake(frames - 1, amt * decay, decay);
+                });
+            }
         }
         return {
             render_new_sprite(ptr: Ref<Costume>): u32 {
@@ -236,6 +252,22 @@ module Render {
                                     .width(40)
                                     .height(40)
                                 );
+                        case Costume.Push:
+                            const a = draw
+                                .circle(1)
+                                .fill("none")
+                                .stroke({
+                                    color: "black",
+                                    opacity: 0.4,
+                                    width: 2,
+                                    dasharray: "5"
+                                })
+                            a.animate(500, 0, "now")
+                                .width(3000)
+                                .height(3000);
+                            screenShake(20, 20, 0.9);
+                                
+                            return a;
                     }
                 };
                 return cache.add(element());
@@ -262,6 +294,7 @@ module Render {
                     case Costume.DualGun:
                     case Costume.HealthBar:
                     case Costume.Shield:
+                    case Costume.Push:
                         element
                             .cx(args[0])
                             .cy(args[1]);

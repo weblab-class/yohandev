@@ -3,7 +3,7 @@ use hecs::Entity;
 use crate::{
     input::{Input, LookDirection},
     math::Vec2,
-    platform::Connection, ability::AbilityKind
+    platform::Connection, ability::AbilityKind, render::Costume
 };
 
 /// Shorthand for iterator of reserved entity IDs
@@ -32,5 +32,8 @@ pub enum Packet {
     EntityLookDirection(Entity, LookDirection),
     /// Server -> Clients
     EntityHealth(Entity, f32),
+    /// Server -> Clients
     PlayerToggleAbility(Entity, Option<usize>),
+    /// Server -> Clients
+    EffectSpawn(Costume),
 }
