@@ -41,6 +41,7 @@ export enum AbilityKind {
     AssaultRifle,
     DualGun,
     Shield,
+    Push,
 }
 
 export enum Costume {

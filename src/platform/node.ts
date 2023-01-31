@@ -99,6 +99,7 @@ module Net {
                 case "assault-rifle": return AbilityKind.AssaultRifle;
                 case "dual-gun": return AbilityKind.DualGun;
                 case "shield": return AbilityKind.Shield;
+                case "push": return AbilityKind.Push;
                 default:
                     // These come from DB, client can't crash the server
                     throw `Unknown ability kind "${ability}"`;

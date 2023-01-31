@@ -1,5 +1,6 @@
 pub use gun::*;
 pub use shield::{ Shield, position_shield };
+pub use push::push_controller;
 
 use hecs::{ Entity, World };
 
@@ -10,6 +11,7 @@ mod shotgun;
 mod rifle;
 mod pistols;
 mod shield;
+mod push;
 
 /// Complete enumeration of all ability types
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -19,6 +21,7 @@ pub enum AbilityKind {
     AssaultRifle,
     DualGun,
     Shield,
+    Push,
 }
 
 /// Component that marks this entity as an ability
@@ -38,6 +41,7 @@ pub fn instantiate(world: &mut World, owner: Entity, binding: usize, kind: Abili
         AbilityKind::AssaultRifle => rifle::instantiate(world, owner, binding),
         AbilityKind::DualGun => pistols::instantiate(world, owner, binding),
         AbilityKind::Shield => shield::instantiate(world, owner, binding),
+        AbilityKind::Push => push::instantiate(world, owner, binding),
     }
 }
 
