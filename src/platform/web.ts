@@ -495,6 +495,8 @@ module Input {
             axes: <{ [_: string]: [string, string] }>{
                 x: ["ArrowLeft", "ArrowRight"],
                 y: ["ArrowDown", "ArrowUp"],
+                xAlt: ["a", "d"],
+                yAlt: ["s", "w"],
             },
             buttons: {
                 fire: "Mouse0",
@@ -546,10 +548,14 @@ module Input {
         });
         return {
             input_get_dx(): f32 {
-                return axis(bindings.axes.x);
+                const pri = axis(bindings.axes.x);
+                const alt = axis(bindings.axes.xAlt);
+                return pri === 0 ? alt : pri;
             },
             input_get_dy(): f32 {
-                return axis(bindings.axes.y);
+                const pri = axis(bindings.axes.y);
+                const alt = axis(bindings.axes.yAlt);
+                return pri === 0 ? alt : pri;
             },
             input_get_ax(): f32 {
                 return emulateJoystick(origin.x, origin.y).x;
