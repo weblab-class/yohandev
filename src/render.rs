@@ -60,6 +60,9 @@ pub enum Costume {
     Heal {
         position: Vec2<f32>,
     },
+    SpawnIn {
+        position: Vec2<f32>,
+    },
     Shadow {
         position: Vec2<f32>,
         scale: f32,

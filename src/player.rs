@@ -1,7 +1,7 @@
 use hecs::{ World, EntityBuilder, Entity };
 
 use crate::{
-    physics::{ KinematicBody, Grounded, Collider, Gravity },
+    physics::{ KinematicBody, Grounded, Collider, Gravity, self },
     input::{Input, LookDirection},
     platform::{ Socket, Time, Connection },
     render::{ Sprite, Costume, Shadow },
@@ -9,7 +9,7 @@ use crate::{
     math::vec2,
     network::Packet,
     ability::{ AbilityKind, self, Ability, TimeScale },
-    health::{ Health, self },
+    health::{ Health, self }, bullet::TimeToLive,
 };
 
 /// Component that marks an entity as a player.
@@ -36,7 +36,7 @@ fn prefab(deck: [AbilityKind; 4]) -> EntityBuilder {
         Grounded::default(),
         Gravity { acceleration: vec2!(0.0, -2500.0) },
         Transform {
-            translation: vec2!(0.0, 200.0),
+            translation: vec2!(100.0, 500.0),
             rotation: 0.0,
         },
         NetworkPosition::default(),
@@ -98,6 +98,8 @@ pub fn networked_instantiate(
                     scale: Default::default(),
                 }),
             ));
+            // Spawn indicator
+            instantiate_spawn_indicator(world, *e);
             // Owned entity
             if connection != c {
                 world.remove_one::<Input>(*e).unwrap();
@@ -162,6 +164,27 @@ pub fn networked_despawn(world: &mut World, socket: &Socket) {
             }
         }
     }
+}
+
+pub fn instantiate_spawn_indicator(world: &mut World, entity: Entity) {
+    let ground = {
+        let Ok(transform) = world.get::<&Transform>(entity) else {
+            return;
+        };
+        let Some((_, ground)) = physics::raycast_solid(
+            world,
+            transform.translation,
+            vec2!(0.0, -1.0),
+            Some(entity),
+        ) else {
+            return;
+        };
+        ground
+    };
+    world.spawn((
+        Sprite::new(Costume::SpawnIn { position: ground }),
+        TimeToLive::Frames(200),
+    ));
 }
 
 /// System that updates player controllers.

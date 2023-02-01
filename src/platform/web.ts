@@ -336,6 +336,15 @@ module Render {
                                 .loop(2, true)
                                 .attr({ opacity: 1.0 });
                             return draw.group().add(e);
+                        case Costume.SpawnIn:
+                            const ent = draw
+                                .image("assets/weapons/spawn-in.svg")
+                                .scale(0.2, -0.2)
+                                .opacity(0);
+                            ent.animate(400, 0, "now")
+                                .loop(2, true)
+                                .attr({ opacity: 1.0 });
+                            return draw.group().add(ent);
                         case Costume.Shadow:
                             return draw
                                 .group()
@@ -385,9 +394,13 @@ module Render {
                     case Costume.BubbleShield:
                     case Costume.Shadow:
                     case Costume.Platform:
-                        element
-                            .cx(args[0])
-                            .cy(args[1]);
+                        try {
+                            element
+                                .cx(args[0])
+                                .cy(args[1]);
+                        } catch {
+                            console.error(args[0], args[1]);
+                        }
                 }
                 // Rotation
                 switch (tag) {
@@ -418,6 +431,7 @@ module Render {
                 switch (tag) {
                     case Costume.Lightning:
                     case Costume.Heal:
+                    case Costume.SpawnIn:
                         element
                             .cx(args[0])
                             .y(args[1]);
