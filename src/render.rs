@@ -49,6 +49,10 @@ pub enum Costume {
         position: Vec2<f32>,
     },
     Freeze,
+    Lightning {
+        /// Position of impact
+        position: Vec2<f32>,
+    }
 }
 
 /// Whether a [Sprite] is visible or not.

@@ -2,6 +2,7 @@ pub use gun::*;
 pub use shield::{ Shield, position_shield };
 pub use push::push_controller;
 pub use freeze::{ TimeScale, freeze_controller };
+pub use lightning::lightning_controller;
 
 use hecs::{ Entity, World };
 
@@ -18,6 +19,7 @@ mod pistols;
 mod shield;
 mod push;
 mod freeze;
+mod lightning;
 
 /// Complete enumeration of all ability types
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -29,6 +31,7 @@ pub enum AbilityKind {
     Shield,
     Push,
     Freeze,
+    Lightning
 }
 
 /// Component that marks this entity as an ability
@@ -50,6 +53,7 @@ pub fn instantiate(world: &mut World, owner: Entity, binding: usize, kind: Abili
         AbilityKind::Shield => shield::instantiate(world, owner, binding),
         AbilityKind::Push => push::instantiate(world, owner, binding),
         AbilityKind::Freeze => freeze::instantiate(world, owner, binding),
+        AbilityKind::Lightning => lightning::instantiate(world, owner, binding),
     }
 }
 

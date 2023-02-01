@@ -55,6 +55,7 @@ pub fn main() {
         ability::position_shield(&mut world);
         ability::push_controller(&mut world, &time, &socket);
         ability::freeze_controller(&mut world, &mut time, &socket);
+        ability::lightning_controller(&mut world, &mut time, &socket);
         physics::compute_gravity(&mut world, &time);
         physics::compute_kinematics(&mut world, &time);
         physics::resolve_collisions(&mut world, &time);

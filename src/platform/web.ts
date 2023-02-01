@@ -297,6 +297,11 @@ module Render {
                             screenDistort();
                             // Dummy element
                             return draw.circle(0);
+                        case Costume.Lightning:
+                            return draw
+                                .rect(100, 5000)
+                                .fill("blue")
+                                .hide();
                     }
                 };
                 return cache.add(element());
@@ -352,6 +357,12 @@ module Render {
                     element
                         .last()
                         .width(args[2] * 40);
+                }
+                // Lightning
+                if (tag == Costume.Lightning) {
+                    element
+                        .cx(args[0])
+                        .y(args[1]);
                 }
             },
             render_drop_sprite(handle: u32) {
