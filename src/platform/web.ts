@@ -233,7 +233,10 @@ module Render {
                 const element = () => {
                     switch (costume(ptr)[0]) {
                         case Costume.Player:
-                            return draw.rect(30, 50).fill("#EFC643");
+                            return draw
+                                .rect(30, 50)
+                                .fill("#EFC643")
+                                .back();
                         case Costume.Bullet:
                             return draw.circle(3);
                         case Costume.Shotgun:
@@ -413,7 +416,8 @@ module Render {
                 if (tag == Costume.Shadow) {
                     element
                         .transform({ scale: args[2] })
-                        .opacity(args[2] + 0.3);
+                        .opacity(args[2] + 0.3)
+                        .back();
                 }
             },
             render_drop_sprite(handle: u32) {
