@@ -18,8 +18,8 @@ pub fn instantiate(world: &mut World, owner: Entity, binding: usize) -> Entity {
             active: false,
         },
         Gun {
-            // TODO these should come from `abilities.toml`
-            cooldown: Cooldown(1.5),
+            // TODO: these should come from `abilities.toml`
+            cooldown: Cooldown(1.0),
             shoot: |world, owner, origin, velocity| {
                 // TODO: this can be greatly optimized by simply sending the random seed
                 for _ in 0..10 {
