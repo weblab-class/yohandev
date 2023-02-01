@@ -283,8 +283,8 @@ module Render {
                         case Costume.HealthBar:
                             return draw
                                 .group()
-                                .add(draw.rect(40, 10).fill("grey"))
-                                .add(draw.rect(40, 10).fill("red"));
+                                .add(draw.rect(40, 5).fill("#692724"))
+                                .add(draw.rect(40, 5).fill("#bf544e"));
                         case Costume.Shield:
                             return draw
                                 .group()
