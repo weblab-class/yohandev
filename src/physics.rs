@@ -258,3 +258,37 @@ pub fn raycast(
             origin + dir * toi,
         ))
 }
+
+/// Utility function to send a raycast in the scene and get the entity
+/// hit and at what position
+pub fn raycast_solid(
+    world: &World,
+    origin: Vec2<f32>,
+    dir: Vec2<f32>,
+    ignore: Option<Entity>,
+) -> Option<(Entity, Vec2<f32>)> {
+    let Some(dir) = dir.try_normalize(0.001) else {
+        return None;
+    };
+    let ray = Ray::new(origin.into(), dir);
+    // Find min TOI
+    world.query::<With<(&Transform, &Collider), &FixedBody>>()
+        .iter()
+        .filter_map(|(e, (transform, collider))| {
+            let toi = collider.cast_ray(
+                &(&*transform).into(),
+                &ray,
+                std::f32::MAX,
+                true
+            )?;
+            Some((e, toi))
+        })
+        .filter(|(e, _)| ignore != Some(*e))
+        .min_by(|(_, x), (_, y)|
+            x.partial_cmp(y).unwrap_or(std::cmp::Ordering::Equal)
+        )
+        .map(|(entity, toi)| (
+            entity,
+            origin + dir * toi,
+        ))
+}

@@ -1,11 +1,11 @@
-use hecs::World;
+use hecs::{World, Entity};
 
 use crate::{
     platform::Canvas,
     transform::{Transform, Parent},
     math::{ Vec2, vec2 },
     ability::{Ability, BubbleShield, Cooldown},
-    health::Health
+    health::Health, physics
 };
 
 /// A type of [Sprite]
@@ -59,6 +59,10 @@ pub enum Costume {
     },
     Heal {
         position: Vec2<f32>,
+    },
+    Shadow {
+        position: Vec2<f32>,
+        scale: f32,
     }
 }
 
@@ -98,6 +102,36 @@ impl Sprite {
 impl Drop for Sprite {
     fn drop(&mut self) {
         Canvas::remove(self);
+    }
+}
+
+/// Component for a shadow entity
+pub struct Shadow(pub Entity);
+
+/// System that animates the sprites of shadows
+pub fn animate_shadow_sprites(world: &mut World) {
+    let mut rm = Vec::new();
+    for (e, (shadow, sprite)) in &mut world.query::<(&Shadow, &mut Sprite)>() {
+        let Costume::Shadow { position, scale } = &mut sprite.costume else {
+            continue;
+        };
+        let Ok(transform) = world.get::<&Transform>(shadow.0) else {
+            rm.push(e);
+            continue;
+        };
+        if let Some((_, pos)) = physics::raycast_solid(
+            world,
+            transform.translation,
+            vec2!(0.0, -1.0),
+            Some(shadow.0)
+        ) {
+            let target = 35.0 * ((pos - transform.translation).magnitude() + 1.0).powi(-1);
+            *position += 0.9 * (pos - *position);
+            *scale += 0.7 * (target - *scale);
+        }
+    }
+    for e in rm {
+        world.despawn(e).unwrap();
     }
 }
 

@@ -75,6 +75,7 @@ pub fn main() {
         render::animate_handheld_sprites(&mut world);
         render::animate_bubble_shield_sprite(&mut world);
         render::animate_health_bar_sprites(&mut world);
+        render::animate_shadow_sprites(&mut world);
         render::draw_sprites(&mut world, &canvas);
     });
 }

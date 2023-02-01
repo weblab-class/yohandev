@@ -4,7 +4,7 @@ use crate::{
     physics::{ KinematicBody, Grounded, Collider, Gravity },
     input::{Input, LookDirection},
     platform::{ Socket, Time, Connection },
-    render::{ Sprite, Costume },
+    render::{ Sprite, Costume, Shadow },
     transform::{ Transform, NetworkPosition, Parent },
     math::vec2,
     network::{Packet, NetEntities},
@@ -90,6 +90,14 @@ pub fn networked_instantiate(
             for (i, kind) in deck.iter().enumerate() {
                 ability::instantiate(world, *e, i, *kind);
             }
+            // Shadow
+            world.spawn((
+                Shadow(*e),
+                Sprite::new(Costume::Shadow {
+                    position: Default::default(),
+                    scale: Default::default(),
+                }),
+            ));
             // Owned entity
             if connection != c {
                 world.remove_one::<Input>(*e).unwrap();

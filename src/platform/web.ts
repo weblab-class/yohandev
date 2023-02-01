@@ -331,6 +331,14 @@ module Render {
                                 .loop(2, true)
                                 .attr({ opacity: 1.0 });
                             return draw.group().add(e);
+                        case Costume.Shadow:
+                            return draw
+                                .group()
+                                .back()
+                                .add(draw
+                                    .image("assets/weapons/shadow.svg")
+                                    .scale(0.2, -0.2)
+                                );
                     }
                 };
                 return cache.add(element());
@@ -359,6 +367,7 @@ module Render {
                     case Costume.Shield:
                     case Costume.Push:
                     case Costume.BubbleShield:
+                    case Costume.Shadow:
                         element
                             .cx(args[0])
                             .cy(args[1]);
@@ -399,6 +408,12 @@ module Render {
                 // Bubble shield
                 if (tag == Costume.BubbleShield) {
                     element.size(args[2] * 2, args[2] * 2)
+                }
+                // Shadow
+                if (tag == Costume.Shadow) {
+                    element
+                        .transform({ scale: args[2] })
+                        .opacity(args[2] + 0.3);
                 }
             },
             render_drop_sprite(handle: u32) {
