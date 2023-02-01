@@ -47,11 +47,27 @@ api.post("/join-game", async (req, res) => {
 });
 
 api.post("/edit-deck", async (req, res) => {
-    const user = req.session["user"];
+    let user = req.session["user"];
     const { added, removed } = req.body;
     if (!user) {
         // No login -> OK
-        return res.send({});
+        user = req.session["user"] = {
+            dummy: true,
+            unlocked: [
+                // Default deck:
+                "shotgun",
+                "dual-gun",
+                "assault-rifle",
+                "shield"
+            ],
+            deck: [
+                // Default deck:
+                "shotgun",
+                "dual-gun",
+                "assault-rifle",
+                "shield"
+            ]
+        }
     }
     // Cheating?!
     if (!user.unlocked.includes(added) || !user.unlocked.includes(removed)) {
@@ -70,6 +86,8 @@ api.post("/edit-deck", async (req, res) => {
         return id;
     });
     // Save to DB
-    await User.findByIdAndUpdate(user._id, { deck: user.deck });
+    if (!user.dummy) {
+        await User.findByIdAndUpdate(user._id, { deck: user.deck });
+    }
     res.send({});
 });

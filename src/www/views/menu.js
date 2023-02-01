@@ -11,7 +11,13 @@ import "../styles/menu.css";
  */
 export function Menu({ startGame, ...props }) {
     // User progress
-    const [deck, setDeck] = useState(Array(4).fill(undefined));
+    const [deck, setDeck] = useState([
+        // Default deck:
+        "shotgun",
+        "dual-gun",
+        "assault-rifle",
+        "shield"
+    ]);
     const [collection, setCollection] = useState([]);
     // Dynamic UI stuff
     const [hovered, setHovered] = useState(undefined);
