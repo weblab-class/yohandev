@@ -66,6 +66,7 @@ pub fn main() {
         ability::gun_controller(&mut world, &time);
         input::network_look_direction(&mut world, &socket);
         input::follow_look_direction(&mut world);
+        ability::heal_controller(&mut world, &time, &socket);
         bullet::impact_and_damage(&mut world, &socket);
         bullet::network_instantiate(&mut world, &socket);
         bullet::despawn_time_to_live(&mut world, &time);

@@ -107,6 +107,7 @@ module Net {
                 case "time-freeze": return AbilityKind.Freeze;
                 case "lightning": return AbilityKind.Lightning;
                 case "bubble-shield": return AbilityKind.BubbleShield;
+                case "heal": return AbilityKind.Heal;
                 default:
                     // These come from DB, client can't crash the server
                     throw `Unknown ability kind "${ability}"`;

@@ -322,6 +322,15 @@ module Render {
                                 );
                         case Costume.BubbleShield:
                             return draw.image("assets/weapons/bubble-shield.svg").size(0, 0);
+                        case Costume.Heal:
+                            const e = draw
+                                .image("assets/weapons/heal.svg")
+                                .scale(0.2, -0.2)
+                                .opacity(0);
+                            e.animate(200, 0, "now")
+                                .loop(2, true)
+                                .attr({ opacity: 1.0 });
+                            return draw.group().add(e);
                     }
                 };
                 return cache.add(element());
@@ -379,11 +388,13 @@ module Render {
                         .last()
                         .width(args[2] * 40);
                 }
-                // Lightning
-                if (tag == Costume.Lightning) {
-                    element
-                        .cx(args[0])
-                        .y(args[1]);
+                // Position feet
+                switch (tag) {
+                    case Costume.Lightning:
+                    case Costume.Heal:
+                        element
+                            .cx(args[0])
+                            .y(args[1]);
                 }
                 // Bubble shield
                 if (tag == Costume.BubbleShield) {

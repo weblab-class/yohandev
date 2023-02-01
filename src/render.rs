@@ -56,6 +56,9 @@ pub enum Costume {
     BubbleShield {
         position: Vec2<f32>,
         radius: f32,
+    },
+    Heal {
+        position: Vec2<f32>,
     }
 }
 

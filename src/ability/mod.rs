@@ -4,6 +4,7 @@ pub use push::push_controller;
 pub use freeze::{ TimeScale, freeze_controller };
 pub use lightning::lightning_controller;
 pub use bubble::{ BubbleShield, bubble_shield_controller };
+pub use heal::heal_controller;
 
 use hecs::{ Entity, World };
 
@@ -22,6 +23,7 @@ mod push;
 mod freeze;
 mod lightning;
 mod bubble;
+mod heal;
 
 /// Complete enumeration of all ability types
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -35,6 +37,7 @@ pub enum AbilityKind {
     Freeze,
     Lightning,
     BubbleShield,
+    Heal,
 }
 
 /// Component that marks this entity as an ability
@@ -58,6 +61,7 @@ pub fn instantiate(world: &mut World, owner: Entity, binding: usize, kind: Abili
         AbilityKind::Freeze => freeze::instantiate(world, owner, binding),
         AbilityKind::Lightning => lightning::instantiate(world, owner, binding),
         AbilityKind::BubbleShield => bubble::instantiate(world, owner, binding),
+        AbilityKind::Heal => heal::instantiate(world, owner, binding),
     }
 }
 
