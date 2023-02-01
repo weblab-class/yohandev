@@ -2,7 +2,7 @@ use hecs::{ World, Entity, With };
 
 use crate::{
     ability::{ Ability, Cooldown },
-    platform::{Time, Socket},
+    platform::{Time, Socket, Connection},
     transform::Transform,
     render::{ Sprite, Costume }, bullet::TimeToLive, network::Packet,
 };
@@ -57,6 +57,12 @@ pub fn freeze_controller(world: &mut World, time: &mut Time, socket: &Socket) {
             time.scale = SCALE;
             freeze.frames = Some(240);
             *cooldown = Cooldown(25.0);
+            if let Ok(id) = world.get::<&Connection>(ability.owner) {
+                socket.send(*id, &Packet::CooldownStart {
+                    binding: ability.binding,
+                    duration: cooldown.0,
+                })
+            }
             add.push(ability.owner);
         }
         if let Some(frames) = &mut freeze.frames {

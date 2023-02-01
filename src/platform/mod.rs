@@ -45,6 +45,7 @@ extern {
     fn render_new_sprite(ptr: *const Costume) -> u32;
     fn render_update_sprite(handle: u32, ptr: *const Costume, visibility: Visibility);
     fn render_drop_sprite(handle: u32);
+    fn render_set_cooldown(binding: usize, time_left: f32);
 
     fn input_get_dx() -> f32;
     fn input_get_dy() -> f32;
@@ -257,6 +258,13 @@ impl Canvas {
             if let Some(handle) = sprite.handle.take() {
                 render_drop_sprite(handle);
             }
+        }
+    }
+
+    /// Set the time left on cooldown for an ability
+    pub fn set_cooldown(&self, binding: usize, time_left: f32) {
+        unsafe {
+            render_set_cooldown(binding, time_left);
         }
     }
 }

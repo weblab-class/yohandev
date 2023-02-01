@@ -1,11 +1,11 @@
 use hecs::{World, Entity};
 
 use crate::{
-    platform::Canvas,
+    platform::{Canvas, Socket},
     transform::{Transform, Parent},
     math::{ Vec2, vec2 },
     ability::{Ability, BubbleShield, Cooldown},
-    health::Health, physics
+    health::Health, physics, network::Packet
 };
 
 /// A type of [Sprite]
@@ -277,5 +277,18 @@ pub fn draw_sprites(world: &mut World, canvas: &Canvas) {
     }
     for (_, sprite) in world.query_mut::<&mut Sprite>() {
         canvas.draw(sprite);
+    }
+}
+
+/// System that updates cooldown UIs
+pub fn draw_cooldowns(socket: &Socket, canvas: &Canvas) {
+    if cfg!(server) {
+        return;
+    }
+    for (_, packet) in socket.packets() {
+        let Packet::CooldownStart { binding, duration } = packet else {
+            continue;
+        };
+        canvas.set_cooldown(*binding, *duration);
     }
 }

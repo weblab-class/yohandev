@@ -6,7 +6,7 @@ use crate::{
     transform::{ Transform, LocalPosition },
     input::FollowLookDirection,
     physics::Collider,
-    math::{ Rot2, vec2 }, platform::Time,
+    math::{ Rot2, vec2 }, platform::{Time, Connection, Socket}, network::Packet,
 };
 
 use super::{Shield, Cooldown};
@@ -38,7 +38,7 @@ pub fn instantiate(world: &mut World, owner: Entity, binding: usize) -> Entity {
 }
 
 /// System that positions the shield
-pub fn bubble_shield_controller(world: &mut World, time: &Time) {
+pub fn bubble_shield_controller(world: &mut World, socket: &Socket, time: &Time) {
     for (_, (ability, shield, cooldown, collider)) in &mut world.query::<(
         &Ability, &mut BubbleShield, &mut Cooldown, &mut Collider
     )>() {
@@ -50,8 +50,14 @@ pub fn bubble_shield_controller(world: &mut World, time: &Time) {
             *collider = Collider::circle(shield.radius);
         }
         if shield.radius <= 15.0 {
-            *cooldown = Cooldown(5.0);
             shield.radius = 50.0;
+            *cooldown = Cooldown(5.0);
+            if let Ok(id) = world.get::<&Connection>(ability.owner) {
+                socket.send(*id, &Packet::CooldownStart {
+                    binding: ability.binding,
+                    duration: cooldown.0,
+                })
+            }
         }
     }
 }

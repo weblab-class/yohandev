@@ -34,6 +34,9 @@ pub fn instantiate(world: &mut World) {
 
 /// System that instantly kills entities that fall off the map
 pub fn void_damage(world: &mut World) {
+    if cfg!(client) {
+        return;
+    }
     for (e, (health, transform)) in world.query_mut::<(&mut Health, &Transform)>() {
         if transform.translation.y < -1000.0 {
             health.now = 0.0;

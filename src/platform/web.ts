@@ -1,6 +1,7 @@
 /**
  * Platform implementation for a web browser.
  */
+import { StateUpdater } from "preact/hooks";
 import { geckos, RawMessage, ClientChannel, ChannelId } from "@geckos.io/client";
 import { Shape, Svg, SVG } from "@svgdotjs/svg.js";
 import "@svgdotjs/svg.filter.js";
@@ -16,10 +17,11 @@ import {
 export async function game(port: number) {
     const draw = SVG();
     const channel = geckos({ port });
+    const setCooldowns = {};
     const wasm = await instantiate({
         ...Log.imports(() => wasm.memory),
         ...Net.imports(() => wasm.memory, channel),
-        ...Render.imports(() => wasm.memory, draw),
+        ...Render.imports(() => wasm.memory, draw, setCooldowns),
         ...Input.imports(),
         ...Time.imports(),
     });
@@ -28,10 +30,10 @@ export async function game(port: number) {
         requestAnimationFrame(loop);
         wasm.tick();
     });
-    console.log(channel.id);
     return {
-        hook(node: HTMLElement): void {
+        hook(node: HTMLElement, cb: StateUpdater<number[]>): void {
             draw.addTo(node);
+            setCooldowns["current"] = cb;
         },
         uuid(): ChannelId {
             return channel.id;
@@ -155,7 +157,7 @@ module Net {
 }
 
 module Render {
-    export function imports(mem: () => Memory, root: Svg) {
+    export function imports(mem: () => Memory, root: Svg, setCooldowns: { current?: StateUpdater<number[]> }) {
         const draw = root.size("200%", "100%")
             .addClass("cartesian")
             .group()
@@ -460,6 +462,17 @@ module Render {
                 // Remove from cache
                 cache.drop(handle);
             },
+            render_set_cooldown(binding: usize, time_left: f32) {
+                console.log(binding, time_left);
+                setCooldowns.current?.((prev) => prev.map((t, i) => (
+                    i === binding ? time_left : t
+                )));
+                setTimeout(() => {
+                    setCooldowns.current?.((prev) => prev.map((t, i) => (
+                        i === binding ? 0 : t
+                    )));
+                }, time_left)
+            }
         }
     }
 }

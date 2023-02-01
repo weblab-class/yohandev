@@ -214,6 +214,9 @@ module Render {
             render_drop_sprite(handle: u32) {
                 // Node is headless!
             },
+            render_set_cooldown(binding: usize, time_left: f32) {
+                // Node is headless!
+            }
         }
     }
 }

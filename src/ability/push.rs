@@ -2,7 +2,7 @@ use hecs::{ World, Entity, With };
 
 use crate::{
     ability::{ Ability, Cooldown },
-    platform::{Time, Socket},
+    platform::{Time, Socket, Connection},
     transform::Transform,
     physics::KinematicBody,
     render::{ Sprite, Costume }, bullet::TimeToLive, network::Packet,
@@ -54,6 +54,12 @@ pub fn push_controller(world: &mut World, time: &Time, socket: &Socket) {
                 pushes.push(transform.translation);
             }
             *cooldown = Cooldown(15.0);
+            if let Ok(id) = world.get::<&Connection>(ability.owner) {
+                socket.send(*id, &Packet::CooldownStart {
+                    binding: ability.binding,
+                    duration: cooldown.0,
+                })
+            }
         }
     }
     for origin in pushes {

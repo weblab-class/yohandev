@@ -2,7 +2,7 @@ use hecs::{ World, Entity, With };
 
 use crate::{
     ability::{ Ability, Cooldown },
-    platform::{Time, Socket},
+    platform::{Time, Socket, Connection},
     transform::Transform,
     math::vec2,
     render::{ Sprite, Costume }, bullet::TimeToLive, network::Packet, health::Health,
@@ -59,6 +59,12 @@ pub fn heal_controller(world: &mut World, time: &Time, socket: &Socket) {
                 socket.broadcast(&Packet::EntityHealth(ability.owner, health.now));
             }
             *cooldown = Cooldown(5.0);
+            if let Ok(id) = world.get::<&Connection>(ability.owner) {
+                socket.send(*id, &Packet::CooldownStart {
+                    binding: ability.binding,
+                    duration: cooldown.0,
+                })
+            }
         }
     }
 }

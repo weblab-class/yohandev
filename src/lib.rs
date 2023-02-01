@@ -42,7 +42,7 @@ pub fn main() {
         }
         transform::local_to_world(&mut world);
         ability::position_shield(&mut world);
-        ability::bubble_shield_controller(&mut world, &time);
+        ability::bubble_shield_controller(&mut world, &socket, &time);
         ability::push_controller(&mut world, &time, &socket);
         ability::freeze_controller(&mut world, &mut time, &socket);
         ability::lightning_controller(&mut world, &mut time, &socket);
@@ -53,7 +53,7 @@ pub fn main() {
         transform::networked_position(&mut world, &socket);
         level::void_damage(&mut world);
         ability::toggle_abilities(&mut world, &socket);
-        ability::gun_controller(&mut world, &time);
+        ability::gun_controller(&mut world, &socket, &time);
         input::network_look_direction(&mut world, &socket);
         input::follow_look_direction(&mut world);
         ability::heal_controller(&mut world, &time, &socket);
@@ -67,5 +67,6 @@ pub fn main() {
         render::animate_health_bar_sprites(&mut world);
         render::animate_shadow_sprites(&mut world);
         render::draw_sprites(&mut world, &canvas);
+        render::draw_cooldowns(&socket, &canvas);
     });
 }

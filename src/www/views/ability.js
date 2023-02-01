@@ -7,11 +7,26 @@ import "../styles/ability.css";
  * Component for a single ability's icon, optionally with button binding.
  * @param {{ id: string, binding?: string }} props
  */
-export function AbilityIcon({ id, binding, size=64, ...props }) {
+export function AbilityIcon({ id, binding, size=64, cooldown=0.0, ...props }) {
+    const ref = useRef();
+    useEffect(() => {
+        if (cooldown <= 0.0 || !ref.current) {
+            return;
+        }
+        let k = cooldown * 10;
+        let i = k;
+        let j = setInterval(() => {
+            if ((i -= 1) <= 0) {
+                clearInterval(j);
+            }
+            ref.current.style.filter = `grayscale(${i / k * 100}%)`;
+        }, 100);
+    }, [cooldown]);
     return (
         <div
-            class="ability-icon unselectable"
+            class={`ability-icon unselectable`}
             style={`width: ${size}px; height: ${size}px;`}
+            ref={ref}
             {...props}
         >
             <img src={abilities[id]?.icon}/>

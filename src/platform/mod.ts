@@ -90,6 +90,7 @@ export interface Imports extends WebAssembly.ModuleImports {
     render_new_sprite(ptr: Ref<Costume>): u32;
     render_update_sprite(handle: u32, ptr: Ref<Costume>, visibility: Visibility);
     render_drop_sprite(handle: u32);
+    render_set_cooldown(binding: usize, time_left: f32);
 
     input_get_dx(): f32;
     input_get_dy(): f32;

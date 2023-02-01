@@ -38,4 +38,9 @@ pub enum Packet {
     EffectSpawn(Costume),
     /// Server -> Clients
     PlayerRespawn(Entity, Vec2<f32>),
+    /// Server -> Client
+    CooldownStart {
+        binding: usize,
+        duration: f32,
+    },
 }

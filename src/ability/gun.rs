@@ -2,10 +2,10 @@ use hecs::{World, Entity};
 
 use crate::{
     math::Vec2,
-    platform::Time,
+    platform::{Time, Connection, Socket},
     ability::Ability,
     transform::Transform,
-    input::Input,
+    input::Input, network::Packet,
 };
 
 /// Component for a generic gun's stats.
@@ -21,7 +21,7 @@ pub struct Gun {
 pub struct Cooldown(pub f32);
 
 /// System that does the generic gun functionality
-pub fn gun_controller(world: &mut World, time: &Time) {
+pub fn gun_controller(world: &mut World, socket: &Socket, time: &Time) {
     if cfg!(client) {
         return;
     }
@@ -44,6 +44,15 @@ pub fn gun_controller(world: &mut World, time: &Time) {
         if ability.active && cooldown.0 <= 0.0 && input.fire() {
             shots.push((gun.shoot, ability.owner, transform.translation, input.look_axis()));
             *cooldown = gun.cooldown;
+            // "some" impatient threshold
+            if cooldown.0 > 0.7 {
+                if let Ok(id) = world.get::<&Connection>(ability.owner) {
+                    socket.send(*id, &Packet::CooldownStart {
+                        binding: ability.binding,
+                        duration: cooldown.0,
+                    })
+                }
+            }
         }
     }
     for (shoot, e, o, v) in shots {
