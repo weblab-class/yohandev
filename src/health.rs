@@ -1,10 +1,9 @@
-use hecs::{World, Entity, EntityBuilder};
+use hecs::{ Entity, EntityBuilder };
 
 use crate::{
-    physics::Collisions,
     render::{ Sprite, Costume },
     transform::{ Transform, Parent, LocalPosition },
-    math::vec2, platform::Socket, network::Packet,
+    math::vec2,
 };
 
 /// Component for an entity's health

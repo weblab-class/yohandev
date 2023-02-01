@@ -7,7 +7,7 @@ use crate::{
     render::{ Sprite, Costume, Shadow },
     transform::{ Transform, NetworkPosition, Parent },
     math::vec2,
-    network::{Packet, NetEntities},
+    network::Packet,
     ability::{ AbilityKind, self, Ability, TimeScale },
     health::{ Health, self },
 };

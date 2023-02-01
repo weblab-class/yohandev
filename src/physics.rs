@@ -3,7 +3,7 @@ use std::ops::Deref;
 use hecs::{ Entity, World, With };
 use parry2d::{
     shape::{ Cuboid, Ball, Shape },
-    query::{ self, Contact, Ray, RayCast },
+    query::{ self, Contact, Ray },
 };
 use smallvec::SmallVec;
 
