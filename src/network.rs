@@ -36,4 +36,6 @@ pub enum Packet {
     PlayerToggleAbility(Entity, Option<usize>),
     /// Server -> Clients
     EffectSpawn(Costume),
+    /// Server -> Clients
+    PlayerRespawn(Entity, Vec2<f32>),
 }

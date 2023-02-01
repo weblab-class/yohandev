@@ -33,6 +33,7 @@ pub fn main() {
 
         player::networked_instantiate(&mut world, &socket, &mut reserved);
         player::networked_despawn(&mut world, &socket);
+        health::respawn_players(&mut world, &socket, &time);
         input::update(&mut world, &input);
         input::network_player_commands(&mut world, &socket);
         // TODO: client-side prediction
