@@ -227,13 +227,6 @@ module Render {
                 root.unfilter();
             }, 4500);
         }
-        function feather(filter, color: string, dilate: number, blur: number[]) {
-            filter.flood(color, 1.0)
-                .composite(
-                    filter.morphology("dilate", dilate).gaussianBlur(...blur),
-                    "in"
-                )
-        }
         return {
             render_new_sprite(ptr: Ref<Costume>): u32 {
                 // Creates a new SVG element for the costume
@@ -327,6 +320,8 @@ module Render {
                                         );
                                     })
                                 );
+                        case Costume.BubbleShield:
+                            return draw.image("assets/weapons/bubble-shield.svg").size(0, 0);
                     }
                 };
                 return cache.add(element());
@@ -354,6 +349,7 @@ module Render {
                     case Costume.HealthBar:
                     case Costume.Shield:
                     case Costume.Push:
+                    case Costume.BubbleShield:
                         element
                             .cx(args[0])
                             .cy(args[1]);
@@ -388,6 +384,10 @@ module Render {
                     element
                         .cx(args[0])
                         .y(args[1]);
+                }
+                // Bubble shield
+                if (tag == Costume.BubbleShield) {
+                    element.size(args[2] * 2, args[2] * 2)
                 }
             },
             render_drop_sprite(handle: u32) {

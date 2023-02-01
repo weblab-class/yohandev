@@ -10,7 +10,7 @@ use crate::{
 };
 
 // Special parent with offsetted pivot
-pub struct Shield(Entity);
+pub struct Shield(pub Entity);
 
 pub fn instantiate(world: &mut World, owner: Entity, binding: usize) -> Entity {
     world.spawn((

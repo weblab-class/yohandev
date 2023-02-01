@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 467 467">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#radial-gradient);
+        filter: url(#outer-glow-1);
+      }
+    </style>
+    <radialGradient id="radial-gradient" cx="233.5" cy="233.5" fx="233.5" fy="233.5" r="203.5" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff" stop-opacity=".1"/>
+      <stop offset=".46" stop-color="#fafdfe" stop-opacity=".11"/>
+      <stop offset=".63" stop-color="#e9f6fc" stop-opacity=".14"/>
+      <stop offset=".75" stop-color="#cceaf8" stop-opacity=".19"/>
+      <stop offset=".84" stop-color="#a2d9f2" stop-opacity=".27"/>
+      <stop offset=".92" stop-color="#6dc4eb" stop-opacity=".37"/>
+      <stop offset="1" stop-color="#2ba9e2" stop-opacity=".49"/>
+      <stop offset="1" stop-color="#27a8e2" stop-opacity=".5"/>
+    </radialGradient>
+    <filter id="outer-glow-1" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur" stdDeviation="10"/>
+      <feFlood flood-color="#5aa3e5" flood-opacity=".19"/>
+      <feComposite in2="blur" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Shield">
+    <circle class="cls-1" cx="233.5" cy="233.5" r="203.5"/>
+  </g>
+</svg>

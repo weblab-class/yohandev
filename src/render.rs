@@ -4,7 +4,7 @@ use crate::{
     platform::Canvas,
     transform::{Transform, Parent},
     math::{ Vec2, vec2 },
-    ability::Ability,
+    ability::{Ability, BubbleShield, Cooldown},
     health::Health
 };
 
@@ -52,6 +52,10 @@ pub enum Costume {
     Lightning {
         /// Position of impact
         position: Vec2<f32>,
+    },
+    BubbleShield {
+        position: Vec2<f32>,
+        radius: f32,
     }
 }
 
@@ -175,6 +179,31 @@ pub fn animate_handheld_sprites(world: &mut World) {
             false => Visibility::Hidden,
         };
     }
+}
+
+pub fn animate_bubble_shield_sprite(world: &mut World) {
+    if cfg!(server) {
+        return;
+    }
+    for (_, (transform, ability, shield, cooldown, sprite)) in world.query_mut::<(
+        &Transform, &Ability, &BubbleShield, &Cooldown, &mut Sprite
+    )>() {
+        let Costume::BubbleShield { position, radius } = &mut sprite.costume else {
+            continue;
+        };
+        let target = transform.translation;
+        let delta = target - *position;
+
+        // Damp position
+        *position += 0.9 * delta;
+        // Radius is exact
+        *radius = shield.radius.max(0.0);
+        // Visibility
+        sprite.visibility = match ability.active && cooldown.0 <= 0.0 {
+            true => Visibility::Shown,
+            false => Visibility::Hidden,
+        };
+    }   
 }
 
 pub fn animate_health_bar_sprites(world: &mut World) {

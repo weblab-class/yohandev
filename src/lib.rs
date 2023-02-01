@@ -53,6 +53,7 @@ pub fn main() {
         }
         transform::local_to_world(&mut world);
         ability::position_shield(&mut world);
+        ability::bubble_shield_controller(&mut world, &time);
         ability::push_controller(&mut world, &time, &socket);
         ability::freeze_controller(&mut world, &mut time, &socket);
         ability::lightning_controller(&mut world, &mut time, &socket);
@@ -71,6 +72,7 @@ pub fn main() {
         render::animate_player_sprites(&mut world);
         render::animate_bullet_sprites(&mut world);
         render::animate_handheld_sprites(&mut world);
+        render::animate_bubble_shield_sprite(&mut world);
         render::animate_health_bar_sprites(&mut world);
         render::draw_sprites(&mut world, &canvas);
     });

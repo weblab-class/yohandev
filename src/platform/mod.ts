@@ -44,6 +44,7 @@ export enum AbilityKind {
     Push,
     Freeze,
     Lightning,
+    BubbleShield,
 }
 
 export enum Costume {
@@ -57,6 +58,7 @@ export enum Costume {
     Push,
     Freeze,
     Lightning,
+    BubbleShield,
 }
 export enum Visibility {
     Shown,
