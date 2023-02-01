@@ -15,7 +15,7 @@ pub trait NetEntities: Iterator<Item = Entity> { }
 #[derive(Debug, Clone)]
 pub enum Packet {
     /// Server -> Clients
-    PlayerSpawn(Entity, Connection, [AbilityKind; 4]),
+    PlayerSpawn(Entity, Connection, [AbilityKind; 4], usize),
     /// Server -> Clients
     PlayerDespawn(Entity),
     /// Client -> Server

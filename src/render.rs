@@ -21,6 +21,7 @@ pub enum Costume {
         position: Vec2<f32>,
         scale: Vec2<f32>,
         lean: f32,
+        color: i32,
     },
     Bullet {
         position: Vec2<f32>,
@@ -148,7 +149,7 @@ pub fn animate_player_sprites(world: &mut World) {
         return;
     }
     for (_, (transform, sprite)) in world.query_mut::<(&Transform, &mut Sprite)>() {
-        let Costume::Player { position, scale, lean } = &mut sprite.costume else {
+        let Costume::Player { position, scale, lean, .. } = &mut sprite.costume else {
             continue;
         };
         let target = transform.translation;

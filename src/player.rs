@@ -15,17 +15,19 @@ use crate::{
 /// Component that marks an entity as a player.
 pub struct Player {
     deck: [AbilityKind; 4],
+    color: usize,
 }
 
 /// Prefab for a player entity
-fn prefab(deck: [AbilityKind; 4]) -> EntityBuilder {
+fn prefab(deck: [AbilityKind; 4], color: usize) -> EntityBuilder {
     let mut builder = EntityBuilder::new();
     builder.add_bundle((
-        Player { deck },
+        Player { deck, color },
         Sprite::new(Costume::Player {
             position: vec2!(0.0, 500.0),
             scale: vec2!(1.0, 1.0),
             lean: 0.0,
+            color: color as _,
         }),
         Health {
             now: 100.0,
@@ -58,32 +60,33 @@ pub fn networked_instantiate(
         // Server spawns player for every connection
         for (connection, deck) in socket.joins() {
             let e = reserved.next().unwrap_or_else(|| world.reserve_entity());
+            let color = e.id() as usize;
             // Player
-            world.spawn_at(e, prefab(*deck).add(*connection).build());
+            world.spawn_at(e, prefab(*deck, color).add(*connection).build());
             // Abilities
             for (i, kind) in deck.iter().enumerate() {
                 ability::instantiate(world, e, i, *kind);
             }
             // TODO: reliable transport
-            socket.broadcast(&Packet::PlayerSpawn(e, *connection, *deck));
+            socket.broadcast(&Packet::PlayerSpawn(e, *connection, *deck, color));
         }
         // Synchronize world state with every new connection
         for &connection in socket.connections() {
             // Existing players
             for (e, (c, player)) in world.query_mut::<(&Connection, &Player)>() {
                 // TODO: reliable transport
-                socket.send(connection, &Packet::PlayerSpawn(e, *c, player.deck));
+                socket.send(connection, &Packet::PlayerSpawn(e, *c, player.deck, player.color));
             }
         }
     }
     // Client spawns player whenever it's told so
     if cfg!(client) {
         for (connection, packet) in socket.packets() {
-            let Packet::PlayerSpawn(e, c, deck) = packet else {
+            let Packet::PlayerSpawn(e, c, deck, color) = packet else {
                 continue;
             };
             // Player:
-            world.spawn_at(*e, prefab(*deck).build());
+            world.spawn_at(*e, prefab(*deck, *color).build());
             // Health bar:
             world.spawn(health::gui_prefab(*e).build());
             // Abilities:

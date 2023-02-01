@@ -231,15 +231,26 @@ module Render {
         }
         const shadows = draw.group().back();
         const platforms = draw.group().after(shadows);
+        const COLORS = [
+            "#EFC643",
+            "#27AE60",
+            "#E74C3C",
+            "#AF7AC5",
+            "#3498DB",
+            "#1ABC9C",
+            "#E67E22",
+            "#34495E",
+        ]
         return {
             render_new_sprite(ptr: Ref<Costume>): u32 {
                 // Creates a new SVG element for the costume
                 const element = () => {
                     switch (costume(ptr)[0]) {
                         case Costume.Player:
+                            const color = new Int32Array(mem().buffer, ptr + 4)[5];
                             return draw
                                 .rect(30, 50)
-                                .fill("#EFC643")
+                                .fill(COLORS[color % COLORS.length])
                                 .back();
                         case Costume.Bullet:
                             return draw.circle(3);
