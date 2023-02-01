@@ -36,7 +36,10 @@ export async function findOrCreateUser(gid: string) {
         gid,
         // TODO: Until the collection aspect of the game is implemented,
         // every single ability is unlocked(yay!)
-        deck: ["shotgun", "push", "grappling", "dual-gun"],
-        unlocked: Object.keys(abilities),
+        deck: ["shotgun", "push", "time-freeze", "dual-gun"],
+        unlocked: Object.keys(abilities).filter((n) => ![
+            // not yet implemented
+            "sniper", "grappling"
+        ].includes(n)),
     }).save();
 }
