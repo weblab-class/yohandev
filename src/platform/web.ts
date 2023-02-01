@@ -358,12 +358,11 @@ module Render {
                             // return draw.rect(0, 20);
                             return draw
                                 .group()
-                                .back()
+                                .addTo(platforms)
                                 .add(draw
                                     .image("assets/weapons/platform.svg")
-                                    .scale(3.0, -3.0)
-                                )
-                                .addTo(platforms)
+                                    .scale(1.0, -3.0)
+                                );
                     }
                 };
                 return cache.add(element());
@@ -393,14 +392,9 @@ module Render {
                     case Costume.Push:
                     case Costume.BubbleShield:
                     case Costume.Shadow:
-                    case Costume.Platform:
-                        try {
-                            element
-                                .cx(args[0])
-                                .cy(args[1]);
-                        } catch {
-                            console.error(args[0], args[1]);
-                        }
+                        element
+                            .cx(args[0])
+                            .cy(args[1]);
                 }
                 // Rotation
                 switch (tag) {
@@ -449,8 +443,15 @@ module Render {
                 // Platform
                 if (tag == Costume.Platform) {
                     element
-                        .width(args[2])
-                        .dy(-60);
+                        .cx(args[0])
+                        .cy(args[1] - 60)
+                        .first()
+                        .attr({
+                            preserveAspectRatio: "none",
+                            width: args[2],
+                            height: 49,
+                        })
+                        // .width(args[2]);
                 }
             },
             render_drop_sprite(handle: u32) {

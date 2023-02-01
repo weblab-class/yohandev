@@ -4,7 +4,7 @@ use crate::{
     math::{ Vec2, vec2 },
     physics::{ Collider, FixedBody },
     render::{ Sprite, Costume },
-    transform::Transform
+    transform::Transform, health::Health
 };
 
 fn platform(world: &mut World, pos: Vec2<f32>, width: f32) {
@@ -30,4 +30,14 @@ pub fn instantiate(world: &mut World) {
     platform(world, vec2!(1200.0, 350.0), 200.0);
     platform(world, vec2!(950.0, 250.0), 250.0);
     platform(world, vec2!(850.0, 400.0), 100.0);
+}
+
+/// System that instantly kills entities that fall off the map
+pub fn void_damage(world: &mut World) {
+    for (e, (health, transform)) in world.query_mut::<(&mut Health, &Transform)>() {
+        if transform.translation.y < -1000.0 {
+            health.now = 0.0;
+            log::info!("{e:?} fell in the void.");
+        }
+    }
 }
