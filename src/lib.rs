@@ -25,18 +25,43 @@ pub fn main() {
         .into_iter();
 
     // Test game level
+    // world.spawn((
+    //     physics::Collider::rect(5000.0, 20.0),
+    //     physics::FixedBody::default(),
+    //     transform::Transform {
+    //         translation: vec2!(0.0, 100.0),
+    //         rotation: 0.0,
+    //     },
+    // ));
+    // world.spawn((
+    //     physics::Collider::rect(20.0, 300.0),
+    //     physics::FixedBody::default(),
+    //     transform::Transform::default(),
+    // ));
     world.spawn((
-        physics::Collider::rect(5000.0, 20.0),
+        physics::Collider::rect(500.0, 20.0),
         physics::FixedBody::default(),
+        render::Sprite::new(render::Costume::Platform {
+            position: vec2!(0.0, 130.0),
+            width: 500.0
+        }),
         transform::Transform {
-            translation: vec2!(0.0, 100.0),
+            translation: vec2!(0.0, 130.0),
             rotation: 0.0,
         },
     ));
+
     world.spawn((
-        physics::Collider::rect(20.0, 300.0),
+        physics::Collider::rect(300.0, 20.0),
         physics::FixedBody::default(),
-        transform::Transform::default(),
+        render::Sprite::new(render::Costume::Platform {
+            position: vec2!(500.0, 170.0),
+            width: 300.0
+        }),
+        transform::Transform {
+            translation: vec2!(500.0, 170.0),
+            rotation: 0.0,
+        },
     ));
 
     platform::run(move || {

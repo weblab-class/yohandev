@@ -62,6 +62,7 @@ export enum Costume {
     BubbleShield,
     Heal,
     Shadow,
+    Platform
 }
 export enum Visibility {
     Shown,

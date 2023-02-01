@@ -63,7 +63,11 @@ pub enum Costume {
     Shadow {
         position: Vec2<f32>,
         scale: f32,
-    }
+    },
+    Platform {
+        position: Vec2<f32>,
+        width: f32,
+    },
 }
 
 /// Whether a [Sprite] is visible or not.

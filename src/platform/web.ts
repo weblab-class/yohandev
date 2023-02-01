@@ -227,6 +227,8 @@ module Render {
                 root.unfilter();
             }, 4500);
         }
+        const shadows = draw.group().back();
+        const platforms = draw.group().after(shadows);
         return {
             render_new_sprite(ptr: Ref<Costume>): u32 {
                 // Creates a new SVG element for the costume
@@ -341,7 +343,18 @@ module Render {
                                 .add(draw
                                     .image("assets/weapons/shadow.svg")
                                     .scale(0.2, -0.2)
-                                );
+                                )
+                                .addTo(shadows)
+                        case Costume.Platform:
+                            // return draw.rect(0, 20);
+                            return draw
+                                .group()
+                                .back()
+                                .add(draw
+                                    .image("assets/weapons/platform.svg")
+                                    .scale(3.0, -3.0)
+                                )
+                                .addTo(platforms)
                     }
                 };
                 return cache.add(element());
@@ -371,6 +384,7 @@ module Render {
                     case Costume.Push:
                     case Costume.BubbleShield:
                     case Costume.Shadow:
+                    case Costume.Platform:
                         element
                             .cx(args[0])
                             .cy(args[1]);
@@ -416,8 +430,13 @@ module Render {
                 if (tag == Costume.Shadow) {
                     element
                         .transform({ scale: args[2] })
-                        .opacity(args[2] + 0.3)
-                        .back();
+                        .opacity(args[2] + 0.3);
+                }
+                // Platform
+                if (tag == Costume.Platform) {
+                    element
+                        .width(args[2])
+                        .dy(-60);
                 }
             },
             render_drop_sprite(handle: u32) {
