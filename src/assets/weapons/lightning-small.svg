@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 74 154">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#linear-gradient);
+        filter: url(#outer-glow-1);
+        opacity: .39;
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="24" y1="77" x2="50" y2="77" gradientUnits="userSpaceOnUse">
+      <stop offset=".12" stop-color="#e0eefa"/>
+      <stop offset=".22" stop-color="#eef6fc"/>
+      <stop offset=".36" stop-color="#fafcfe"/>
+      <stop offset=".5" stop-color="#fff"/>
+      <stop offset=".64" stop-color="#fafcfe"/>
+      <stop offset=".78" stop-color="#eef5fb"/>
+      <stop offset=".9" stop-color="#deecf9"/>
+    </linearGradient>
+    <filter id="outer-glow-1" filterUnits="userSpaceOnUse">
+      <feOffset dx="0" dy="0"/>
+      <feGaussianBlur result="blur" stdDeviation="8"/>
+      <feFlood flood-color="#86caef" flood-opacity="1"/>
+      <feComposite in2="blur" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Layer_7" data-name="Layer 7">
+    <rect class="cls-1" x="24" y="24" width="26" height="106" rx="13" ry="13"/>
+  </g>
+</svg>

@@ -49,6 +49,7 @@ pub fn lightning_controller(world: &mut World, time: &mut Time, socket: &Socket)
             if !matches!(costume, Costume::Lightning { .. }) {
                 continue;
             }
+            log::info!("spawn lightning");
             // Add sprite
             world.spawn((
                 Sprite::new(costume.clone()),

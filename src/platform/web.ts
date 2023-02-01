@@ -227,6 +227,13 @@ module Render {
                 root.unfilter();
             }, 4500);
         }
+        function feather(filter, color: string, dilate: number, blur: number[]) {
+            filter.flood(color, 1.0)
+                .composite(
+                    filter.morphology("dilate", dilate).gaussianBlur(...blur),
+                    "in"
+                )
+        }
         return {
             render_new_sprite(ptr: Ref<Costume>): u32 {
                 // Creates a new SVG element for the costume
@@ -299,9 +306,27 @@ module Render {
                             return draw.circle(0);
                         case Costume.Lightning:
                             return draw
-                                .rect(100, 5000)
-                                .fill("blue")
-                                .hide();
+                                .group()
+                                .add(draw
+                                    .image("assets/weapons/lightning-big.svg")
+                                    .attr("preserveAspectRatio", "none")
+                                    .width(100)
+                                    .height(4000)
+                                    .filterWith((filter) => {
+                                        const turbulence = filter
+                                            .turbulence(0.01, 1, 1234, "noStitch", "turbulence")
+                                        turbulence
+                                            .animate(5000, 0, "now")
+                                            .attr("baseFrequency", "0.02")
+                                        filter.displacementMap(
+                                            "SourceGraphic",
+                                            turbulence,
+                                            10,
+                                            "R",
+                                            "R"
+                                        );
+                                    })
+                                );
                     }
                 };
                 return cache.add(element());
