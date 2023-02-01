@@ -76,7 +76,7 @@ export function Menu({ startGame, ...props }) {
                         <div class="player-stats">
                             {hovered
                                 ? (<AbilityDescription id={hovered}/>)
-                                : (<></>)
+                                : (<Tutorial/>)
                             }
                         </div>
                         <button class="play-button" onClick={onPlay}>
@@ -92,8 +92,12 @@ export function Menu({ startGame, ...props }) {
 /**
  * Component that displays player stats given their deck.
  */
-function PlayerStats({ deck }) {
-
+function Tutorial() {
+    return (
+        <div class="tutorial">
+            <img src="assets/tutorial.svg"/>
+        </div>
+    )
 }
 
 /**

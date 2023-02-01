@@ -27,6 +27,7 @@ export function AbilityIcon({ id, binding, size=64, cooldown=0.0, ...props }) {
             class={`ability-icon unselectable`}
             style={`width: ${size}px; height: ${size}px;`}
             ref={ref}
+            onClick={() => binding && alert("Use 1-4 on your keyboard!")}
             {...props}
         >
             <img src={abilities[id]?.icon}/>
